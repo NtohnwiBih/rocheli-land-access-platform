@@ -195,7 +195,7 @@ release/*
 
 ## Project Status
 
-🚧 In Development
+In Development
 
 Current Phase: Project Setup & Architecture
 
