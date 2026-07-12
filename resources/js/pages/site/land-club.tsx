@@ -2,7 +2,6 @@ import { Breadcrumb } from "@/components/site/breadcrumbs";
 import FAQ from "@/components/site/home/faqs";
 import { Plans } from "@/components/site/plans";
 import { SectionHeader } from "@/components/site/section";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { testimonials } from "@/lib/mock-data";
 import { Head } from "@inertiajs/react";
 import { ArrowRight, Check, Landmark, Rocket, ShieldCheck, Sparkles, Users } from "lucide-react";
@@ -22,7 +21,7 @@ export default function LandClub() {
             content="A structured savings program that ends with a title in your name."
             />
           </Head>
-          
+
           <Breadcrumb
             eyebrow="The Land Access Club"
             title={
