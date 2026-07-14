@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
 import AuthSplitLayout from '@/layouts/auth/auth-split-layout';
-import { Mail, Phone } from 'lucide-react';
+import { Eye, EyeOff, Mail, Phone } from 'lucide-react';
 import { useState } from 'react';
 
 type Props = {
@@ -20,7 +20,9 @@ type Props = {
 };
 
 export default function Login({ status, canResetPassword }: Props) {
-     const [mode, setMode] = useState<"email" | "phone">("email");
+    const [mode, setMode] = useState<"email" | "phone">("email");
+    const [showPassword, setShowPassword] = useState(false);
+
     return (
         <>
             <Head title="Log in" />
@@ -48,11 +50,25 @@ export default function Login({ status, canResetPassword }: Props) {
               <Input className="mt-1.5" placeholder={mode === "email" ? "you@example.com" : "+234 913 000 0000"} />
             </div>
             <div>
-              <div className="flex items-center justify-between">
-                <Label>Password</Label>
-                <a href="#" className="text-xs font-medium text-rocheli-blue hover:underline">Forgot?</a>
-              </div>
-              <Input type="password" className="mt-1.5" placeholder="••••••••" />
+                <div className="flex items-center justify-between">
+                    <Label>Password</Label>
+                    <a href="#" className="text-xs font-medium text-rocheli-blue hover:underline">Forgot?</a>
+                </div>
+                <div className="relative mt-1.5">
+                    <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    className="pr-10"
+                    />
+                    <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    tabIndex={-1}
+                    >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                </div>
             </div>
             <label className="flex items-center gap-2 text-sm">
               <Checkbox defaultChecked /> Remember me
