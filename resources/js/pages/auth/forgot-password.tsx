@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthSplitLayout from '@/layouts/auth/auth-split-layout';
-import { ArrowLeft, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { FormEventHandler, useEffect, useState } from 'react';
 
 type Props = {
