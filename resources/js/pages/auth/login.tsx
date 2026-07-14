@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, Link } from '@inertiajs/react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import TextLink from '@/components/text-link';
@@ -7,8 +7,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { Badge } from '@/components/ui/badge';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
+import AuthSplitLayout from '@/layouts/auth/auth-split-layout';
+import { Mail, Phone } from 'lucide-react';
+import { useState } from 'react';
 
 type Props = {
     status?: string;
@@ -16,86 +20,58 @@ type Props = {
 };
 
 export default function Login({ status, canResetPassword }: Props) {
+     const [mode, setMode] = useState<"email" | "phone">("email");
     return (
         <>
             <Head title="Log in" />
+            <AuthSplitLayout>
 
-            <Form
-                {...store.form()}
-                resetOnSuccess={['password']}
-                className="flex flex-col gap-6"
-            >
-                {({ processing, errors }) => (
-                    <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="email"
-                                    placeholder="email@example.com"
-                                />
-                                <InputError message={errors.email} />
-                            </div>
+        <div className="flex flex-col justify-between">
+        <Link href="/"></Link>
+        <div className="mx-auto w-full max-w-md py-10">
+          <Badge variant="secondary" className="mb-4">Member Portal</Badge>
+          <h1 className="font-display text-3xl font-black md:text-4xl">Welcome back.</h1>
+          <p className="mt-2 text-sm text-muted-foreground">Log in to your Land Access Club account.</p>
 
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
-                                    {canResetPassword && (
-                                        <TextLink
-                                            href={request()}
-                                            className="ml-auto text-sm"
-                                            tabIndex={5}
-                                        >
-                                            Forgot your password?
-                                        </TextLink>
-                                    )}
-                                </div>
-                                <PasswordInput
-                                    id="password"
-                                    name="password"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="current-password"
-                                    placeholder="Password"
-                                />
-                                <InputError message={errors.password} />
-                            </div>
+          <div className="mt-8 grid grid-cols-2 gap-2 rounded-xl bg-muted p-1 text-sm">
+            <button onClick={() => setMode("email")} className={`rounded-lg px-3 py-2 font-medium transition-colors ${mode === "email" ? "bg-card shadow-sm" : "text-muted-foreground"}`}>
+              <Mail className="mr-1 inline h-4 w-4" /> Email
+            </button>
+            <button onClick={() => setMode("phone")} className={`rounded-lg px-3 py-2 font-medium transition-colors ${mode === "phone" ? "bg-card shadow-sm" : "text-muted-foreground"}`}>
+              <Phone className="mr-1 inline h-4 w-4" /> Phone
+            </button>
+          </div>
 
-                            <div className="flex items-center space-x-3">
-                                <Checkbox
-                                    id="remember"
-                                    name="remember"
-                                    tabIndex={3}
-                                />
-                                <Label htmlFor="remember">Remember me</Label>
-                            </div>
-
-                            <Button
-                                type="submit"
-                                className="mt-4 w-full"
-                                tabIndex={4}
-                                disabled={processing}
-                                data-test="login-button"
-                            >
-                                {processing && <Spinner />}
-                                Log in
-                            </Button>
-                        </div>
-                    </>
-                )}
-            </Form>
+          <form className="mt-6 space-y-4">
+            <div>
+              <Label>{mode === "email" ? "Email" : "Phone number"}</Label>
+              <Input className="mt-1.5" placeholder={mode === "email" ? "you@example.com" : "+234 913 000 0000"} />
+            </div>
+            <div>
+              <div className="flex items-center justify-between">
+                <Label>Password</Label>
+                <a href="#" className="text-xs font-medium text-rocheli-blue hover:underline">Forgot?</a>
+              </div>
+              <Input type="password" className="mt-1.5" placeholder="••••••••" />
+            </div>
+            <label className="flex items-center gap-2 text-sm">
+              <Checkbox defaultChecked /> Remember me
+            </label>
+            <Button variant="brand" size="lg" className="w-full">Log in</Button>
+          </form>
+          <div className="mt-6 text-center text-sm text-muted-foreground">
+            New here? <Link href="/register" className="font-semibold text-rocheli-blue">Create an account</Link>
+          </div>
+        </div>
+      </div>
 
             {status && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
                     {status}
                 </div>
             )}
+
+            </AuthSplitLayout>
         </>
     );
 }
