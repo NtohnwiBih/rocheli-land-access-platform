@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckCircle2, ArrowLeft, ArrowRight } from "lucide-react";
+import { CheckCircle2, ArrowLeft, ArrowRight, EyeOff } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -102,6 +102,8 @@ const AGREEMENT_LABELS = [
 
 export default function RegisterPage() {
   const [step, setStep] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
   const pct = ((step + 1) / steps.length) * 100;
 
   const { data, setData, post, processing, errors } = useForm<MemberForm>({
@@ -246,13 +248,43 @@ export default function RegisterPage() {
 
               <div>
                 <Label>Password</Label>
-                <Input type="password" className="mt-1.5" value={data.password} onChange={(e) => setData("password", e.target.value)} />
+                <div className="relative mt-1.5">
+                    <Input
+                    type={showPassword ? "text" : "password"}
+                    className="pr-10"
+                    value={data.password}
+                    onChange={(e) => setData("password", e.target.value)}
+                    />
+                    <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    tabIndex={-1}
+                    >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                </div>
                 {errors.password && <p className="mt-1 text-xs text-destructive">{errors.password}</p>}
               </div>
 
               <div>
                 <Label>Confirm password</Label>
-                <Input type="password" className="mt-1.5" value={data.password_confirmation} onChange={(e) => setData("password_confirmation", e.target.value)} />
+                <div className="relative mt-1.5">
+                    <Input
+                    type={showPasswordConfirmation ? "text" : "password"}
+                    className="pr-10"
+                    value={data.password_confirmation}
+                    onChange={(e) => setData("password_confirmation", e.target.value)}
+                    />
+                    <button
+                    type="button"
+                    onClick={() => setShowPasswordConfirmation((prev) => !prev)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    tabIndex={-1}
+                    >
+                    {showPasswordConfirmation ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                </div>
               </div>
             </div>
           )}
