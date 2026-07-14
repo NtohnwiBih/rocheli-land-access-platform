@@ -1,0 +1,290 @@
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import AuthSplitLayout from '@/layouts/auth/auth-split-layout';
+import {
+    CheckCircle2,
+    Mail,
+    Phone,
+    RefreshCw,
+    ShieldCheck,
+} from 'lucide-react';
+
+type Method = 'email' | 'phone';
+
+type Props = {
+    email?: string;
+    phone?: string;
+    status?: string;
+    resendAvailableInSeconds?: number;
+};
+
+export default function VerifyAccount({
+    email,
+    phone,
+    status,
+    resendAvailableInSeconds = 45,
+}: Props) {
+    // Always open on the Email tab
+    const [method, setMethod] = useState<Method>('email');
+    const destination = method === 'email' ? email ?? 'you@example.com' : phone ?? '+234 913 000 0000';
+
+    // 6 digits for email codes, 4 digits for SMS codes
+    const digits = method === 'email' ? 6 : 4;
+
+    const [values, setValues] = useState<string[]>(() => Array(digits).fill(''));
+    const [seconds, setSeconds] = useState(resendAvailableInSeconds);
+    const [verified, setVerified] = useState(false);
+    const inputs = useRef<Array<HTMLInputElement | null>>([]);
+
+    const { data, setData, post, processing, errors, reset } = useForm({
+        code: '',
+        method,
+    });
+
+    // Reset local UI whenever the method changes
+    useEffect(() => {
+        setValues(Array(digits).fill(''));
+        setSeconds(resendAvailableInSeconds);
+        inputs.current = [];
+        reset('code');
+    }, [method, digits]);
+
+    useEffect(() => {
+        if (seconds <= 0) return;
+        const timer = setTimeout(() => setSeconds((s) => s - 1), 1000);
+        return () => clearTimeout(timer);
+    }, [seconds]);
+
+    const copy = useMemo(() => {
+        return method === 'email'
+            ? {
+                  eyebrow: 'Email verification',
+                  title: 'Verify your email',
+                  desc: 'We sent a 6-digit code to',
+                  hint: '123456',
+                  channel: 'email',
+                  sideIcon: Mail,
+                  sideNote: 'Encrypted email delivery via authenticated relays.',
+                  sideTag: 'Email verification',
+              }
+            : {
+                  eyebrow: 'SMS verification',
+                  title: 'Verify your phone',
+                  desc: 'We texted a 4-digit code to',
+                  hint: '1234',
+                  channel: 'SMS',
+                  sideIcon: Phone,
+                  sideNote: 'SMS one-time passcodes powered by tier-1 mobile carriers.',
+                  sideTag: 'SMS verification',
+              };
+    }, [method]);
+
+    const submitCode = (joined: string) => {
+        setData((prev) => ({ ...prev, code: joined, method }));
+        post('/verification.verify', {
+            preserveScroll: true,
+            onSuccess: () => setVerified(true),
+            onError: () => {
+                setValues(Array(digits).fill(''));
+                inputs.current[0]?.focus();
+            },
+        });
+    };
+
+    const setDigit = (i: number, raw: string) => {
+        const clean = raw.replace(/\D/g, '').slice(-1);
+        const next = [...values];
+        next[i] = clean;
+        setValues(next);
+
+        if (clean && i < digits - 1) inputs.current[i + 1]?.focus();
+
+        if (next.every((d) => d !== '')) {
+            submitCode(next.join(''));
+        }
+    };
+
+    const onKeyDown = (i: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Backspace' && !values[i] && i > 0) inputs.current[i - 1]?.focus();
+    };
+
+    const onPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+        const text = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, digits);
+        if (!text) return;
+        e.preventDefault();
+        const next = Array(digits).fill('');
+        for (let i = 0; i < text.length; i++) next[i] = text[i];
+        setValues(next);
+        inputs.current[Math.min(text.length, digits - 1)]?.focus();
+        if (text.length === digits) submitCode(text);
+    };
+
+    // Pure client-side toggle — no server round-trip needed just to switch tabs
+    const switchMethod = (m: Method) => setMethod(m);
+
+    const resend = () => {
+        router.post('/verification.send',
+            { method },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setSeconds(resendAvailableInSeconds);
+                    setValues(Array(digits).fill(''));
+                    reset('code');
+                },
+            },
+        );
+    };
+
+    return (
+        <>
+            <Head title={copy.title} />
+            <AuthSplitLayout title="" description="">
+                <Badge variant="secondary">
+                    {copy.eyebrow}
+                </Badge>
+
+                {!verified ? (
+                    <>
+                        <h1 className="mt-6 font-display text-3xl font-black md:text-4xl">
+                            {copy.title}
+                        </h1>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                            {copy.desc}{' '}
+                            <span className="font-semibold text-foreground">{destination}</span>. Enter
+                            it below to activate your Land Access Club membership.
+                        </p>
+
+                        {/* Method switcher */}
+                        <div className="mt-6 grid grid-cols-2 gap-2 rounded-xl bg-muted p-1 text-sm">
+                            <button
+                                type="button"
+                                onClick={() => switchMethod('email')}
+                                className={`rounded-lg px-3 py-2 font-medium transition-colors ${
+                                    method === 'email'
+                                        ? 'bg-card shadow-sm'
+                                        : 'text-muted-foreground'
+                                }`}
+                            >
+                                <Mail className="mr-1 inline h-4 w-4" /> Email code
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => switchMethod('phone')}
+                                className={`rounded-lg px-3 py-2 font-medium transition-colors ${
+                                    method === 'phone'
+                                        ? 'bg-card shadow-sm'
+                                        : 'text-muted-foreground'
+                                }`}
+                            >
+                                <Phone className="mr-1 inline h-4 w-4" /> SMS code
+                            </button>
+                        </div>
+
+                        <div className="mt-6">
+                            <div
+                                className={`grid gap-2 sm:gap-3 ${
+                                    method === 'email' ? 'grid-cols-6' : 'max-w-xs grid-cols-4'
+                                }`}
+                            >
+                                {values.map((d, i) => (
+                                    <input
+                                        key={`${method}-${i}`}
+                                        ref={(el) => {
+                                            inputs.current[i] = el;
+                                        }}
+                                        value={d}
+                                        onChange={(e) => setDigit(i, e.target.value)}
+                                        onKeyDown={(e) => onKeyDown(i, e)}
+                                        onPaste={onPaste}
+                                        disabled={processing}
+                                        inputMode="numeric"
+                                        maxLength={1}
+                                        aria-label={`Digit ${i + 1}`}
+                                        className={`h-14 w-full rounded-xl border bg-card text-center font-display text-2xl font-bold outline-none transition-all focus:border-rocheli-blue focus:ring-2 focus:ring-rocheli-blue/20 ${
+                                            errors.code
+                                                ? 'border-destructive text-destructive'
+                                                : 'border-border'
+                                        }`}
+                                    />
+                                ))}
+                            </div>
+                            {errors.code && (
+                                <p className="mt-3 text-sm text-destructive">{errors.code}</p>
+                            )}
+                            <p className="mt-3 text-xs text-muted-foreground">
+                                Tip: use <span className="font-mono font-semibold">{copy.hint}</span> to
+                                preview success.
+                            </p>
+                        </div>
+
+                        <div className="mt-8 flex items-center justify-between rounded-2xl bg-muted p-4 text-sm">
+                            <span className="text-muted-foreground">
+                                Didn't receive the {copy.channel}?
+                            </span>
+                            {seconds > 0 ? (
+                                <span className="font-medium text-muted-foreground">
+                                    Resend in {seconds}s
+                                </span>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={resend}
+                                    className="inline-flex items-center gap-1.5 font-semibold text-rocheli-blue hover:underline"
+                                >
+                                    <RefreshCw className="h-3.5 w-3.5" /> Resend code
+                                </button>
+                            )}
+                        </div>
+
+                        <div className="mt-6 text-center text-sm text-muted-foreground">
+                            {method === 'email' ? 'Prefer SMS?' : 'Prefer email?'}{' '}
+                            <button
+                                type="button"
+                                onClick={() => switchMethod(method === 'email' ? 'phone' : 'email')}
+                                className="font-semibold text-rocheli-blue hover:underline"
+                            >
+                                Verify via {method === 'email' ? 'phone' : 'email'} instead
+                            </button>
+                        </div>
+                    </>
+                ) : (
+                    <div className="space-y-6">
+                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-rocheli-blue/10 text-rocheli-blue">
+                            <ShieldCheck className="h-7 w-7" />
+                        </div>
+                        <h1 className="font-display text-3xl font-black md:text-4xl">
+                            Account verified
+                        </h1>
+                        <p className="text-sm text-muted-foreground">
+                            Welcome to Rocheli. Your {method === 'email' ? 'email' : 'phone number'} has
+                            been confirmed and your membership is now active.
+                        </p>
+                        <ul className="space-y-2 text-sm">
+                            {['Wallet activated', 'Referral code generated', 'Access to Club properties'].map(
+                                (c) => (
+                                    <li key={c} className="flex items-center gap-2">
+                                        <CheckCircle2 className="h-4 w-4 text-rocheli-blue" /> {c}
+                                    </li>
+                                ),
+                            )}
+                        </ul>
+                        <Link href='/dashboard'>
+                            <Button variant="brand" size="lg" className="w-full">
+                                Go to dashboard
+                            </Button>
+                        </Link>
+                    </div>
+                )}
+
+                {status && (
+                    <div className="mt-4 text-center text-sm font-medium text-green-600">
+                        {status}
+                    </div>
+                )}
+            </AuthSplitLayout>
+        </>
+    );
+}
