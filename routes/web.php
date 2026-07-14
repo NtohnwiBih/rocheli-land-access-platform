@@ -2,7 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'welcome')->name('home');
+Route::inertia('/', 'site/index')->name('home');
+Route::inertia('/properties', 'site/properties')->name('properties');
+Route::inertia('/land-access-club', 'site/land-club')->name('land-club');
+Route::inertia('/services', 'site/services')->name('services');
+Route::inertia('/about', 'site/about')->name('about');
+Route::inertia('/resources', 'site/resources')->name('resources');
+Route::inertia('/contact', 'site/contact')->name('contact');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
