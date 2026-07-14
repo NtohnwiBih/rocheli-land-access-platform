@@ -43,6 +43,13 @@
   --color-blue: var(--blue);
   --color-blue-dark: var(--blue-dark);
   --color-surface: var(--surface);
+
+  --color-rocheli-blue: var(--rocheli-blue);
+  --color-rocheli-blue-dark: var(--rocheli-blue-dark);
+  --color-rocheli-gold: var(--rocheli-gold);
+  --color-rocheli-gold-dark: var(--rocheli-gold-dark);
+  --color-rocheli-navy: var(--rocheli-navy);
+  --color-surface: var(--surface);
 }
 
 :root {
@@ -54,6 +61,13 @@
   --gold: #FFD21A;
   --gold-dark: #D9B000;
   --navy: #082436;
+
+  --rocheli-blue: oklch(0.66 0.13 220);
+  --rocheli-blue-dark: oklch(0.55 0.12 224);
+  --rocheli-gold: oklch(0.88 0.17 92);
+  --rocheli-gold-dark: oklch(0.78 0.16 88);
+  --rocheli-navy: oklch(0.22 0.05 240);
+  --surface: oklch(1 0 0);
 
   --background: #F8FAFC;
   --surface: #FFFFFF;
@@ -88,6 +102,12 @@
   --gradient-gold: linear-gradient(135deg, #FFD21A 0%, #D9B000 100%);
   --gradient-blue: linear-gradient(135deg, #1298C2 0%, #0D7EA0 100%);
   --gradient-navy: linear-gradient(180deg, #082436 0%, #0D2B44 100%);
+    /* Gradients & shadows */
+  --gradient-brand: linear-gradient(135deg, var(--rocheli-blue) 0%, var(--rocheli-blue-dark) 100%);
+  --gradient-gold: linear-gradient(135deg, var(--rocheli-gold) 0%, var(--rocheli-gold-dark) 100%);
+  --gradient-mesh: radial-gradient(60% 60% at 20% 10%, oklch(0.66 0.13 220 / 0.35), transparent 60%),
+    radial-gradient(50% 50% at 90% 10%, oklch(0.88 0.17 92 / 0.28), transparent 60%),
+    radial-gradient(60% 60% at 50% 100%, oklch(0.55 0.12 224 / 0.3), transparent 60%);
   --shadow-elegant: 0 25px 60px -25px rgba(8, 36, 54, 0.35);
   --shadow-card: 0 10px 30px -15px rgba(8, 36, 54, 0.18);
   --shadow-glow: 0 0 60px -15px rgba(18, 152, 194, 0.55);
@@ -199,6 +219,15 @@
 }
 @utility bg-gradient-navy {
   background: var(--gradient-navy);
+}
+@utility bg-gradient-brand {
+  background: var(--gradient-brand);
+}
+@utility bg-gradient-gold {
+  background: var(--gradient-gold);
+}
+@utility bg-gradient-mesh {
+  background: var(--gradient-mesh);
 }
 
 @utility grain {
