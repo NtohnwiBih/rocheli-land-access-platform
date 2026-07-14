@@ -12,10 +12,3 @@ export type NavItem = {
     icon?: LucideIcon | null;
     isActive?: boolean;
 };
-
-export interface SiteLayoutProps {
-  children: React.ReactNode;
-}
-
-
-
