@@ -1,15 +1,9 @@
 import { Form, Head, Link } from '@inertiajs/react';
-import InputError from '@/components/input-error';
-import PasswordInput from '@/components/password-input';
-import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
 import { Badge } from '@/components/ui/badge';
-import { store } from '@/routes/login';
-import { request } from '@/routes/password';
 import AuthSplitLayout from '@/layouts/auth/auth-split-layout';
 import { Eye, EyeOff, Mail, Phone } from 'lucide-react';
 import { useState } from 'react';

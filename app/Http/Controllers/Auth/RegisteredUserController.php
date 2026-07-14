@@ -17,4 +17,9 @@ class RegisteredUserController extends Controller
     {
         return Inertia::render('auth/register');
     }
+
+    public function verify(): Response
+    {
+        return Inertia::render('auth/verify-account');
+    }
 }
