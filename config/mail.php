@@ -35,6 +35,8 @@ return [
     |
     */
 
+    'company_notification_email' => env('COMPANY_NOTIFICATION_EMAIL'),
+
     'mailers' => [
 
         'smtp' => [

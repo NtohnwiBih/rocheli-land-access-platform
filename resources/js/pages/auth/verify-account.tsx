@@ -29,9 +29,10 @@ export default function VerifyAccount({
 }: Props) {
     const { t } = useTranslation();
 
-    // Always open on the Email tab
-    const [method, setMethod] = useState<Method>('email');
-    const destination = method === 'email' ? email ?? 'you@example.com' : phone ?? '+234 913 000 0000';
+    // Phone is the primary verification channel — always open on Phone.
+    const [method, setMethod] = useState<Method>('phone');
+    const destination = method === 'email' ? email ?? '' : phone ?? '';
+    const hasEmail = Boolean(email);
 
     // 6 digits for email codes, 4 digits for SMS codes
     const digits = method === 'email' ? 6 : 4;
@@ -46,7 +47,6 @@ export default function VerifyAccount({
         method,
     });
 
-    // Reset local UI whenever the method changes
     useEffect(() => {
         setValues(Array(digits).fill(''));
         setSeconds(resendAvailableInSeconds);
@@ -69,8 +69,6 @@ export default function VerifyAccount({
                   hint: t('verify.email.hint'),
                   channel: t('verify.email.channel'),
                   sideIcon: Mail,
-                  sideNote: t('verify.email.sideNote'),
-                  sideTag: t('verify.email.sideTag'),
               }
             : {
                   eyebrow: t('verify.phone.eyebrow'),
@@ -79,8 +77,6 @@ export default function VerifyAccount({
                   hint: t('verify.phone.hint'),
                   channel: t('verify.phone.channel'),
                   sideIcon: Phone,
-                  sideNote: t('verify.phone.sideNote'),
-                  sideTag: t('verify.phone.sideTag'),
               };
     }, [method, t]);
 
@@ -124,8 +120,10 @@ export default function VerifyAccount({
         if (text.length === digits) submitCode(text);
     };
 
-    // Pure client-side toggle — no server round-trip needed just to switch tabs
-    const switchMethod = (m: Method) => setMethod(m);
+    const switchMethod = (m: Method) => {
+        if (m === 'email' && !hasEmail) return;
+        setMethod(m);
+    };
 
     const resend = () => {
         router.post(
@@ -159,31 +157,32 @@ export default function VerifyAccount({
                             {t('verify.instructions')}
                         </p>
 
-                        {/* Method switcher */}
-                        <div className="mt-6 grid grid-cols-2 gap-2 rounded-xl bg-muted p-1 text-sm">
-                            <button
-                                type="button"
-                                onClick={() => switchMethod('email')}
-                                className={`rounded-lg px-3 py-2 font-medium transition-colors ${
-                                    method === 'email'
-                                        ? 'bg-card shadow-sm'
-                                        : 'text-muted-foreground'
-                                }`}
-                            >
-                                <Mail className="mr-1 inline h-4 w-4" /> {t('verify.emailCode')}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => switchMethod('phone')}
-                                className={`rounded-lg px-3 py-2 font-medium transition-colors ${
-                                    method === 'phone'
-                                        ? 'bg-card shadow-sm'
-                                        : 'text-muted-foreground'
-                                }`}
-                            >
-                                <Phone className="mr-1 inline h-4 w-4" /> {t('verify.smsCode')}
-                            </button>
-                        </div>
+                        {hasEmail && (
+                            <div className="mt-6 grid grid-cols-2 gap-2 rounded-xl bg-muted p-1 text-sm">
+                                <button
+                                    type="button"
+                                    onClick={() => switchMethod('phone')}
+                                    className={`rounded-lg px-3 py-2 font-medium transition-colors ${
+                                        method === 'phone'
+                                            ? 'bg-card shadow-sm'
+                                            : 'text-muted-foreground'
+                                    }`}
+                                >
+                                    <Phone className="mr-1 inline h-4 w-4" /> {t('verify.smsCode')}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => switchMethod('email')}
+                                    className={`rounded-lg px-3 py-2 font-medium transition-colors ${
+                                        method === 'email'
+                                            ? 'bg-card shadow-sm'
+                                            : 'text-muted-foreground'
+                                    }`}
+                                >
+                                    <Mail className="mr-1 inline h-4 w-4" /> {t('verify.emailCode')}
+                                </button>
+                            </div>
+                        )}
 
                         <div className="mt-6">
                             <div
@@ -216,10 +215,6 @@ export default function VerifyAccount({
                             {errors.code && (
                                 <p className="mt-3 text-sm text-destructive">{errors.code}</p>
                             )}
-                            <p className="mt-3 text-xs text-muted-foreground">
-                                Tip: use <span className="font-mono font-semibold">{copy.hint}</span> to
-                                preview success.
-                            </p>
                         </div>
 
                         <div className="mt-8 flex items-center justify-between rounded-2xl bg-muted p-4 text-sm">
@@ -239,19 +234,6 @@ export default function VerifyAccount({
                                     <RefreshCw className="h-3.5 w-3.5" /> {t('verify.resendCode')}
                                 </button>
                             )}
-                        </div>
-
-                        <div className="mt-6 text-center text-sm text-muted-foreground">
-                            {method === 'email' ? t('verify.preferSms') : t('verify.preferEmail')}{' '}
-                            <button
-                                type="button"
-                                onClick={() => switchMethod(method === 'email' ? 'phone' : 'email')}
-                                className="font-semibold text-rocheli-blue hover:underline"
-                            >
-                                {t('verify.verifyVia')}{' '}
-                                {method === 'email' ? t('verify.phoneWord') : t('verify.emailWord')}{' '}
-                                {t('verify.instead')}
-                            </button>
                         </div>
                     </>
                 ) : (

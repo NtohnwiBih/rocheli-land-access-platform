@@ -34,7 +34,6 @@
         "continue": "Continuer",
         "submit": "Soumettre et continuer",
         "submitting": "Envoi en cours…",
-
         "step1": {
             "fullName": "Nom complet",
             "email": "E-mail",
@@ -53,7 +52,6 @@
             "password": "Mot de passe",
             "confirmPassword": "Confirmer le mot de passe"
         },
-
         "step2": {
             "idType": "Type de pièce d'identité",
             "idTypePlaceholder": "Sélectionner...",
@@ -74,7 +72,6 @@
             "kinRelationshipOther": "Autre",
             "kinPhone": "Téléphone"
         },
-
         "step3": {
             "goalLabel": "Pourquoi rejoignez-vous le club ?",
             "goalBuildHome": "Construire une maison",
@@ -91,7 +88,6 @@
             "landTypeAgricultural": "Agricole",
             "landTypeUndecided": "Indécis"
         },
-
         "step4": {
             "planTarget": "Objectif :",
             "planPopular": "Populaire",
@@ -109,7 +105,6 @@
             "paymentBank": "Virement bancaire",
             "paymentCash": "Dépôt en espèces"
         },
-
         "step5": {
             "readyTitle": "Tout est prêt !",
             "readyDesc": "Confirmez les détails ci-dessous et soumettez pour activer votre adhésion.",
@@ -121,7 +116,6 @@
             },
             "signature": "Signature numérique — nom complet"
         },
-
         "cities": {
             "yaounde": "Yaoundé",
             "douala": "Douala",
@@ -130,6 +124,31 @@
             "bamenda": "Bamenda",
             "bafoussam": "Bafoussam",
             "kribi": "Kribi"
+        },
+        "errors": {
+            "fullNameRequired": "Le nom complet est requis",
+            "emailRequired": "L'adresse e-mail est requise",
+            "emailInvalid": "Veuillez saisir une adresse e-mail valide",
+            "genderRequired": "Veuillez sélectionner un sexe",
+            "phoneRequired": "Le numéro de téléphone est requis",
+            "cityRequired": "Veuillez sélectionner une ville",
+            "passwordRequired": "Le mot de passe est requis",
+            "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+            "passwordPattern": "Le mot de passe doit contenir au moins une lettre et un chiffre",
+            "confirmPasswordRequired": "Veuillez confirmer votre mot de passe",
+            "passwordMismatch": "Les mots de passe ne correspondent pas",
+            "idTypeRequired": "Veuillez sélectionner un type de pièce d'identité",
+            "idNumberRequired": "Le numéro de la pièce d'identité est requis",
+            "idDocumentRequired": "Veuillez téléverser votre pièce d'identité",
+            "goalRequired": "Veuillez sélectionner un objectif",
+            "landTypeRequired": "Veuillez sélectionner un type de terrain",
+            "planRequired": "Veuillez sélectionner un plan",
+            "frequencyRequired": "Veuillez sélectionner une fréquence de contribution",
+            "amountRequired": "Le montant de la contribution est requis",
+            "amountInvalid": "Veuillez saisir un montant valide",
+            "paymentMethodRequired": "Veuillez sélectionner un mode de paiement",
+            "agreementsRequired": "Veuillez accepter tous les accords pour continuer",
+            "signatureRequired": "La signature est requise"
         }
     },
     "verify": {
@@ -225,6 +244,77 @@
             "title": "Mot de passe mis à jour",
             "desc": "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter à votre compte Land Access Club.",
             "continueToLogin": "Continuer vers la connexion"
+        }
+    },
+    "member": {
+        "layout": {
+            "nav": {
+            "overview": "Aperçu",
+            "contributions": "Cotisations",
+            "property": "Ma propriété",
+            "documents": "Documents",
+            "notifications": "Notifications",
+            "map": "Carte des propriétés",
+            "calculator": "Calculatrice",
+            "referrals": "Parrainages",
+            "profile": "Profil",
+            "support": "Assistance"
+            },
+            "search": "Rechercher...",
+            "logout": "Déconnexion",
+            "expandSidebar": "Développer le menu",
+            "collapseSidebar": "Réduire le menu",
+            "close": "Fermer",
+            "toggleLanguage": "Changer de langue",
+            "switchToFrench": "Passer en français",
+            "switchToEnglish": "Switch to English",
+            "toggleTheme": "Changer de thème",
+            "defaultMemberName": "Membre",
+            "defaultMemberCode": "—",
+            "notificationsDropdown": {
+                "title": "Notifications",
+                "empty": "Vous êtes à jour",
+                "viewAll": "Voir toutes les notifications",
+                "markAllRead": "Tout marquer comme lu"
+            }
+        },
+        "dashboard": {
+            "planSuffix": "Formule",
+            "noPlanSelected": "Aucune formule sélectionnée",
+            "welcomeBack": "Bon retour, {{name}}.",
+            "memberId": "N° de membre · {{code}}",
+            "makeContribution": "Faire une cotisation",
+            "statement": "Relevé",
+            "stats": {
+            "walletBalance": "Solde du portefeuille",
+            "contributionsMade": "Cotisations effectuées",
+            "outstanding": "Solde restant",
+            "plotReserved": "Parcelle réservée",
+            "consecutiveMonths": "mois consécutifs",
+            "forReservedPlot": "pour la parcelle réservée"
+            },
+            "savingsJourney": "Parcours d'épargne",
+            "last8Months": "8 derniers mois",
+            "propertyStatus": {
+            "approved": "Approuvée",
+            "underReview": "En cours d'examen",
+            "pending": "En attente d'examen",
+            "rejected": "Non approuvée",
+            "none": "Aucune demande",
+            "locations_one": "Emplacement préféré : {{list}}",
+            "locations_other": "Emplacements préférés : {{list}}",
+            "notSpecified": "Non spécifié",
+            "approvedNote": "Une parcelle spécifique a été attribuée. Les détails complets sont disponibles dans {{link}}.",
+            "myPropertyLink": "Ma propriété",
+            "pendingNote": "Aucune parcelle spécifique n'a encore été attribuée. L'attribution devient possible une fois votre demande examinée et l'éligibilité confirmée.",
+            "viewProperty": "Voir la propriété",
+            "viewApplication": "Voir la demande",
+            "askAdvisor": "Contacter un conseiller"
+            },
+            "upcomingPayments": "Prochains paiements",
+            "notificationsTitle": "Notifications",
+            "paid": "Payé",
+            "scheduled": "Prévu"
         }
     }
 }

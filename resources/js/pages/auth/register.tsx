@@ -49,6 +49,8 @@ type MemberForm = {
   signature: string;
 };
 
+type ClientErrors = Partial<Record<keyof MemberForm, string>>;
+
 const PLANS = [
   { name: "Starter Plan", price: "2,000,000 FCFA", daily: "2,500 F", weekly: "15,000 F", monthly: "65,000 F" },
   { name: "Growth Plan", price: "3,000,000 FCFA", daily: "5,000 F", weekly: "25,000 F", monthly: "100,000 F" },
@@ -56,11 +58,15 @@ const PLANS = [
   { name: "Prime Plan", price: "10,000,000 FCFA", daily: "10,000+ F", weekly: "75,000+ F", monthly: "300,000+ F" },
 ];
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d)/;
+
 export default function RegisterPage() {
   const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
+  const [clientErrors, setClientErrors] = useState<ClientErrors>({});
 
   const steps = [
     t("register.steps.0"), t("register.steps.1"), t("register.steps.2"), t("register.steps.3"), t("register.steps.4"),
@@ -149,13 +155,134 @@ export default function RegisterPage() {
     setData("agreements", next);
   };
 
-  const next = () => setStep((s) => Math.min(steps.length - 1, s + 1));
-  const back = () => setStep((s) => Math.max(0, s - 1));
+  const setField = <K extends keyof MemberForm>(field: K, value: MemberForm[K]) => {
+    // cast to any to satisfy useForm's setData overloaded typing (e.g. File | null cases)
+    setData(field as any, value as any);
+    if (clientErrors[field]) {
+      setClientErrors((prev) => {
+        const next = { ...prev };
+        delete next[field];
+        return next;
+      });
+    }
+  };
 
-  //   const submit: FormEventHandler = (e) => {
-  //     e.preventDefault();
-  //     post("/register", { forceFormData: true });
-  //   };
+  // --- Validation ---------------------------------------------------------
+
+  const validateStep = (currentStep: number): ClientErrors => {
+    const errs: ClientErrors = {};
+
+    if (currentStep === 0) {
+      if (!data.full_name.trim()) {
+        errs.full_name = t("register.errors.fullNameRequired");
+      }
+      if (!data.email.trim()) {
+        errs.email = t("register.errors.emailRequired");
+      } else if (!EMAIL_PATTERN.test(data.email)) {
+        errs.email = t("register.errors.emailInvalid");
+      }
+      if (!data.gender) {
+        errs.gender = t("register.errors.genderRequired");
+      }
+      if (!data.phone.trim()) {
+        errs.phone = t("register.errors.phoneRequired");
+      }
+      if (!data.city) {
+        errs.city = t("register.errors.cityRequired");
+      }
+      if (!data.password) {
+        errs.password = t("register.errors.passwordRequired");
+      } else if (data.password.length < 8) {
+        errs.password = t("register.errors.passwordTooShort");
+      } else if (!PASSWORD_PATTERN.test(data.password)) {
+        errs.password = t("register.errors.passwordPattern");
+      }
+      if (!data.password_confirmation) {
+        errs.password_confirmation = t("register.errors.confirmPasswordRequired");
+      } else if (data.password_confirmation !== data.password) {
+        errs.password_confirmation = t("register.errors.passwordMismatch");
+      }
+    }
+
+    if (currentStep === 1) {
+      if (!data.id_type) {
+        errs.id_type = t("register.errors.idTypeRequired");
+      }
+      if (!data.id_number.trim()) {
+        errs.id_number = t("register.errors.idNumberRequired");
+      }
+      if (!data.id_document) {
+        errs.id_document = t("register.errors.idDocumentRequired");
+      }
+    }
+
+    if (currentStep === 2) {
+      if (!data.goal) {
+        errs.goal = t("register.errors.goalRequired");
+      }
+      if (!data.land_type) {
+        errs.land_type = t("register.errors.landTypeRequired");
+      }
+    }
+
+    if (currentStep === 3) {
+      if (!data.plan) {
+        errs.plan = t("register.errors.planRequired");
+      }
+      if (!data.contribution_frequency) {
+        errs.contribution_frequency = t("register.errors.frequencyRequired");
+      }
+      if (!data.contribution_amount) {
+        errs.contribution_amount = t("register.errors.amountRequired");
+      } else if (Number(data.contribution_amount) <= 0) {
+        errs.contribution_amount = t("register.errors.amountInvalid");
+      }
+      if (!data.payment_method) {
+        errs.payment_method = t("register.errors.paymentMethodRequired");
+      }
+    }
+
+    if (currentStep === 4) {
+      if (data.agreements.some((a) => !a)) {
+        errs.agreements = t("register.errors.agreementsRequired");
+      }
+      if (!data.signature.trim()) {
+        errs.signature = t("register.errors.signatureRequired");
+      }
+    }
+
+    return errs;
+  };
+
+  const next = () => {
+    const stepErrors = validateStep(step);
+    if (Object.keys(stepErrors).length > 0) {
+      setClientErrors(stepErrors);
+      return;
+    }
+    setClientErrors({});
+    setStep((s) => Math.min(steps.length - 1, s + 1));
+  };
+
+  const back = () => {
+    setClientErrors({});
+    setStep((s) => Math.max(0, s - 1));
+  };
+
+  const showError = (field: keyof MemberForm) => clientErrors[field] || errors[field];
+
+  const submit: FormEventHandler = (e) => {
+    e.preventDefault();
+
+    const stepErrors = validateStep(4);
+    if (Object.keys(stepErrors).length > 0) {
+      setClientErrors(stepErrors);
+      return;
+    }
+
+    setClientErrors({});
+    post("/register", { forceFormData: true });
+  };
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -183,24 +310,24 @@ export default function RegisterPage() {
           </ol>
         </div>
 
-        <form className="mt-8 rounded-3xl bg-card p-6 shadow-card md:p-10">
+        <form onSubmit={submit} className="mt-8 rounded-3xl bg-card p-6 shadow-card md:p-10" noValidate>
           {step === 0 && (
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="sm:col-span-2">
                 <Label>{t("register.step1.fullName")}</Label>
-                <Input className="mt-1.5" value={data.full_name} onChange={(e) => setData("full_name", e.target.value)} />
-                {errors.full_name && <p className="mt-1 text-xs text-destructive">{errors.full_name}</p>}
+                <Input className="mt-1.5" value={data.full_name} onChange={(e) => setField("full_name", e.target.value)} />
+                {showError("full_name") && <p className="mt-1 text-xs text-destructive">{showError("full_name")}</p>}
               </div>
 
               <div>
                 <Label>{t("register.step1.email")}</Label>
-                <Input type="email" className="mt-1.5" value={data.email} onChange={(e) => setData("email", e.target.value)} />
-                {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email}</p>}
+                <Input type="email" className="mt-1.5" value={data.email} onChange={(e) => setField("email", e.target.value)} />
+                {showError("email") && <p className="mt-1 text-xs text-destructive">{showError("email")}</p>}
               </div>
 
               <div>
                 <Label>{t("register.step1.gender")}</Label>
-                <Select value={data.gender} onValueChange={(v) => setData("gender", v)}>
+                <Select value={data.gender} onValueChange={(v) => setField("gender", v)}>
                   <SelectTrigger className="mt-1.5"><SelectValue placeholder={t("register.step1.genderPlaceholder")} /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="male">{t("register.step1.genderMale")}</SelectItem>
@@ -208,34 +335,34 @@ export default function RegisterPage() {
                     <SelectItem value="other">{t("register.step1.genderOther")}</SelectItem>
                   </SelectContent>
                 </Select>
-                {errors.gender && <p className="mt-1 text-xs text-destructive">{errors.gender}</p>}
+                {showError("gender") && <p className="mt-1 text-xs text-destructive">{showError("gender")}</p>}
               </div>
 
               <div>
                 <Label>{t("register.step1.phone")}</Label>
-                <Input placeholder={t("register.step1.phonePlaceholder")} className="mt-1.5" value={data.phone} onChange={(e) => setData("phone", e.target.value)} />
-                {errors.phone && <p className="mt-1 text-xs text-destructive">{errors.phone}</p>}
+                <Input placeholder={t("register.step1.phonePlaceholder")} className="mt-1.5" value={data.phone} onChange={(e) => setField("phone", e.target.value)} />
+                {showError("phone") && <p className="mt-1 text-xs text-destructive">{showError("phone")}</p>}
               </div>
 
               <div>
                 <Label>{t("register.step1.whatsapp")}</Label>
-                <Input placeholder={t("register.step1.phonePlaceholder")} className="mt-1.5" value={data.whatsapp} onChange={(e) => setData("whatsapp", e.target.value)} />
-                {errors.whatsapp && <p className="mt-1 text-xs text-destructive">{errors.whatsapp}</p>}
+                <Input placeholder={t("register.step1.phonePlaceholder")} className="mt-1.5" value={data.whatsapp} onChange={(e) => setField("whatsapp", e.target.value)} />
+                {showError("whatsapp") && <p className="mt-1 text-xs text-destructive">{showError("whatsapp")}</p>}
               </div>
 
               <div>
                 <Label>{t("register.step1.occupation")}</Label>
-                <Input className="mt-1.5" value={data.occupation} onChange={(e) => setData("occupation", e.target.value)} />
+                <Input className="mt-1.5" value={data.occupation} onChange={(e) => setField("occupation", e.target.value)} />
               </div>
 
               <div>
                 <Label>{t("register.step1.country")}</Label>
-                <Input className="mt-1.5" value={data.country_of_residence} onChange={(e) => setData("country_of_residence", e.target.value)} />
+                <Input className="mt-1.5" value={data.country_of_residence} onChange={(e) => setField("country_of_residence", e.target.value)} />
               </div>
 
               <div className="sm:col-span-2">
                 <Label>{t("register.step1.city")}</Label>
-                <Select value={data.city} onValueChange={(v) => setData("city", v)}>
+                <Select value={data.city} onValueChange={(v) => setField("city", v)}>
                   <SelectTrigger className="mt-1.5"><SelectValue placeholder={t("register.step1.cityPlaceholder")} /></SelectTrigger>
                   <SelectContent>
                     {CITIES.map((c) => (
@@ -243,7 +370,7 @@ export default function RegisterPage() {
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.city && <p className="mt-1 text-xs text-destructive">{errors.city}</p>}
+                {showError("city") && <p className="mt-1 text-xs text-destructive">{showError("city")}</p>}
               </div>
 
               <div>
@@ -253,7 +380,7 @@ export default function RegisterPage() {
                     type={showPassword ? "text" : "password"}
                     className="pr-10"
                     value={data.password}
-                    onChange={(e) => setData("password", e.target.value)}
+                    onChange={(e) => setField("password", e.target.value)}
                   />
                   <button
                     type="button"
@@ -264,7 +391,7 @@ export default function RegisterPage() {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                {errors.password && <p className="mt-1 text-xs text-destructive">{errors.password}</p>}
+                {showError("password") && <p className="mt-1 text-xs text-destructive">{showError("password")}</p>}
               </div>
 
               <div>
@@ -274,7 +401,7 @@ export default function RegisterPage() {
                     type={showPasswordConfirmation ? "text" : "password"}
                     className="pr-10"
                     value={data.password_confirmation}
-                    onChange={(e) => setData("password_confirmation", e.target.value)}
+                    onChange={(e) => setField("password_confirmation", e.target.value)}
                   />
                   <button
                     type="button"
@@ -285,6 +412,7 @@ export default function RegisterPage() {
                     {showPasswordConfirmation ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                {showError("password_confirmation") && <p className="mt-1 text-xs text-destructive">{showError("password_confirmation")}</p>}
               </div>
             </div>
           )}
@@ -293,7 +421,7 @@ export default function RegisterPage() {
             <div className="grid gap-4">
               <div>
                 <Label>{t("register.step2.idType")}</Label>
-                <Select value={data.id_type} onValueChange={(v) => setData("id_type", v)}>
+                <Select value={data.id_type} onValueChange={(v) => setField("id_type", v)}>
                   <SelectTrigger className="mt-1.5"><SelectValue placeholder={t("register.step2.idTypePlaceholder")} /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="NIN">{t("register.step2.idTypeNin")}</SelectItem>
@@ -301,13 +429,13 @@ export default function RegisterPage() {
                     <SelectItem value="Driver's License">{t("register.step2.idTypeLicense")}</SelectItem>
                   </SelectContent>
                 </Select>
-                {errors.id_type && <p className="mt-1 text-xs text-destructive">{errors.id_type}</p>}
+                {showError("id_type") && <p className="mt-1 text-xs text-destructive">{showError("id_type")}</p>}
               </div>
 
               <div>
                 <Label>{t("register.step2.idNumber")}</Label>
-                <Input className="mt-1.5" value={data.id_number} onChange={(e) => setData("id_number", e.target.value)} />
-                {errors.id_number && <p className="mt-1 text-xs text-destructive">{errors.id_number}</p>}
+                <Input className="mt-1.5" value={data.id_number} onChange={(e) => setField("id_number", e.target.value)} />
+                {showError("id_number") && <p className="mt-1 text-xs text-destructive">{showError("id_number")}</p>}
               </div>
 
               <div>
@@ -318,19 +446,19 @@ export default function RegisterPage() {
                     type="file"
                     accept=".png,.jpg,.jpeg,.pdf"
                     className="hidden"
-                    onChange={(e) => setData("id_document", e.target.files?.[0] ?? null)}
+                    onChange={(e) => setField("id_document", e.target.files?.[0] ?? null)}
                   />
                 </label>
-                {errors.id_document && <p className="mt-1 text-xs text-destructive">{errors.id_document}</p>}
+                {showError("id_document") && <p className="mt-1 text-xs text-destructive">{showError("id_document")}</p>}
               </div>
 
               <div className="mt-4 rounded-2xl border border-border p-5">
                 <p className="text-sm font-semibold">{t("register.step2.kinTitle")}</p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                  <Input placeholder={t("register.step2.kinName")} value={data.kin_name} onChange={(e) => setData("kin_name", e.target.value)} />
+                  <Input placeholder={t("register.step2.kinName")} value={data.kin_name} onChange={(e) => setField("kin_name", e.target.value)} />
                   <Select
                     value={data.kin_relationship || undefined}
-                    onValueChange={(v) => setData("kin_relationship", v)}
+                    onValueChange={(v) => setField("kin_relationship", v)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder={t("register.step2.kinRelationship")} />
@@ -341,9 +469,9 @@ export default function RegisterPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <Input placeholder={t("register.step2.kinPhone")} value={data.kin_phone} onChange={(e) => setData("kin_phone", e.target.value)} />
+                  <Input placeholder={t("register.step2.kinPhone")} value={data.kin_phone} onChange={(e) => setField("kin_phone", e.target.value)} />
                 </div>
-                {errors.kin_phone && <p className="mt-1 text-xs text-destructive">{errors.kin_phone}</p>}
+                {showError("kin_phone") && <p className="mt-1 text-xs text-destructive">{showError("kin_phone")}</p>}
               </div>
             </div>
           )}
@@ -352,14 +480,14 @@ export default function RegisterPage() {
             <div className="grid gap-5">
               <div>
                 <Label>{t("register.step3.goalLabel")}</Label>
-                <RadioGroup value={data.goal} onValueChange={(v) => setData("goal", v)} className="mt-2 grid gap-2 sm:grid-cols-2">
+                <RadioGroup value={data.goal} onValueChange={(v) => setField("goal", v)} className="mt-2 grid gap-2 sm:grid-cols-2">
                   {GOALS.map((g) => (
                     <label key={g} className="flex cursor-pointer items-center gap-2 rounded-xl border border-border p-3 hover:border-rocheli-blue">
                       <RadioGroupItem value={g} /> {g}
                     </label>
                   ))}
                 </RadioGroup>
-                {errors.goal && <p className="mt-1 text-xs text-destructive">{errors.goal}</p>}
+                {showError("goal") && <p className="mt-1 text-xs text-destructive">{showError("goal")}</p>}
               </div>
 
               <div>
@@ -379,14 +507,14 @@ export default function RegisterPage() {
 
               <div>
                 <Label>{t("register.step3.landTypeLabel")}</Label>
-                <RadioGroup value={data.land_type} onValueChange={(v) => setData("land_type", v)} className="mt-2 grid gap-2 sm:grid-cols-3">
+                <RadioGroup value={data.land_type} onValueChange={(v) => setField("land_type", v)} className="mt-2 grid gap-2 sm:grid-cols-3">
                   {LAND_TYPES.map((tItem) => (
                     <label key={tItem} className="flex cursor-pointer items-center gap-2 rounded-xl border border-border p-3 hover:border-rocheli-blue">
                       <RadioGroupItem value={tItem} /> {tItem}
                     </label>
                   ))}
                 </RadioGroup>
-                {errors.land_type && <p className="mt-1 text-xs text-destructive">{errors.land_type}</p>}
+                {showError("land_type") && <p className="mt-1 text-xs text-destructive">{showError("land_type")}</p>}
               </div>
             </div>
           )}
@@ -406,7 +534,7 @@ export default function RegisterPage() {
                       name="plan"
                       className="sr-only"
                       checked={data.plan === p.name}
-                      onChange={() => setData("plan", p.name)}
+                      onChange={() => setField("plan", p.name)}
                     />
                     <span
                       className={`absolute right-5 top-5 flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors ${
@@ -442,7 +570,7 @@ export default function RegisterPage() {
                   </label>
                 ))}
               </div>
-              {errors.plan && <p className="text-xs text-destructive">{errors.plan}</p>}
+              {showError("plan") && <p className="text-xs text-destructive">{showError("plan")}</p>}
 
               <div>
                 <Label>{t("register.step4.frequencyLabel")}</Label>
@@ -451,7 +579,7 @@ export default function RegisterPage() {
                     <button
                       type="button"
                       key={f.key}
-                      onClick={() => setData("contribution_frequency", f.key)}
+                      onClick={() => setField("contribution_frequency", f.key)}
                       className={`rounded-full border-2 px-5 py-2 text-sm font-semibold transition ${
                         data.contribution_frequency === f.key
                           ? "border-rocheli-gold bg-rocheli-gold text-rocheli-navy"
@@ -462,7 +590,7 @@ export default function RegisterPage() {
                     </button>
                   ))}
                 </div>
-                {errors.contribution_frequency && <p className="mt-1 text-xs text-destructive">{errors.contribution_frequency}</p>}
+                {showError("contribution_frequency") && <p className="mt-1 text-xs text-destructive">{showError("contribution_frequency")}</p>}
               </div>
 
               <div>
@@ -471,21 +599,21 @@ export default function RegisterPage() {
                   type="number"
                   className="mt-1.5"
                   value={data.contribution_amount}
-                  onChange={(e) => setData("contribution_amount", e.target.value)}
+                  onChange={(e) => setField("contribution_amount", e.target.value)}
                 />
-                {errors.contribution_amount && <p className="mt-1 text-xs text-destructive">{errors.contribution_amount}</p>}
+                {showError("contribution_amount") && <p className="mt-1 text-xs text-destructive">{showError("contribution_amount")}</p>}
               </div>
 
               <div>
                 <Label>{t("register.step4.paymentLabel")}</Label>
-                <RadioGroup value={data.payment_method} onValueChange={(v) => setData("payment_method", v)} className="mt-2 grid gap-2 sm:grid-cols-2">
+                <RadioGroup value={data.payment_method} onValueChange={(v) => setField("payment_method", v)} className="mt-2 grid gap-2 sm:grid-cols-2">
                   {PAYMENT_METHODS.map((m) => (
                     <label key={m} className="flex cursor-pointer items-center gap-2 rounded-xl border border-border p-3 hover:border-rocheli-blue">
                       <RadioGroupItem value={m} /> {m}
                     </label>
                   ))}
                 </RadioGroup>
-                {errors.payment_method && <p className="mt-1 text-xs text-destructive">{errors.payment_method}</p>}
+                {showError("payment_method") && <p className="mt-1 text-xs text-destructive">{showError("payment_method")}</p>}
               </div>
             </div>
           )}
@@ -508,7 +636,7 @@ export default function RegisterPage() {
                     <span>{label}</span>
                   </label>
                 ))}
-                {errors.agreements && <p className="text-xs text-destructive">{errors.agreements}</p>}
+                {showError("agreements") && <p className="text-xs text-destructive">{showError("agreements")}</p>}
               </div>
 
               <div>
@@ -516,9 +644,9 @@ export default function RegisterPage() {
                 <Input
                   className="mt-1.5 font-display italic"
                   value={data.signature}
-                  onChange={(e) => setData("signature", e.target.value)}
+                  onChange={(e) => setField("signature", e.target.value)}
                 />
-                {errors.signature && <p className="mt-1 text-xs text-destructive">{errors.signature}</p>}
+                {showError("signature") && <p className="mt-1 text-xs text-destructive">{showError("signature")}</p>}
               </div>
             </div>
           )}

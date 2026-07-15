@@ -130,6 +130,31 @@
             "bamenda": "Bamenda",
             "bafoussam": "Bafoussam",
             "kribi": "Kribi"
+        },
+        "errors": {
+            "fullNameRequired": "Full name is required",
+            "emailRequired": "Email is required",
+            "emailInvalid": "Please enter a valid email address",
+            "genderRequired": "Please select a gender",
+            "phoneRequired": "Phone number is required",
+            "cityRequired": "Please select a city",
+            "passwordRequired": "Password is required",
+            "passwordTooShort": "Password must be at least 8 characters",
+            "passwordPattern": "Password must contain at least one letter and one number",
+            "confirmPasswordRequired": "Please confirm your password",
+            "passwordMismatch": "Passwords do not match",
+            "idTypeRequired": "Please select an ID type",
+            "idNumberRequired": "ID number is required",
+            "idDocumentRequired": "Please upload your ID document",
+            "goalRequired": "Please select a goal",
+            "landTypeRequired": "Please select a land type",
+            "planRequired": "Please select a plan",
+            "frequencyRequired": "Please select a contribution frequency",
+            "amountRequired": "Contribution amount is required",
+            "amountInvalid": "Enter a valid amount",
+            "paymentMethodRequired": "Please select a payment method",
+            "agreementsRequired": "Please accept all agreements to continue",
+            "signatureRequired": "Signature is required"
         }
     },
     "verify": {
@@ -225,6 +250,77 @@
             "title": "Password updated",
             "desc": "Your password has been reset successfully. You can now log in to your Land Access Club account.",
             "continueToLogin": "Continue to login"
+        }
+    },
+    "member": {
+        "layout": {
+            "nav": {
+            "overview": "Overview",
+            "contributions": "Contributions",
+            "property": "My Property",
+            "documents": "Documents",
+            "notifications": "Notifications",
+            "map": "Property Map",
+            "calculator": "Calculator",
+            "referrals": "Referrals",
+            "profile": "Profile",
+            "support": "Support"
+            },
+            "search": "Search anything...",
+            "logout": "Log out",
+            "expandSidebar": "Expand sidebar",
+            "collapseSidebar": "Collapse sidebar",
+            "close": "Close",
+            "toggleLanguage": "Toggle language",
+            "switchToFrench": "Passer en français",
+            "switchToEnglish": "Switch to English",
+            "toggleTheme": "Toggle theme",
+            "defaultMemberName": "Member",
+            "defaultMemberCode": "—",
+            "notificationsDropdown": {
+                "title": "Notifications",
+                "empty": "You're all caught up",
+                "viewAll": "View all notifications",
+                "markAllRead": "Mark all as read"
+            }
+        },
+        "dashboard": {
+            "planSuffix": "Plan",
+            "noPlanSelected": "No plan selected",
+            "welcomeBack": "Welcome back, {{name}}.",
+            "memberId": "Member ID · {{code}}",
+            "makeContribution": "Make contribution",
+            "statement": "Statement",
+            "stats": {
+            "walletBalance": "Wallet Balance",
+            "contributionsMade": "Contributions Made",
+            "outstanding": "Outstanding",
+            "plotReserved": "Plot Reserved",
+            "consecutiveMonths": "consecutive months",
+            "forReservedPlot": "for reserved plot"
+            },
+            "savingsJourney": "Savings journey",
+            "last8Months": "Last 8 months",
+            "propertyStatus": {
+            "approved": "Approved",
+            "underReview": "Under Review",
+            "pending": "Pending Review",
+            "rejected": "Not Approved",
+            "none": "No application",
+            "locations_one": "Preferred location: {{list}}",
+            "locations_other": "Preferred locations: {{list}}",
+            "notSpecified": "Not specified",
+            "approvedNote": "A specific plot has been allocated. Full details are available in {{link}}.",
+            "myPropertyLink": "My Property",
+            "pendingNote": "No specific plot has been allocated yet. Plot allocation becomes available once your application is reviewed and eligibility is met.",
+            "viewProperty": "View property",
+            "viewApplication": "View application",
+            "askAdvisor": "Ask advisor"
+            },
+            "upcomingPayments": "Upcoming payments",
+            "notificationsTitle": "Notifications",
+            "paid": "Paid",
+            "scheduled": "Scheduled"
         }
     }
 }
