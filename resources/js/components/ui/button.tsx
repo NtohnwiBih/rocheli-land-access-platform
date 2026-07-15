@@ -20,6 +20,8 @@ const buttonVariants = cva(
           "bg-gradient-brand text-white shadow-glow-blue hover:brightness-110 transition-all",
         gold:
           "bg-gradient-gold text-rocheli-navy font-semibold shadow-glow-gold hover:brightness-105 transition-all",
+        hero:
+          "bg-white text-rocheli-navy shadow-elegant hover:bg-white/95 transition-all",
       },
       size: {
         default: "h-9 px-4 py-2",

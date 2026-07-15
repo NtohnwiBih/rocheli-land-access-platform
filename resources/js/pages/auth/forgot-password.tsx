@@ -4,14 +4,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthSplitLayout from '@/layouts/auth/auth-split-layout';
-import { ArrowLeft, Mail } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { FormEventHandler, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
     status?: string;
 };
 
 export default function ForgotPassword({ status }: Props) {
+    const { t } = useTranslation();
+
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
     });
@@ -47,22 +50,21 @@ export default function ForgotPassword({ status }: Props) {
             <Head title="Forgot password" />
             <AuthSplitLayout title="" description="">
                 <Badge variant="secondary" className="mb-4">
-                    Password Recovery
+                    {t('forgotPassword.badge')}
                 </Badge>
 
                 {!sent ? (
                     <>
                         <h1 className="font-display text-3xl font-black md:text-4xl">
-                            Forgot your password?
+                            {t('forgotPassword.title')}
                         </h1>
                         <p className="mt-2 text-sm text-muted-foreground">
-                            Enter the email associated with your account and we'll send you a secure
-                            reset link.
+                            {t('forgotPassword.subtitle')}
                         </p>
 
                         <form className="mt-4 space-y-4" onSubmit={submit}>
                             <div>
-                                <Label>Email address</Label>
+                                <Label>{t('forgotPassword.emailLabel')}</Label>
                                 <Input
                                     type="email"
                                     required
@@ -70,7 +72,7 @@ export default function ForgotPassword({ status }: Props) {
                                     value={data.email}
                                     onChange={(e) => setData('email', e.target.value)}
                                     className="mt-1.5"
-                                    placeholder="you@example.com"
+                                    placeholder={t('forgotPassword.emailPlaceholder')}
                                 />
                                 {errors.email && (
                                     <p className="mt-1 text-xs text-destructive">{errors.email}</p>
@@ -83,14 +85,14 @@ export default function ForgotPassword({ status }: Props) {
                                 className="w-full"
                                 disabled={processing}
                             >
-                                {processing ? 'Sending…' : 'Send reset link'}
+                                {processing ? t('forgotPassword.sending') : t('forgotPassword.submit')}
                             </Button>
                         </form>
 
                         <div className="mt-6 text-center text-sm text-muted-foreground">
-                            Remembered it?{' '}
+                            {t('forgotPassword.rememberedIt')}{' '}
                             <Link href="/login" className="font-semibold text-rocheli-blue">
-                                Log in
+                                {t('forgotPassword.logIn')}
                             </Link>
                         </div>
                     </>
@@ -100,31 +102,29 @@ export default function ForgotPassword({ status }: Props) {
                             <Mail className="h-7 w-7" />
                         </div>
                         <h1 className="font-display text-3xl font-black md:text-4xl">
-                            Check your inbox
+                            {t('forgotPassword.sent.title')}
                         </h1>
                         <p className="text-sm text-muted-foreground">
-                            We've sent a password reset link to{' '}
-                            <span className="font-semibold text-foreground">{data.email}</span>. The
-                            link expires in 30 minutes.
+                            {t('forgotPassword.sent.desc')}{' '}
+                            <span className="font-semibold text-foreground">{data.email}</span>.{' '}
+                            {t('forgotPassword.sent.descSuffix')}
                         </p>
                         <div className="rounded-2xl bg-muted p-4 text-sm text-muted-foreground">
-                            <div className="font-medium text-foreground">Didn't get the email?</div>
+                            <div className="font-medium text-foreground">
+                                {t('forgotPassword.sent.didntGetTitle')}
+                            </div>
                             <ul className="mt-2 list-disc space-y-1 pl-5">
-                                <li>Check your spam or promotions folder</li>
-                                <li>Make sure the email address is correct</li>
-                                <li>Wait a minute — delivery can be delayed</li>
+                                <li>{t('forgotPassword.sent.tip1')}</li>
+                                <li>{t('forgotPassword.sent.tip2')}</li>
+                                <li>{t('forgotPassword.sent.tip3')}</li>
                             </ul>
                         </div>
-                        <Button
-                            variant="outline"
-                            className="w-full"
-                            onClick={tryAnotherEmail}
-                        >
-                            Try another email
+                        <Button variant="outline" className="w-full" onClick={tryAnotherEmail}>
+                            {t('forgotPassword.sent.tryAnother')}
                         </Button>
                         <Link href="/login">
                             <Button variant="brand" className="w-full">
-                                Back to login
+                                {t('forgotPassword.sent.backToLogin')}
                             </Button>
                         </Link>
                     </div>

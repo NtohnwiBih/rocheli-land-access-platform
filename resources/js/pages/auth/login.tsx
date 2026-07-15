@@ -1,4 +1,4 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import AuthSplitLayout from '@/layouts/auth/auth-split-layout';
 import { Eye, EyeOff, Mail, Phone } from 'lucide-react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
     status?: string;
@@ -16,6 +17,7 @@ type Props = {
 export default function Login({ status, canResetPassword }: Props) {
     const [mode, setMode] = useState<"email" | "phone">("email");
     const [showPassword, setShowPassword] = useState(false);
+    const { t } = useTranslation();
 
     return (
         <>
@@ -26,32 +28,42 @@ export default function Login({ status, canResetPassword }: Props) {
         <Link href="/"></Link>
         <div className="mx-auto w-full max-w-md py-10">
           <Badge variant="secondary" className="mb-4">Member Portal</Badge>
-          <h1 className="font-display text-3xl font-black md:text-4xl">Welcome back.</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Log in to your Land Access Club account.</p>
+          <h1 className="font-display text-3xl font-black md:text-4xl">{t('login.welcomeBack')}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{t('login.subtitle')}</p>
 
           <div className="mt-8 grid grid-cols-2 gap-2 rounded-xl bg-muted p-1 text-sm">
-            <button onClick={() => setMode("email")} className={`rounded-lg px-3 py-2 font-medium transition-colors ${mode === "email" ? "bg-card shadow-sm" : "text-muted-foreground"}`}>
-              <Mail className="mr-1 inline h-4 w-4" /> Email
+            <button
+                onClick={() => setMode('email')}
+                className={`rounded-lg px-3 py-2 font-medium transition-colors ${
+                    mode === 'email' ? 'bg-card shadow-sm' : 'text-muted-foreground'
+                }`}
+            >
+                <Mail className="mr-1 inline h-4 w-4" /> {t('login.email')}
             </button>
-            <button onClick={() => setMode("phone")} className={`rounded-lg px-3 py-2 font-medium transition-colors ${mode === "phone" ? "bg-card shadow-sm" : "text-muted-foreground"}`}>
-              <Phone className="mr-1 inline h-4 w-4" /> Phone
+            <button
+                onClick={() => setMode('phone')}
+                className={`rounded-lg px-3 py-2 font-medium transition-colors ${
+                    mode === 'phone' ? 'bg-card shadow-sm' : 'text-muted-foreground'
+                }`}
+            >
+                <Phone className="mr-1 inline h-4 w-4" /> {t('login.phone')}
             </button>
           </div>
 
           <form className="mt-6 space-y-4">
             <div>
-              <Label>{mode === "email" ? "Email" : "Phone number"}</Label>
-              <Input className="mt-1.5" placeholder={mode === "email" ? "you@example.com" : "+234 913 000 0000"} />
+              <Label>{mode === 'email' ? t('login.email') : t('login.phoneNumber')}</Label>
+              <Input className="mt-1.5" placeholder={mode === "email" ? t('login.emailPlaceholder') : t('login.phonePlaceholder')} />
             </div>
             <div>
                 <div className="flex items-center justify-between">
-                    <Label>Password</Label>
+                    <Label>{t('login.password')}</Label>
                     <a href="#" className="text-xs font-medium text-rocheli-blue hover:underline">Forgot?</a>
                 </div>
                 <div className="relative mt-1.5">
                     <Input
                     type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
+                    placeholder={t('login.passwordPlaceholder')}
                     className="pr-10"
                     />
                     <button
@@ -65,12 +77,12 @@ export default function Login({ status, canResetPassword }: Props) {
                 </div>
             </div>
             <label className="flex items-center gap-2 text-sm">
-              <Checkbox defaultChecked /> Remember me
+              <Checkbox defaultChecked /> {t('login.rememberMe')}
             </label>
-            <Button variant="brand" size="lg" className="w-full">Log in</Button>
+            <Button variant="brand" size="lg" className="w-full">{t('login.submit')}</Button>
           </form>
           <div className="mt-6 text-center text-sm text-muted-foreground">
-            New here? <Link href="/register" className="font-semibold text-rocheli-blue">Create an account</Link>
+            {t('login.newHere')}{' '} <Link href="/register" className="font-semibold text-rocheli-blue">{t('login.createAccount')}</Link>
           </div>
         </div>
       </div>
