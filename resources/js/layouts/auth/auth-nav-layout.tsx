@@ -1,16 +1,14 @@
 import { Link, usePage } from "@inertiajs/react";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
-import { Menu, X, Moon, Sun, ChevronDown, Globe, Sparkles } from "lucide-react";
+import { Moon, Sun, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { LanguageThemeToggle } from "@/components/language-toggle";
 
 export function AuthNavLayout() {
   const { url } = usePage();
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [dark, setDark] = useState(false);
-  const [lang, setLang] = useState<"EN" | "FR">("EN");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -58,20 +56,7 @@ export function AuthNavLayout() {
             />
           </Link>
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setLang(lang === "EN" ? "FR" : "EN")}
-              className="items-center gap-1.5 rounded-full border border-border/70 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:border-primary/40 transition"
-            >
-              <Globe className="h-3.5 w-3.5 hidden md:inline-flex" />
-              {lang}
-            </button>
-            <button
-              onClick={() => setDark(!dark)}
-              className="place-items-center h-9 w-9 rounded-full border border-border/70 text-muted-foreground hover:text-foreground hover:border-primary/40 transition"
-              aria-label="Toggle theme"
-            >
-              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
+            <LanguageThemeToggle />
             <Button
               asChild
               className="bg-gradient-blue text-white shadow-glow hover:opacity-95 rounded-full px-5 h-10"

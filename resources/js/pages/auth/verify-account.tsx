@@ -1,5 +1,6 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import AuthSplitLayout from '@/layouts/auth/auth-split-layout';
@@ -26,6 +27,8 @@ export default function VerifyAccount({
     status,
     resendAvailableInSeconds = 45,
 }: Props) {
+    const { t } = useTranslation();
+
     // Always open on the Email tab
     const [method, setMethod] = useState<Method>('email');
     const destination = method === 'email' ? email ?? 'you@example.com' : phone ?? '+234 913 000 0000';
@@ -60,26 +63,26 @@ export default function VerifyAccount({
     const copy = useMemo(() => {
         return method === 'email'
             ? {
-                  eyebrow: 'Email verification',
-                  title: 'Verify your email',
-                  desc: 'We sent a 6-digit code to',
-                  hint: '123456',
-                  channel: 'email',
+                  eyebrow: t('verify.email.eyebrow'),
+                  title: t('verify.email.title'),
+                  desc: t('verify.email.desc'),
+                  hint: t('verify.email.hint'),
+                  channel: t('verify.email.channel'),
                   sideIcon: Mail,
-                  sideNote: 'Encrypted email delivery via authenticated relays.',
-                  sideTag: 'Email verification',
+                  sideNote: t('verify.email.sideNote'),
+                  sideTag: t('verify.email.sideTag'),
               }
             : {
-                  eyebrow: 'SMS verification',
-                  title: 'Verify your phone',
-                  desc: 'We texted a 4-digit code to',
-                  hint: '1234',
-                  channel: 'SMS',
+                  eyebrow: t('verify.phone.eyebrow'),
+                  title: t('verify.phone.title'),
+                  desc: t('verify.phone.desc'),
+                  hint: t('verify.phone.hint'),
+                  channel: t('verify.phone.channel'),
                   sideIcon: Phone,
-                  sideNote: 'SMS one-time passcodes powered by tier-1 mobile carriers.',
-                  sideTag: 'SMS verification',
+                  sideNote: t('verify.phone.sideNote'),
+                  sideTag: t('verify.phone.sideTag'),
               };
-    }, [method]);
+    }, [method, t]);
 
     const submitCode = (joined: string) => {
         setData((prev) => ({ ...prev, code: joined, method }));
@@ -125,7 +128,8 @@ export default function VerifyAccount({
     const switchMethod = (m: Method) => setMethod(m);
 
     const resend = () => {
-        router.post('/verification.send',
+        router.post(
+            '/verification.send',
             { method },
             {
                 preserveScroll: true,
@@ -142,9 +146,7 @@ export default function VerifyAccount({
         <>
             <Head title={copy.title} />
             <AuthSplitLayout title="" description="">
-                <Badge variant="secondary">
-                    {copy.eyebrow}
-                </Badge>
+                <Badge variant="secondary">{copy.eyebrow}</Badge>
 
                 {!verified ? (
                     <>
@@ -153,8 +155,8 @@ export default function VerifyAccount({
                         </h1>
                         <p className="mt-2 text-sm text-muted-foreground">
                             {copy.desc}{' '}
-                            <span className="font-semibold text-foreground">{destination}</span>. Enter
-                            it below to activate your Land Access Club membership.
+                            <span className="font-semibold text-foreground">{destination}</span>.{' '}
+                            {t('verify.instructions')}
                         </p>
 
                         {/* Method switcher */}
@@ -168,7 +170,7 @@ export default function VerifyAccount({
                                         : 'text-muted-foreground'
                                 }`}
                             >
-                                <Mail className="mr-1 inline h-4 w-4" /> Email code
+                                <Mail className="mr-1 inline h-4 w-4" /> {t('verify.emailCode')}
                             </button>
                             <button
                                 type="button"
@@ -179,7 +181,7 @@ export default function VerifyAccount({
                                         : 'text-muted-foreground'
                                 }`}
                             >
-                                <Phone className="mr-1 inline h-4 w-4" /> SMS code
+                                <Phone className="mr-1 inline h-4 w-4" /> {t('verify.smsCode')}
                             </button>
                         </div>
 
@@ -222,11 +224,11 @@ export default function VerifyAccount({
 
                         <div className="mt-8 flex items-center justify-between rounded-2xl bg-muted p-4 text-sm">
                             <span className="text-muted-foreground">
-                                Didn't receive the {copy.channel}?
+                                {t('verify.didntReceive')} {copy.channel}?
                             </span>
                             {seconds > 0 ? (
                                 <span className="font-medium text-muted-foreground">
-                                    Resend in {seconds}s
+                                    {t('verify.resendIn')} {seconds}s
                                 </span>
                             ) : (
                                 <button
@@ -234,19 +236,21 @@ export default function VerifyAccount({
                                     onClick={resend}
                                     className="inline-flex items-center gap-1.5 font-semibold text-rocheli-blue hover:underline"
                                 >
-                                    <RefreshCw className="h-3.5 w-3.5" /> Resend code
+                                    <RefreshCw className="h-3.5 w-3.5" /> {t('verify.resendCode')}
                                 </button>
                             )}
                         </div>
 
                         <div className="mt-6 text-center text-sm text-muted-foreground">
-                            {method === 'email' ? 'Prefer SMS?' : 'Prefer email?'}{' '}
+                            {method === 'email' ? t('verify.preferSms') : t('verify.preferEmail')}{' '}
                             <button
                                 type="button"
                                 onClick={() => switchMethod(method === 'email' ? 'phone' : 'email')}
                                 className="font-semibold text-rocheli-blue hover:underline"
                             >
-                                Verify via {method === 'email' ? 'phone' : 'email'} instead
+                                {t('verify.verifyVia')}{' '}
+                                {method === 'email' ? t('verify.phoneWord') : t('verify.emailWord')}{' '}
+                                {t('verify.instead')}
                             </button>
                         </div>
                     </>
@@ -256,24 +260,27 @@ export default function VerifyAccount({
                             <ShieldCheck className="h-7 w-7" />
                         </div>
                         <h1 className="font-display text-3xl font-black md:text-4xl">
-                            Account verified
+                            {t('verify.success.title')}
                         </h1>
                         <p className="text-sm text-muted-foreground">
-                            Welcome to Rocheli. Your {method === 'email' ? 'email' : 'phone number'} has
-                            been confirmed and your membership is now active.
+                            {t('verify.success.desc')}{' '}
+                            {method === 'email' ? t('verify.emailWord') : t('verify.phoneNumberWord')}{' '}
+                            {t('verify.success.descSuffix')}
                         </p>
                         <ul className="space-y-2 text-sm">
-                            {['Wallet activated', 'Referral code generated', 'Access to Club properties'].map(
-                                (c) => (
-                                    <li key={c} className="flex items-center gap-2">
-                                        <CheckCircle2 className="h-4 w-4 text-rocheli-blue" /> {c}
-                                    </li>
-                                ),
-                            )}
+                            {[
+                                t('verify.success.wallet'),
+                                t('verify.success.referral'),
+                                t('verify.success.access'),
+                            ].map((c) => (
+                                <li key={c} className="flex items-center gap-2">
+                                    <CheckCircle2 className="h-4 w-4 text-rocheli-blue" /> {c}
+                                </li>
+                            ))}
                         </ul>
-                        <Link href='/dashboard'>
+                        <Link href="/dashboard">
                             <Button variant="brand" size="lg" className="w-full">
-                                Go to dashboard
+                                {t('verify.success.goToDashboard')}
                             </Button>
                         </Link>
                     </div>

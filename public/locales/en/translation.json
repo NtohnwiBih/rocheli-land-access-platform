@@ -1,0 +1,230 @@
+{
+    "login":{
+        "memberPortal": "Member Portal",
+        "welcomeBack": "Welcome back.",
+        "subtitle": "Log in to your Land Access Club account.",
+        "email": "Email",
+        "phone": "Phone",
+        "phoneNumber": "Phone number",
+        "emailPlaceholder": "you@example.com",
+        "phonePlaceholder": "+234 913 000 0000",
+        "password": "Password",
+        "passwordPlaceholder": "••••••••",
+        "forgot": "Forgot?",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password",
+        "rememberMe": "Remember me",
+        "submit": "Log in",
+        "newHere": "New here?",
+        "createAccount": "Create an account"
+    },
+    "register": {
+        "badge": "Onboarding",
+        "title": "Join the Land Access Club",
+        "subtitle": "Takes about 5 minutes.",
+        "steps": {
+            "0": "Personal Information",
+            "1": "Identity Verification",
+            "2": "Preferences",
+            "3": "Contribution Plan",
+            "4": "Review & Submit"
+        },
+        "stepLabel": "Step {{current}} of {{total}}",
+        "back": "Back",
+        "continue": "Continue",
+        "submit": "Submit & continue",
+        "submitting": "Submitting…",
+
+        "step1": {
+            "fullName": "Full name",
+            "email": "Email",
+            "gender": "Gender",
+            "genderPlaceholder": "Select...",
+            "genderMale": "Male",
+            "genderFemale": "Female",
+            "genderOther": "Other",
+            "phone": "Phone",
+            "phonePlaceholder": "+237 6XX XXX XXX",
+            "whatsapp": "WhatsApp number",
+            "occupation": "Occupation",
+            "country": "Country of residence",
+            "city": "City",
+            "cityPlaceholder": "Select...",
+            "password": "Password",
+            "confirmPassword": "Confirm password"
+        },
+
+        "step2": {
+            "idType": "ID type",
+            "idTypePlaceholder": "Select...",
+            "idTypeNin": "NIN",
+            "idTypePassport": "Passport",
+            "idTypeLicense": "Driver's License",
+            "idNumber": "ID number",
+            "uploadLabel": "Upload ID document (PNG/JPG/PDF, max 5MB)",
+            "uploadPrompt": "Click to upload",
+            "kinTitle": "Next of kin (optional)",
+            "kinName": "Full name",
+            "kinRelationship": "Select relationship",
+            "kinRelationshipSpouse": "Spouse",
+            "kinRelationshipChild": "Child",
+            "kinRelationshipParent": "Parent",
+            "kinRelationshipSibling": "Sibling",
+            "kinRelationshipFriend": "Friend",
+            "kinRelationshipOther": "Other",
+            "kinPhone": "Phone"
+        },
+
+        "step3": {
+            "goalLabel": "Why are you joining?",
+            "goalBuildHome": "Build a home",
+            "goalInvest": "Invest in land",
+            "goalFamily": "Buy for family",
+            "goalBusiness": "Business project",
+            "goalOther": "Other",
+            "locationsLabel": "Preferred location(s)",
+            "locationOther": "Other",
+            "landTypeLabel": "Land type",
+            "landTypeLand": "Land",
+            "landTypeResidential": "Residential",
+            "landTypeCommercial": "Commercial",
+            "landTypeAgricultural": "Agricultural",
+            "landTypeUndecided": "Undecided"
+        },
+
+        "step4": {
+            "planTarget": "Target:",
+            "planPopular": "Popular",
+            "planDaily": "Daily",
+            "planWeekly": "Weekly",
+            "planMonthly": "Monthly",
+            "frequencyLabel": "Contribution frequency",
+            "frequencyDaily": "Daily",
+            "frequencyWeekly": "Weekly",
+            "frequencyMonthly": "Monthly",
+            "amountLabel": "Amount (FCFA)",
+            "paymentLabel": "Payment method",
+            "paymentMomo": "MTN Mobile Money",
+            "paymentOrange": "Orange Money",
+            "paymentBank": "Bank Transfer",
+            "paymentCash": "Cash Deposit"
+        },
+
+        "step5": {
+            "readyTitle": "You're all set!",
+            "readyDesc": "Confirm the details below and submit to activate your membership.",
+            "agreements": {
+            "0": "I understand that the Land Access Club is a land acquisition program operated by Rocheli Real Properties.",
+            "1": "Choosing a plan does not immediately allocate a specific plot.",
+            "2": "Plot allocation becomes available once eligibility is met.",
+            "3": "I accept the Membership Agreement and Withdrawal Policy."
+            },
+            "signature": "Digital signature — full name"
+        },
+
+        "cities": {
+            "yaounde": "Yaoundé",
+            "douala": "Douala",
+            "buea": "Buea",
+            "limbe": "Limbe",
+            "bamenda": "Bamenda",
+            "bafoussam": "Bafoussam",
+            "kribi": "Kribi"
+        }
+    },
+    "verify": {
+        "email": {
+            "eyebrow": "Email verification",
+            "title": "Verify your email",
+            "desc": "We sent a 6-digit code to",
+            "hint": "123456",
+            "channel": "email",
+            "sideNote": "Encrypted email delivery via authenticated relays.",
+            "sideTag": "Email verification"
+        },
+        "phone": {
+            "eyebrow": "SMS verification",
+            "title": "Verify your phone",
+            "desc": "We texted a 4-digit code to",
+            "hint": "1234",
+            "channel": "SMS",
+            "sideNote": "SMS one-time passcodes powered by tier-1 mobile carriers.",
+            "sideTag": "SMS verification"
+        },
+        "instructions": "Enter it below to activate your Land Access Club membership.",
+        "emailCode": "Email code",
+        "smsCode": "SMS code",
+        "didntReceive": "Didn't receive the",
+        "resendIn": "Resend in",
+        "resendCode": "Resend code",
+        "preferSms": "Prefer SMS?",
+        "preferEmail": "Prefer email?",
+        "verifyVia": "Verify via",
+        "instead": "instead",
+        "phoneWord": "phone",
+        "emailWord": "email",
+        "phoneNumberWord": "phone number",
+        "success": {
+            "title": "Account verified",
+            "desc": "Welcome to Rocheli. Your",
+            "descSuffix": "has been confirmed and your membership is now active.",
+            "wallet": "Wallet activated",
+            "referral": "Referral code generated",
+            "access": "Access to Club properties",
+            "goToDashboard": "Go to dashboard"
+        }
+    },
+    "forgotPassword": {
+        "badge": "Password Recovery",
+        "title": "Forgot your password?",
+        "subtitle": "Enter the email associated with your account and we'll send you a secure reset link.",
+        "emailLabel": "Email address",
+        "emailPlaceholder": "you@example.com",
+        "submit": "Send reset link",
+        "sending": "Sending…",
+        "rememberedIt": "Remembered it?",
+        "logIn": "Log in",
+        "sent": {
+            "title": "Check your inbox",
+            "desc": "We've sent a password reset link to",
+            "descSuffix": "The link expires in 30 minutes.",
+            "didntGetTitle": "Didn't get the email?",
+            "tip1": "Check your spam or promotions folder",
+            "tip2": "Make sure the email address is correct",
+            "tip3": "Wait a minute — delivery can be delayed",
+            "tryAnother": "Try another email",
+            "backToLogin": "Back to login"
+        }
+    },
+    "resetPassword": {
+        "badge": "Secure Reset",
+        "title": "Create a new password",
+        "subtitle": "Choose a strong password you haven't used before. It will secure your account and wallet.",
+        "newPassword": "New password",
+        "passwordPlaceholder": "At least 8 characters",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password",
+        "strength": "Strength",
+        "strengthTooWeak": "Too weak",
+        "strengthWeak": "Weak",
+        "strengthFair": "Fair",
+        "strengthStrong": "Strong",
+        "strengthExcellent": "Excellent",
+        "confirmPassword": "Confirm password",
+        "confirmPlaceholder": "Re-enter password",
+        "passwordsDontMatch": "Passwords do not match",
+        "requirements": {
+            "length": "At least 8 characters",
+            "uppercase": "One uppercase letter",
+            "number": "One number",
+            "special": "One special character"
+        },
+        "submit": "Reset password",
+        "resetting": "Resetting…",
+        "done": {
+            "title": "Password updated",
+            "desc": "Your password has been reset successfully. You can now log in to your Land Access Club account.",
+            "continueToLogin": "Continue to login"
+        }
+    }
+}

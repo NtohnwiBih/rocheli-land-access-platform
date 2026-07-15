@@ -1,5 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +25,7 @@ function scorePassword(pw: string) {
 }
 
 export default function ResetPassword({ token, email }: Props) {
+    const { t } = useTranslation();
     const [show, setShow] = useState(false);
     const [done, setDone] = useState(false);
 
@@ -35,7 +37,14 @@ export default function ResetPassword({ token, email }: Props) {
     });
 
     const score = useMemo(() => scorePassword(data.password), [data.password]);
-    const strengthLabel = ['Too weak', 'Weak', 'Fair', 'Strong', 'Excellent'][score];
+    const strengthLabels = [
+        t('resetPassword.strengthTooWeak'),
+        t('resetPassword.strengthWeak'),
+        t('resetPassword.strengthFair'),
+        t('resetPassword.strengthStrong'),
+        t('resetPassword.strengthExcellent'),
+    ];
+    const strengthLabel = strengthLabels[score];
     const strengthColor = [
         'bg-destructive',
         'bg-destructive',
@@ -45,6 +54,13 @@ export default function ResetPassword({ token, email }: Props) {
     ][score];
 
     const match = data.password.length > 0 && data.password === data.password_confirmation;
+
+    const requirements = [
+        { ok: data.password.length >= 8, label: t('resetPassword.requirements.length') },
+        { ok: /[A-Z]/.test(data.password), label: t('resetPassword.requirements.uppercase') },
+        { ok: /[0-9]/.test(data.password), label: t('resetPassword.requirements.number') },
+        { ok: /[^A-Za-z0-9]/.test(data.password), label: t('resetPassword.requirements.special') },
+    ];
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -60,22 +76,21 @@ export default function ResetPassword({ token, email }: Props) {
             <Head title="Reset password" />
             <AuthSplitLayout title="" description="">
                 <Badge variant="secondary" className="mb-4">
-                    Secure Reset
+                    {t('resetPassword.badge')}
                 </Badge>
 
                 {!done ? (
                     <>
                         <h1 className="font-display text-3xl font-black md:text-4xl">
-                            Create a new password
+                            {t('resetPassword.title')}
                         </h1>
                         <p className="mt-2 text-sm text-muted-foreground">
-                            Choose a strong password you haven't used before. It will secure your
-                            account and wallet.
+                            {t('resetPassword.subtitle')}
                         </p>
 
                         <form className="mt-8 space-y-5" onSubmit={submit}>
                             <div>
-                                <Label>New password</Label>
+                                <Label>{t('resetPassword.newPassword')}</Label>
                                 <div className="relative mt-1.5">
                                     <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
@@ -85,13 +100,17 @@ export default function ResetPassword({ token, email }: Props) {
                                         value={data.password}
                                         onChange={(e) => setData('password', e.target.value)}
                                         className="pl-9 pr-10"
-                                        placeholder="At least 8 characters"
+                                        placeholder={t('resetPassword.passwordPlaceholder')}
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShow((s) => !s)}
                                         className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:bg-muted"
-                                        aria-label={show ? 'Hide password' : 'Show password'}
+                                        aria-label={
+                                            show
+                                                ? t('resetPassword.hidePassword')
+                                                : t('resetPassword.showPassword')
+                                        }
                                     >
                                         {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                     </button>
@@ -113,7 +132,9 @@ export default function ResetPassword({ token, email }: Props) {
                                             ))}
                                         </div>
                                         <div className="flex items-center justify-between text-xs">
-                                            <span className="text-muted-foreground">Strength</span>
+                                            <span className="text-muted-foreground">
+                                                {t('resetPassword.strength')}
+                                            </span>
                                             <span className="font-medium">{strengthLabel}</span>
                                         </div>
                                     </div>
@@ -121,7 +142,7 @@ export default function ResetPassword({ token, email }: Props) {
                             </div>
 
                             <div>
-                                <Label>Confirm password</Label>
+                                <Label>{t('resetPassword.confirmPassword')}</Label>
                                 <div className="relative mt-1.5">
                                     <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
@@ -130,12 +151,12 @@ export default function ResetPassword({ token, email }: Props) {
                                         value={data.password_confirmation}
                                         onChange={(e) => setData('password_confirmation', e.target.value)}
                                         className="pl-9"
-                                        placeholder="Re-enter password"
+                                        placeholder={t('resetPassword.confirmPlaceholder')}
                                     />
                                 </div>
                                 {data.password_confirmation && !match && (
                                     <p className="mt-1.5 text-xs text-destructive">
-                                        Passwords do not match
+                                        {t('resetPassword.passwordsDontMatch')}
                                     </p>
                                 )}
                                 {errors.password_confirmation && (
@@ -146,15 +167,7 @@ export default function ResetPassword({ token, email }: Props) {
                             </div>
 
                             <ul className="grid gap-1.5 rounded-2xl bg-muted/60 p-4 text-xs text-muted-foreground">
-                                {[
-                                    { ok: data.password.length >= 8, label: 'At least 8 characters' },
-                                    { ok: /[A-Z]/.test(data.password), label: 'One uppercase letter' },
-                                    { ok: /[0-9]/.test(data.password), label: 'One number' },
-                                    {
-                                        ok: /[^A-Za-z0-9]/.test(data.password),
-                                        label: 'One special character',
-                                    },
-                                ].map((r) => (
+                                {requirements.map((r) => (
                                     <li
                                         key={r.label}
                                         className={`flex items-center gap-2 ${
@@ -178,7 +191,7 @@ export default function ResetPassword({ token, email }: Props) {
                                 className="w-full"
                                 disabled={!match || score < 2 || processing}
                             >
-                                {processing ? 'Resetting…' : 'Reset password'}
+                                {processing ? t('resetPassword.resetting') : t('resetPassword.submit')}
                             </Button>
                         </form>
                     </>
@@ -188,15 +201,14 @@ export default function ResetPassword({ token, email }: Props) {
                             <ShieldCheck className="h-7 w-7" />
                         </div>
                         <h1 className="font-display text-3xl font-black md:text-4xl">
-                            Password updated
+                            {t('resetPassword.done.title')}
                         </h1>
                         <p className="text-sm text-muted-foreground">
-                            Your password has been reset successfully. You can now log in to your
-                            Land Access Club account.
+                            {t('resetPassword.done.desc')}
                         </p>
                         <Link href="/login">
                             <Button variant="brand" size="lg" className="w-full rounded-full">
-                                Continue to login
+                                {t('resetPassword.done.continueToLogin')}
                             </Button>
                         </Link>
                     </div>

@@ -1,10 +1,11 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Globe, Moon, Star, Sun } from 'lucide-react';
+import { Star } from 'lucide-react';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { home } from '@/routes';
 import type { AuthLayoutProps } from '@/types';
+import { LanguageThemeToggle } from '@/components/language-toggle';
 
 const testimonials = [
     {
@@ -30,13 +31,7 @@ export default function AuthSplitLayout({
     description,
 }: AuthLayoutProps) {
     const { name } = usePage().props;
-    const [dark, setDark] = useState(false);
-    const [lang, setLang] = useState<'EN' | 'FR'>('EN');
     const [testimonialIndex, setTestimonialIndex] = useState(0);
-
-    useEffect(() => {
-        document.documentElement.classList.toggle('dark', dark);
-    }, [dark]);
 
     useEffect(() => {
         const id = setInterval(() => {
@@ -56,22 +51,7 @@ export default function AuthSplitLayout({
                         <AppLogoIcon className="h-10 fill-current text-black sm:h-12" />
                     </Link>
 
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setLang(lang === 'EN' ? 'FR' : 'EN')}
-                            className="flex items-center gap-1.5 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-semibold text-muted-foreground backdrop-blur transition hover:border-primary/40 hover:text-foreground"
-                        >
-                            <Globe className="h-3.5 w-3.5" />
-                            {lang}
-                        </button>
-                        <button
-                            onClick={() => setDark(!dark)}
-                            className="grid h-9 w-9 place-items-center rounded-full border border-border/70 bg-background/80 text-muted-foreground backdrop-blur transition hover:border-primary/40 hover:text-foreground"
-                            aria-label="Toggle theme"
-                        >
-                            {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                        </button>
-                    </div>
+                    <LanguageThemeToggle />
                 </div>
 
                 <div className="flex flex-1 items-center justify-center">
