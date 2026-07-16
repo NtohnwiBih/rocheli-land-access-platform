@@ -120,7 +120,7 @@ export function MemberLayout({ children }: PropsWithChildren) {
   const mainOffset = collapsed ? "lg:pl-20" : "lg:pl-72";
 
   function handleLogout() {
-    router.post("member./logout");
+    router.post("/logout");
   }
 
   return (
@@ -230,7 +230,7 @@ export function MemberLayout({ children }: PropsWithChildren) {
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="relative">
                     <Bell className="h-4 w-4" />
-                    {unreadCount >= 0 && (
+                    {unreadCount > 0 && (
                         <span className="absolute right-1.5 top-1.5 flex h-2 w-2">
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rocheli-gold opacity-75" />
                         <span className="relative inline-flex h-2 w-2 rounded-full bg-rocheli-gold" />
@@ -241,7 +241,7 @@ export function MemberLayout({ children }: PropsWithChildren) {
                 <DropdownMenuContent align="end" className="w-80">
                     <DropdownMenuLabel className="flex items-center justify-between text-sm font-semibold">
                     {t("member.layout.notificationsDropdown.title")}
-                    {unreadCount >= 0 && (
+                    {unreadCount > 0 && (
                         <Badge variant="secondary" className="text-[10px]">{unreadCount}</Badge>
                     )}
                     </DropdownMenuLabel>
