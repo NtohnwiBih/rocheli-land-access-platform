@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import AuthSplitLayout from '@/layouts/auth/auth-split-layout';
 import { Eye, EyeOff, Mail, Phone } from 'lucide-react';
-import { useState } from 'react';
+import { FormEventHandler, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type Props = {
@@ -18,6 +18,19 @@ export default function Login({ status, canResetPassword }: Props) {
     const [mode, setMode] = useState<"email" | "phone">("email");
     const [showPassword, setShowPassword] = useState(false);
     const { t } = useTranslation();
+
+    const { data, setData, post, processing, errors, reset } = useForm({
+        login: '',
+        password: '',
+        remember: true,
+    });
+
+    const submit: FormEventHandler = (e) => {
+        e.preventDefault();
+        post('/login', {
+            onFinish: () => reset('password'),
+        });
+    };
 
     return (
         <>
@@ -33,6 +46,7 @@ export default function Login({ status, canResetPassword }: Props) {
 
           <div className="mt-8 grid grid-cols-2 gap-2 rounded-xl bg-muted p-1 text-sm">
             <button
+                type="button"
                 onClick={() => setMode('email')}
                 className={`rounded-lg px-3 py-2 font-medium transition-colors ${
                     mode === 'email' ? 'bg-card shadow-sm' : 'text-muted-foreground'
@@ -41,6 +55,7 @@ export default function Login({ status, canResetPassword }: Props) {
                 <Mail className="mr-1 inline h-4 w-4" /> {t('login.email')}
             </button>
             <button
+                type="button"
                 onClick={() => setMode('phone')}
                 className={`rounded-lg px-3 py-2 font-medium transition-colors ${
                     mode === 'phone' ? 'bg-card shadow-sm' : 'text-muted-foreground'
@@ -50,21 +65,42 @@ export default function Login({ status, canResetPassword }: Props) {
             </button>
           </div>
 
-          <form className="mt-6 space-y-4">
+          {status && (
+            <div className="mt-4 text-center text-sm font-medium text-green-600">
+              {status}
+            </div>
+          )}
+
+          <form className="mt-6 space-y-4" onSubmit={submit}>
             <div>
               <Label>{mode === 'email' ? t('login.email') : t('login.phoneNumber')}</Label>
-              <Input className="mt-1.5" placeholder={mode === "email" ? t('login.emailPlaceholder') : t('login.phonePlaceholder')} />
+              <Input
+                className="mt-1.5"
+                value={data.login}
+                onChange={(e) => setData('login', e.target.value)}
+                placeholder={mode === "email" ? t('login.emailPlaceholder') : t('login.phonePlaceholder')}
+                autoComplete="username"
+                autoFocus
+              />
+              {errors.login && <p className="mt-1 text-xs text-destructive">{errors.login}</p>}
             </div>
             <div>
                 <div className="flex items-center justify-between">
                     <Label>{t('login.password')}</Label>
-                    <a href="#" className="text-xs font-medium text-rocheli-blue hover:underline">Forgot?</a>
+                    {canResetPassword && (
+                        <Link href="/forgot-password" className="text-xs font-medium text-rocheli-blue hover:underline">
+                            Forgot?
+                        </Link>
+                    )}
                 </div>
                 <div className="relative mt-1.5">
                     <Input
                     type={showPassword ? "text" : "password"}
+                    value={data.password}
+                    onChange={(e) => setData('password', e.target.value)}
                     placeholder={t('login.passwordPlaceholder')}
                     className="pr-10"
+                    autoComplete="current-password"
                     />
                     <button
                     type="button"
@@ -75,23 +111,24 @@ export default function Login({ status, canResetPassword }: Props) {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                 </div>
+                {errors.password && <p className="mt-1 text-xs text-destructive">{errors.password}</p>}
             </div>
             <label className="flex items-center gap-2 text-sm">
-              <Checkbox defaultChecked /> {t('login.rememberMe')}
+              <Checkbox
+                checked={data.remember}
+                onCheckedChange={(checked) => setData('remember', Boolean(checked))}
+              />
+              {t('login.rememberMe')}
             </label>
-            <Button variant="brand" size="lg" className="w-full">{t('login.submit')}</Button>
+            <Button type="submit" variant="brand" size="lg" className="w-full" disabled={processing}>
+              {processing ? '...' : t('login.submit')}
+            </Button>
           </form>
           <div className="mt-6 text-center text-sm text-muted-foreground">
             {t('login.newHere')}{' '} <Link href="/register" className="font-semibold text-rocheli-blue">{t('login.createAccount')}</Link>
           </div>
         </div>
       </div>
-
-            {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
 
             </AuthSplitLayout>
         </>

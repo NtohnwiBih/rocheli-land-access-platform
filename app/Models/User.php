@@ -47,4 +47,9 @@ class User extends Authenticatable
     {
         return $this->email_verified_at !== null || $this->phone_verified_at !== null;
     }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification($token));
+    }
 }
