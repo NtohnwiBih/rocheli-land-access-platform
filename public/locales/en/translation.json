@@ -107,7 +107,10 @@
             "paymentMomo": "MTN Mobile Money",
             "paymentOrange": "Orange Money",
             "paymentBank": "Bank Transfer",
-            "paymentCash": "Cash Deposit"
+            "paymentCash": "Cash Deposit",
+            "amountFixedNote": "Fixed by your plan: {{amount}} per {{frequency}}.",
+            "amountMinimumNote": "Minimum: {{amount}} per {{frequency}}. You may contribute more.",
+            "frequencyPeriod": "period"
         },
 
         "step5": {
@@ -154,7 +157,9 @@
             "amountInvalid": "Enter a valid amount",
             "paymentMethodRequired": "Please select a payment method",
             "agreementsRequired": "Please accept all agreements to continue",
-            "signatureRequired": "Signature is required"
+            "signatureRequired": "Signature is required",
+            "amountBelowMinimum": "Amount must be at least {{min}} for this plan",
+            "amountMismatch": "This plan requires {{expected}} for the selected frequency"
         }
     },
     "verify": {
@@ -322,5 +327,34 @@
             "paid": "Paid",
             "scheduled": "Scheduled"
         }
+    },
+    "calculator": {
+        "title": "Investment calculator",
+        "subtitle": "Project your land ownership journey.",
+        "syncedWith": "Synced with your {{plan}}",
+        "exploringScenario": "Exploring a scenario",
+        "planTarget": "Plan target",
+        "contributedSoFar": "Contributed so far",
+        "paying": "Paying",
+        "estTimeToCompletion": "Est. time to completion",
+        "complete": "Complete",
+        "yearSuffix_one": "yr",
+        "yearSuffix_other": "yrs",
+        "noPlanNotice": "You don't have an active plan yet, so this calculator is running in exploration mode with example numbers.",
+        "scenario": "Scenario",
+        "resetToMyPlan": "Reset to my plan",
+        "monthlyEquivalent": "Monthly equivalent (FCFA)",
+        "duration": "Duration: {{years}} years",
+        "projectedFutureValue": "Projected future value",
+        "projectedSavings": "Projected savings",
+        "estimatedLandSize": "Estimated land size",
+        "growthEst": "Growth (est.)",
+        "suggestedLocations": "Suggested locations",
+        "noLocationsAvailable": "No locations available yet.",
+        "findMatchingPlots": "Find matching plots",
+        "savedLegend": "Saved",
+        "projectedValueLegend": "Projected value",
+        "sqm": "sqm",
+        "perYear": "%/yr"
     }
 }

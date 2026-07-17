@@ -103,7 +103,10 @@
             "paymentMomo": "MTN Mobile Money",
             "paymentOrange": "Orange Money",
             "paymentBank": "Virement bancaire",
-            "paymentCash": "Dépôt en espèces"
+            "paymentCash": "Dépôt en espèces",
+            "amountFixedNote": "Fixé par votre formule : {{amount}} par {{frequency}}.",
+            "amountMinimumNote": "Minimum : {{amount}} par {{frequency}}. Vous pouvez cotiser davantage.",
+            "frequencyPeriod": "période"
         },
         "step5": {
             "readyTitle": "Tout est prêt !",
@@ -148,7 +151,9 @@
             "amountInvalid": "Veuillez saisir un montant valide",
             "paymentMethodRequired": "Veuillez sélectionner un mode de paiement",
             "agreementsRequired": "Veuillez accepter tous les accords pour continuer",
-            "signatureRequired": "La signature est requise"
+            "signatureRequired": "La signature est requise",
+            "amountBelowMinimum": "Le montant doit être d'au moins {{min}} pour cette formule",
+            "amountMismatch": "Cette formule nécessite {{expected}} pour la fréquence sélectionnée"
         }
     },
     "verify": {
@@ -316,5 +321,34 @@
             "paid": "Payé",
             "scheduled": "Prévu"
         }
+    },
+    "calculator": {
+        "title": "Calculatrice d'investissement",
+        "subtitle": "Projetez votre parcours vers la propriété foncière.",
+        "syncedWith": "Synchronisé avec votre {{plan}}",
+        "exploringScenario": "Exploration d'un scénario",
+        "planTarget": "Objectif de la formule",
+        "contributedSoFar": "Cotisé jusqu'ici",
+        "paying": "Cotisation",
+        "estTimeToCompletion": "Temps estimé restant",
+        "complete": "Terminé",
+        "yearSuffix_one": "an",
+        "yearSuffix_other": "ans",
+        "noPlanNotice": "Vous n'avez pas encore de formule active, cette calculatrice fonctionne donc en mode exploration avec des chiffres d'exemple.",
+        "scenario": "Scénario",
+        "resetToMyPlan": "Revenir à ma formule",
+        "monthlyEquivalent": "Équivalent mensuel (FCFA)",
+        "duration": "Durée : {{years}} ans",
+        "projectedFutureValue": "Valeur future projetée",
+        "projectedSavings": "Épargne projetée",
+        "estimatedLandSize": "Superficie estimée",
+        "growthEst": "Croissance (est.)",
+        "suggestedLocations": "Emplacements suggérés",
+        "noLocationsAvailable": "Aucun emplacement disponible pour le moment.",
+        "findMatchingPlots": "Trouver des parcelles correspondantes",
+        "savedLegend": "Épargné",
+        "projectedValueLegend": "Valeur projetée",
+        "sqm": "m²",
+        "perYear": "%/an"
     }
 }

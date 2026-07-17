@@ -50,4 +50,24 @@ class Member extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function contributions()
+    {
+        return $this->hasMany(Contribution::class);
+    }
+
+    public function enquiries()
+    {
+        return $this->hasMany(Enquiry::class);
+    }
+
+    public function memberPlans()
+    {
+        return $this->hasMany(MemberPlan::class);
+    }
+
+    public function primaryPlan()
+    {
+        return $this->hasOne(MemberPlan::class)->where('is_primary', true);
+    }
 }

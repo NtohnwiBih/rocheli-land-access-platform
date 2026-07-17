@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\StoreMemberRequest;
 use App\Mail\NewMemberApplication;
+use App\Models\City;
 use App\Models\Member;
+use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +22,22 @@ class RegisteredUserController extends Controller
 {
     public function create(): Response
     {
-        return Inertia::render('auth/register');
+        return Inertia::render('auth/register', [
+            'plans' => Plan::active()->get()->map(fn (Plan $p) => [
+                'name' => $p->name,
+                'target_price' => (float) $p->target_price,
+                'daily_amount' => (float) $p->daily_amount,
+                'weekly_amount' => (float) $p->weekly_amount,
+                'monthly_amount' => (float) $p->monthly_amount,
+                'is_flexible' => $p->is_flexible,
+                'is_featured' => $p->is_featured,
+            ]),
+            'cities' => City::active()->get()->map(fn (City $c) => [
+                'key' => $c->key,
+                'name_en' => $c->name_en,
+                'name_fr' => $c->name_fr,
+            ]),
+        ]);
     }
 
     public function store(StoreMemberRequest $request)
@@ -71,8 +88,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        // Notify the company of the new application. Failure here must never
-        // block registration, so it's isolated in its own try/catch.
         try {
             Mail::to(config('mail.company_notification_email'))
                 ->send(new NewMemberApplication($member->fresh(['user'])));

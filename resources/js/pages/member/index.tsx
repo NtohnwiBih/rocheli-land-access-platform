@@ -1,4 +1,4 @@
-import { Head, Link, usePage } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -46,46 +46,90 @@ interface PageProps {
     status: "pending" | "under_review" | "approved" | "rejected";
     submitted_at: string;
   };
+  stats: {
+    wallet_balance: number;
+    this_month: number;
+    contributions_count: number;
+    outstanding: number;
+    target_price: number;
+  };
+  savings_data: { m: string; v: number }[];
+  recent_contributions: { date: string; amount: number; status: string }[];
   [key: string]: unknown;
+  subscriptions: Subscription[];
+  selected_plan_id: number | null;
 }
 
-const savingsData = [
-  { m: "Jan", v: 75 }, { m: "Feb", v: 150 }, { m: "Mar", v: 225 },
-  { m: "Apr", v: 300 }, { m: "May", v: 375 }, { m: "Jun", v: 450 },
-  { m: "Jul", v: 525 }, { m: "Aug", v: 600 },
-];
+interface Subscription {
+  id: number;
+  label: string;
+  plan_name: string;
+  status: string;
+  is_primary: boolean;
+}
+
+const formatXAF = (n: number) =>
+  new Intl.NumberFormat("fr-CM", {
+    style: "currency",
+    currency: "XAF",
+    maximumFractionDigits: 0,
+  }).format(n);
 
 export default function DashboardOverview() {
   const { t } = useTranslation();
   const { props } = usePage<PageProps>();
   const user = props.auth?.user;
   const member = props.member;
+  const stats = props.stats;
+  const savingsData = props.savings_data;
+  const recentContributions = props.recent_contributions;
+  const { subscriptions, selected_plan_id } = props;
+
+  const switchProject = (id: number) => {
+    router.get("/member", { plan: id }, { preserveScroll: true, preserveState: true });
+  };
 
   const firstName = user?.name?.split(" ")[0] ?? t("layout.defaultMemberName");
 
-  const stats = [
-    { label: t("member.dashboard.stats.walletBalance"), value: "₦2,325,000", icon: Wallet, tone: "blue", delta: "+₦75,000" },
-    { label: t("member.dashboard.stats.contributionsMade"), value: "31", icon: TrendingUp, tone: "gold", delta: t("member.dashboard.stats.consecutiveMonths") },
-    { label: t("member.dashboard.stats.outstanding"), value: "₦1,425,000", icon: Clock, tone: "muted", delta: t("member.dashboard.stats.forReservedPlot") },
-    { label: t("member.dashboard.stats.plotReserved"), value: "Palm Estate", icon: Landmark, tone: "blue", delta: "500 sqm · Lekki" },
-  ];
-
-  const payments = [
-    { d: "Oct 1", label: t("member.dashboard.upcomingPayments"), amount: "₦75,000", status: t("member.dashboard.scheduled") },
-    { d: "Sep 1", label: t("member.dashboard.upcomingPayments"), amount: "₦75,000", status: t("member.dashboard.paid") },
-    { d: "Aug 15", label: t("member.dashboard.upcomingPayments"), amount: "₦250,000", status: t("member.dashboard.paid") },
-  ];
-
-  const notifications = [
-    { title: "Contribution successful", body: "₦75,000 · Sep 1", tone: "success" },
-    { title: "New estate launching", body: "Emerald Heights — Enugu", tone: "info" },
-    { title: "Document ready", body: "Deed of Assignment", tone: "gold" },
+  const statCards = [
+    {
+      label: t("member.dashboard.stats.walletBalance"),
+      value: formatXAF(stats.wallet_balance),
+      icon: Wallet,
+      tone: "blue",
+      delta: stats.this_month > 0 ? `+${formatXAF(stats.this_month)} this month` : "No contributions this month",
+    },
+    {
+      label: t("member.dashboard.stats.contributionsMade"),
+      value: String(stats.contributions_count),
+      icon: TrendingUp,
+      tone: "gold",
+      delta: t("member.dashboard.stats.consecutiveMonths"),
+    },
+    {
+      label: t("member.dashboard.stats.outstanding"),
+      value: stats.target_price > 0 ? formatXAF(stats.outstanding) : "—",
+      icon: Clock,
+      tone: "muted",
+      delta: stats.target_price > 0 ? t("member.dashboard.stats.forReservedPlot") : "No active plan",
+    },
+    {
+      label: t("member.dashboard.stats.plotReserved"),
+      value: member?.land_type ?? "—",
+      icon: Landmark,
+      tone: "blue",
+      delta: member?.preferred_locations?.length ? member.preferred_locations.join(", ") : "Not specified",
+    },
   ];
 
   const statusLabel = () => {
     if (!member?.status) return t("member.dashboard.propertyStatus.none");
     return t(`member.dashboard.propertyStatus.${member.status === "under_review" ? "underReview" : member.status}`);
   };
+
+  const savingsGrowth = savingsData.length > 0
+    ? savingsData.reduce((sum, d) => sum + d.v, 0)
+    : 0;
 
   return (
     <>
@@ -101,27 +145,52 @@ export default function DashboardOverview() {
             <div>
               <Badge className="mb-3 border-white/20 bg-white/10 text-white">
                 <Sparkles className="mr-1 h-3 w-3 text-rocheli-gold" />{" "}
-                {user?.plan ?? member?.plan ?? t("member.dashboard.noPlanSelected")}{" "}
-                {(user?.plan ?? member?.plan) && t("member.dashboard.planSuffix")}
+                {user?.plan ?? member?.plan ?? t("member.dashboard.noPlanSelected")}
               </Badge>
               <h1 className="font-display text-3xl font-black md:text-4xl">
                 {t("member.dashboard.welcomeBack", { name: firstName })}
               </h1>
               <p className="mt-2 text-sm text-white/70">
                 {t("member.dashboard.memberId", { code: user?.member_code ?? "—" })}
-                {user?.created_at && ` · Enrolled ${new Date(user.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })}`}
+                 {user?.created_at && ` · Enrolled ${new Date(user.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" })}`}
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button variant="gold" size="lg"><Plus className="mr-1 h-4 w-4" /> {t("member.dashboard.makeContribution")}</Button>
+              <Link href="/member/contributions">
+                <Button variant="gold" size="lg"><Plus className="mr-1 h-4 w-4" /> {t("member.dashboard.makeContribution")}</Button>
+              </Link>
               <Button variant="hero" size="lg"><Download className="mr-1 h-4 w-4" /> {t("member.dashboard.statement")}</Button>
             </div>
           </div>
         </div>
 
+        {subscriptions.length > 1 && (
+          <div className="flex flex-wrap gap-2">
+            {subscriptions.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => switchProject(s.id)}
+                className={`rounded-xl border px-4 py-2 text-sm font-medium transition-colors ${
+                  s.id === selected_plan_id
+                    ? "border-rocheli-blue bg-rocheli-blue/10 text-rocheli-blue"
+                    : "border-border text-muted-foreground hover:border-rocheli-blue/40"
+                }`}
+              >
+                {s.label}
+                {s.is_primary && <span className="ml-1.5 text-[10px] text-rocheli-gold">★</span>}
+              </button>
+            ))}
+            <Link href="/member/plans">
+              <button className="rounded-xl border border-dashed border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:border-rocheli-blue/40">
+                + Add project
+              </button>
+            </Link>
+          </div>
+        )}
+
         {/* Stat cards */}
         <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-          {stats.map((s) => (
+          {statCards.map((s) => (
             <div key={s.label} className="rounded-2xl bg-card p-5 shadow-card">
               <div className="flex items-center justify-between">
                 <div className={`grid h-10 w-10 place-items-center rounded-xl ${s.tone === "gold" ? "bg-gradient-gold text-rocheli-navy" : s.tone === "muted" ? "bg-muted text-foreground" : "bg-gradient-brand text-white"}`}>
@@ -145,7 +214,7 @@ export default function DashboardOverview() {
                   <h3 className="font-display text-lg font-bold">{t("member.dashboard.savingsJourney")}</h3>
                   <p className="text-xs text-muted-foreground">{t("member.dashboard.last8Months")}</p>
                 </div>
-                <Badge variant="secondary">+₦525,000</Badge>
+                <Badge variant="secondary">{savingsGrowth > 0 ? `+${formatXAF(savingsGrowth)}` : formatXAF(0)}</Badge>
               </div>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -159,7 +228,7 @@ export default function DashboardOverview() {
                     <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
                     <XAxis dataKey="m" fontSize={12} stroke="currentColor" strokeOpacity={0.5} />
                     <YAxis fontSize={12} stroke="currentColor" strokeOpacity={0.5} />
-                    <Tooltip contentStyle={{ borderRadius: 12, border: "none", boxShadow: "var(--shadow-card)" }} formatter={(v) => `₦${v}k`} />
+                    <Tooltip contentStyle={{ borderRadius: 12, border: "none", boxShadow: "var(--shadow-card)" }} formatter={(v) => formatXAF(Number(v))} />
                     <Area type="monotone" dataKey="v" stroke="var(--rocheli-blue)" strokeWidth={2.5} fill="url(#g)" />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -233,25 +302,31 @@ export default function DashboardOverview() {
           <div className="space-y-6">
             <div className="rounded-3xl bg-card p-6 shadow-card">
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="font-display text-base font-bold">{t("member.dashboard.upcomingPayments")}</h3>
+                <h3 className="font-display text-base font-bold">Recent contributions</h3>
                 <Building2 className="h-4 w-4 text-muted-foreground" />
               </div>
               <div className="space-y-3">
-                {payments.map((p, i) => (
-                  <div key={i} className="flex items-center justify-between rounded-xl border border-border p-3">
-                    <div>
-                      <div className="text-sm font-semibold">{p.label}</div>
-                      <div className="text-xs text-muted-foreground">{p.d}</div>
+                {recentContributions.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No contributions yet.</p>
+                ) : (
+                  recentContributions.map((p, i) => (
+                    <div key={i} className="flex items-center justify-between rounded-xl border border-border p-3">
+                      <div>
+                        <div className="text-sm font-semibold">{p.date}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-semibold">{formatXAF(p.amount)}</div>
+                        <Badge variant={p.status === "Successful" ? "secondary" : "outline"} className="mt-0.5 text-[10px]">
+                          {p.status}
+                        </Badge>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-sm font-semibold">{p.amount}</div>
-                      <Badge variant={p.status === t("member.dashboard.paid") ? "secondary" : "outline"} className="mt-0.5 text-[10px]">
-                        {p.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
+              <Link href="/member/contributions" className="mt-4 block text-center text-sm font-medium text-rocheli-blue hover:underline">
+                View all contributions
+              </Link>
             </div>
 
             <div className="rounded-3xl bg-card p-6 shadow-card">
@@ -259,17 +334,7 @@ export default function DashboardOverview() {
                 <h3 className="font-display text-base font-bold">{t("member.dashboard.notificationsTitle")}</h3>
                 <Bell className="h-4 w-4 text-muted-foreground" />
               </div>
-              <div className="space-y-3">
-                {notifications.map((n) => (
-                  <div key={n.title} className="flex gap-3">
-                    <div className={`mt-1 h-2 w-2 shrink-0 rounded-full ${n.tone === "success" ? "bg-emerald-500" : n.tone === "gold" ? "bg-rocheli-gold" : "bg-rocheli-blue"}`} />
-                    <div className="min-w-0">
-                      <div className="truncate text-sm font-semibold">{n.title}</div>
-                      <div className="truncate text-xs text-muted-foreground">{n.body}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <p className="text-sm text-muted-foreground">No notifications yet.</p>
             </div>
           </div>
         </div>
