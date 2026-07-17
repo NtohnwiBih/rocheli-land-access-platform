@@ -1,5 +1,5 @@
 import { Head, useForm } from "@inertiajs/react";
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -51,18 +51,33 @@ type MemberForm = {
 
 type ClientErrors = Partial<Record<keyof MemberForm, string>>;
 
-const PLANS = [
-  { name: "Starter Plan", price: "2,000,000 FCFA", daily: "2,500 F", weekly: "15,000 F", monthly: "65,000 F" },
-  { name: "Growth Plan", price: "3,000,000 FCFA", daily: "5,000 F", weekly: "25,000 F", monthly: "100,000 F" },
-  { name: "Advance Plan", price: "5,000,000 FCFA", daily: "10,000 F", weekly: "50,000 F", monthly: "175,000 F", featured: true },
-  { name: "Prime Plan", price: "10,000,000 FCFA", daily: "10,000+ F", weekly: "75,000+ F", monthly: "300,000+ F" },
-];
+type PlanData = {
+  name: string;
+  target_price: number;
+  daily_amount: number;
+  weekly_amount: number;
+  monthly_amount: number;
+  is_flexible: boolean;
+  is_featured: boolean;
+};
+
+type CityData = {
+  key: string;
+  name_en: string;
+  name_fr: string;
+};
+
+interface RegisterPageProps {
+  plans: PlanData[];
+  cities: CityData[];
+}
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d)/;
 
-export default function RegisterPage() {
-  const { t } = useTranslation();
+
+export default function RegisterPage({ plans, cities }: RegisterPageProps) {
+  const { t, i18n } = useTranslation();
   const [step, setStep] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
@@ -101,15 +116,35 @@ export default function RegisterPage() {
     signature: "",
   });
 
-  const CITIES = [
-    { key: "yaounde", label: t("register.cities.yaounde") },
-    { key: "douala", label: t("register.cities.douala") },
-    { key: "buea", label: t("register.cities.buea") },
-    { key: "limbe", label: t("register.cities.limbe") },
-    { key: "bamenda", label: t("register.cities.bamenda") },
-    { key: "bafoussam", label: t("register.cities.bafoussam") },
-    { key: "kribi", label: t("register.cities.kribi") },
-  ];
+  const formatXAF = (n: number) =>
+    new Intl.NumberFormat("fr-CM", {
+      style: "currency",
+      currency: "XAF",
+      maximumFractionDigits: 0,
+    }).format(n);
+
+  const CITIES = cities.map((c) => ({
+    key: c.key,
+    label: i18n.language === "fr" ? c.name_fr : c.name_en,
+  }));
+
+  const selectedPlan = plans.find((p) => p.name === data.plan);
+
+  const planAmountForFrequency = (plan: PlanData | undefined, frequency: string): number | null => {
+    if (!plan) return null;
+    if (frequency === "Daily") return plan.daily_amount;
+    if (frequency === "Weekly") return plan.weekly_amount;
+    if (frequency === "Monthly") return plan.monthly_amount;
+    return null;
+  };
+
+  const expectedAmount = planAmountForFrequency(selectedPlan, data.contribution_frequency);
+
+  useEffect(() => {
+    if (expectedAmount !== null) {
+      setField("contribution_amount", String(expectedAmount));
+    }
+  }, [data.plan, data.contribution_frequency]);
 
   const GOALS = [
     t("register.step3.goalBuildHome"), t("register.step3.goalInvest"), t("register.step3.goalFamily"),
@@ -234,8 +269,19 @@ export default function RegisterPage() {
       }
       if (!data.contribution_amount) {
         errs.contribution_amount = t("register.errors.amountRequired");
-      } else if (Number(data.contribution_amount) <= 0) {
-        errs.contribution_amount = t("register.errors.amountInvalid");
+      } else {
+        const amountNum = Number(data.contribution_amount);
+        if (amountNum <= 0) {
+          errs.contribution_amount = t("register.errors.amountInvalid");
+        } else if (expectedAmount !== null) {
+          if (selectedPlan?.is_flexible) {
+            if (amountNum < expectedAmount) {
+              errs.contribution_amount = t("register.errors.amountBelowMinimum", { min: formatXAF(expectedAmount) });
+            }
+          } else if (amountNum !== expectedAmount) {
+            errs.contribution_amount = t("register.errors.amountMismatch", { expected: formatXAF(expectedAmount) });
+          }
+        }
       }
       if (!data.payment_method) {
         errs.payment_method = t("register.errors.paymentMethodRequired");
@@ -253,6 +299,9 @@ export default function RegisterPage() {
 
     return errs;
   };
+
+  const frequencyLabel = FREQUENCIES.find((f) => f.key === data.contribution_frequency)?.label.toLowerCase()
+  ?? t("register.step4.frequencyPeriod");
 
   const next = () => {
     const stepErrors = validateStep(step);
@@ -522,7 +571,7 @@ export default function RegisterPage() {
           {step === 3 && (
             <div className="grid gap-6">
               <div className="grid gap-4 sm:grid-cols-2">
-                {PLANS.map((p) => (
+                {plans.map((p) => (
                   <label
                     key={p.name}
                     className={`relative flex cursor-pointer flex-col rounded-2xl border p-5 transition-colors hover:border-rocheli-blue ${
@@ -546,25 +595,31 @@ export default function RegisterPage() {
 
                     <div className="flex items-center justify-between pr-8">
                       <span className="font-display font-bold">{p.name}</span>
-                      {p.featured && <Badge className="bg-rocheli-gold text-rocheli-navy">{t("register.step4.planPopular")}</Badge>}
+                      {p.is_featured && <Badge className="bg-rocheli-gold text-rocheli-navy">{t("register.step4.planPopular")}</Badge>}
                     </div>
 
                     <div className="mt-2 text-sm text-muted-foreground">
-                      {t("register.step4.planTarget")} <span className="font-semibold text-foreground">{p.price}</span>
+                      {t("register.step4.planTarget")} <span className="font-semibold text-foreground">{formatXAF(p.target_price)}</span>
                     </div>
 
                     <div className="mt-3 grid grid-cols-3 gap-2 border-t border-border pt-3 text-center">
                       <div>
                         <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{t("register.step4.planDaily")}</div>
-                        <div className="text-sm font-semibold">{p.daily}</div>
+                        <div className="text-sm font-semibold">
+                          {formatXAF(p.daily_amount)}{p.is_flexible && "+"}
+                        </div>
                       </div>
                       <div>
                         <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{t("register.step4.planWeekly")}</div>
-                        <div className="text-sm font-semibold">{p.weekly}</div>
+                        <div className="text-sm font-semibold">
+                          {formatXAF(p.weekly_amount)}{p.is_flexible && "+"}
+                        </div>
                       </div>
                       <div>
                         <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{t("register.step4.planMonthly")}</div>
-                        <div className="text-sm font-semibold">{p.monthly}</div>
+                        <div className="text-sm font-semibold">
+                          {formatXAF(p.monthly_amount)}{p.is_flexible && "+"}
+                        </div>
                       </div>
                     </div>
                   </label>
@@ -599,8 +654,26 @@ export default function RegisterPage() {
                   type="number"
                   className="mt-1.5"
                   value={data.contribution_amount}
+                  min={expectedAmount ?? undefined}
+                  readOnly={selectedPlan ? !selectedPlan.is_flexible : false}
                   onChange={(e) => setField("contribution_amount", e.target.value)}
                 />
+                {selectedPlan && !selectedPlan.is_flexible && (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t("register.step4.amountFixedNote", {
+                      amount: formatXAF(expectedAmount ?? 0),
+                      frequency: frequencyLabel,
+                    })}
+                  </p>
+                )}
+                {selectedPlan?.is_flexible && (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {t("register.step4.amountMinimumNote", {
+                      amount: formatXAF(expectedAmount ?? 0),
+                      frequency: frequencyLabel,
+                    })}
+                  </p>
+                )}
                 {showError("contribution_amount") && <p className="mt-1 text-xs text-destructive">{showError("contribution_amount")}</p>}
               </div>
 

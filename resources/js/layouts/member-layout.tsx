@@ -33,8 +33,10 @@ import {
   PanelLeft,
   PanelLeftClose,
   Globe,
+  ChevronsUpDown,
 } from "lucide-react";
 import AppLogoIcon from "@/components/app-logo-icon";
+import { MemberMenuContent } from "@/components/member/MemberMenuContent";
 
 interface NotificationItem {
   id: string | number;
@@ -119,6 +121,10 @@ export function MemberLayout({ children }: PropsWithChildren) {
   const sidebarWidth = collapsed ? "lg:w-20" : "lg:w-72";
   const mainOffset = collapsed ? "lg:pl-20" : "lg:pl-72";
 
+  const markRead = (id: string | number) => {
+    router.post(`/member/notifications/${id}/read`, {}, { preserveScroll: true, preserveState: true });
+  };
+
   function handleLogout() {
     router.post("/logout");
   }
@@ -176,26 +182,18 @@ export function MemberLayout({ children }: PropsWithChildren) {
           })}
         </nav>
 
-        <div className={`absolute inset-x-3 bottom-4 rounded-2xl bg-sidebar-accent/60 p-4 transition-all ${collapsed ? "lg:p-2 lg:bottom-3" : ""}`}>
-          <div className={`flex items-center gap-3 ${collapsed ? "lg:justify-center" : ""}`}>
-            <Avatar className="h-10 w-10 shrink-0">
-              <AvatarImage src={user?.avatar} />
-              <AvatarFallback>{user?.name?.slice(0, 2).toUpperCase() ?? "M"}</AvatarFallback>
-            </Avatar>
-            <div className={`min-w-0 overflow-hidden transition-all ${collapsed ? "lg:w-0 lg:opacity-0" : "lg:w-auto lg:opacity-100"}`}>
-              <div className="truncate text-sm font-semibold">{user?.name ?? t("member.layout.defaultMemberName")}</div>
-              <div className="truncate text-xs text-white/60">
-                {user?.member_code ?? t("member.layout.defaultMemberCode")} · {user?.plan ?? member?.plan ?? t("member.dashboard.noPlanSelected")}
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className={`ml-auto text-white/70 hover:text-white ${collapsed ? "lg:hidden" : ""}`}
-              aria-label={t("member.layout.logout")}
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
+        <div
+          className={`absolute inset-x-3 bottom-4 transition-all ${
+            collapsed ? "lg:bottom-3" : ""
+          }`}
+        >
+          <MemberMenuContent
+            user={user}
+            member={member}
+            collapsed={collapsed}
+            t={t}
+            handleLogout={handleLogout}
+          />
         </div>
       </aside>
 
@@ -254,7 +252,11 @@ export function MemberLayout({ children }: PropsWithChildren) {
                     ) : (
                     <div className="max-h-80 overflow-y-auto">
                         {notifications.slice(0, 5).map((n) => (
-                        <DropdownMenuItem key={n.id} className="flex items-start gap-3 whitespace-normal py-2.5">
+                        <DropdownMenuItem
+                          key={n.id}
+                          onClick={() => !n.read_at && markRead(n.id)}
+                          className="flex items-start gap-3 whitespace-normal py-2.5"
+                        >
                             <span
                             className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
                                 n.tone === "success" ? "bg-emerald-500" : n.tone === "gold" ? "bg-rocheli-gold" : "bg-rocheli-blue"
