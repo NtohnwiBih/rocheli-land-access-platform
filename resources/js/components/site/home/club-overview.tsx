@@ -4,15 +4,32 @@ import { Eyebrow } from "../section";
 import { Button } from "@/components/ui/button";
 import { Link } from "@inertiajs/react";
 
-export default function ClubOverview() {
-  const perks = [
-    "Discounted access to premium inventory",
-    "Free legal verification & title tracking",
-    "Priority allocation windows every quarter",
-    "Guaranteed buy-back on Prime tier",
-    "Concierge relationship manager",
-    "Private member-only property drops",
-  ];
+type Props = {
+  content?: {
+    eyebrow?: string;
+    title?: string;
+    titleAccent?: string;
+    subtitle?: string;
+    features?: string[];
+    ctaLabel?: string;
+    secondaryCtaLabel?: string;
+    cohortLabel?: string;
+    image?: string;
+  };
+};
+
+const fallbackPerks = [
+  "Discounted access to premium inventory",
+  "Free legal verification & title tracking",
+  "Priority allocation windows every quarter",
+  "Guaranteed buy-back on Prime tier",
+  "Concierge relationship manager",
+  "Private member-only property drops",
+];
+
+export default function ClubOverview({ content = {} }: Props) {
+  const perks = content.features?.length ? content.features : fallbackPerks;
+
   return (
     <section className="py-24 bg-gradient-navy text-white relative overflow-hidden grain">
       <div
@@ -32,7 +49,7 @@ export default function ClubOverview() {
         >
           <div className="relative rounded-[2rem] overflow-hidden shadow-elegant">
             <img
-              src="/family-land.jpg"
+              src={content.image || "/family-land.jpg"}
               alt="Rocheli members receiving their land title"
               loading="lazy"
               className="w-full aspect-[4/5] object-cover"
@@ -44,37 +61,32 @@ export default function ClubOverview() {
               </div>
               <div>
                 <div className="font-display text-lg font-semibold text-white">
-                  Cohort 11 · 100% allocated
+                  {content.cohortLabel ?? "Cohort 11 · 100% allocated"}
                 </div>
-                <div className="text-xs text-white/70">
-                  312 members received titles in Q4 2025
-                </div>
+                <div className="text-xs text-white/70">312 members received titles in Q4 2025</div>
               </div>
             </div>
           </div>
           <div className="absolute -bottom-6 -right-6 hidden md:block glass rounded-2xl p-5 max-w-[220px]">
-            <div className="text-xs text-white/60 uppercase tracking-widest">
-              Avg. member ROI
-            </div>
-            <div className="font-display text-3xl font-bold text-gradient-gold">
-              +18.4%
-            </div>
+            <div className="text-xs text-white/60 uppercase tracking-widest">Avg. member ROI</div>
+            <div className="font-display text-3xl font-bold text-gradient-gold">+18.4%</div>
             <div className="text-xs text-white/70 mt-1">per annum since 2020</div>
           </div>
         </motion.div>
 
         <div>
           <Eyebrow className="border-white/20 bg-white/5 text-white">
-            The Land Access Club
+            {content.eyebrow ?? "The Land Access Club"}
           </Eyebrow>
           <h2 className="mt-4 font-display text-4xl md:text-5xl font-semibold leading-[1.05] tracking-tight text-white">
-            A structured savings program that ends with{" "}
-            <span className="italic text-gradient-gold">a title in your name.</span>
+            {content.title ?? "A structured savings program that ends with"}{" "}
+            <span className="italic text-gradient-gold">
+              {content.titleAccent ?? "a title in your name."}
+            </span>
           </h2>
           <p className="mt-5 text-white/75 leading-relaxed max-w-xl">
-            Contribute monthly at your pace. Reserve your plot from vetted
-            inventory. Receive a legally-registered land title — no shortcuts,
-            no surprises.
+            {content.subtitle ??
+              "Contribute monthly at your pace. Reserve your plot from vetted inventory. Receive a legally-registered land title — no shortcuts, no surprises."}
           </p>
 
           <ul className="mt-8 grid sm:grid-cols-2 gap-3">
@@ -94,7 +106,7 @@ export default function ClubOverview() {
               className="bg-gradient-gold text-navy rounded-full h-12 px-6 font-semibold hover:opacity-95"
             >
               <Link href="/land-access-club">
-                Explore membership <ArrowRight className="h-4 w-4" />
+                {content.ctaLabel ?? "Explore membership"} <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
             <Button
@@ -102,7 +114,7 @@ export default function ClubOverview() {
               variant="outline"
               className="rounded-full h-12 px-6 border-white/30 bg-white/5 text-white hover:bg-white/15"
             >
-              <Link href="/properties">See eligible inventory</Link>
+              <Link href="/properties">{content.secondaryCtaLabel ?? "See eligible inventory"}</Link>
             </Button>
           </div>
         </div>

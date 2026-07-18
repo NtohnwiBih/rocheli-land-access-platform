@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use App\Models\Contribution;
+use App\Observers\ContributionObserver;
+use App\Repositories\Contracts\SiteContentRepositoryInterface;
+use App\Repositories\SiteContentRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(SiteContentRepositoryInterface::class, SiteContentRepository::class);
     }
 
     /**
@@ -24,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        Contribution::observe(ContributionObserver::class);
     }
 
     /**

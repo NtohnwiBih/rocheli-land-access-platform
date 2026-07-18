@@ -60,13 +60,17 @@ interface PageProps {
   selected_plan_id: number | null;
 }
 
-interface Subscription {
+type Subscription = {
   id: number;
   label: string;
   plan_name: string;
   status: string;
   is_primary: boolean;
-}
+  is_completed: boolean;
+  total_contributed: number;
+  target_price: number;
+  progress_pct: number;
+};
 
 const formatXAF = (n: number) =>
   new Intl.NumberFormat("fr-CM", {
@@ -164,27 +168,47 @@ export default function DashboardOverview() {
           </div>
         </div>
 
-        {subscriptions.length > 1 && (
-          <div className="flex flex-wrap gap-2">
-            {subscriptions.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => switchProject(s.id)}
-                className={`rounded-xl border px-4 py-2 text-sm font-medium transition-colors ${
-                  s.id === selected_plan_id
-                    ? "border-rocheli-blue bg-rocheli-blue/10 text-rocheli-blue"
-                    : "border-border text-muted-foreground hover:border-rocheli-blue/40"
-                }`}
+        {subscriptions.length > 0 && (
+          <div className="rounded-3xl bg-card p-6 shadow-card">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="font-display text-lg font-bold">My Projects</h3>
+              <Link href="/member/plans" className="text-sm font-medium text-rocheli-blue hover:underline">
+                Manage all
+              </Link>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {subscriptions.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => switchProject(s.id)}
+                  className={`flex flex-col rounded-2xl border p-4 text-left transition-colors ${
+                    s.id === selected_plan_id ? "border-rocheli-blue bg-rocheli-blue/5" : "border-border hover:border-rocheli-blue/40"
+                  } ${s.is_completed ? "opacity-70" : ""}`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-semibold">{s.label}</span>
+                    <div className="flex items-center gap-1">
+                      {s.is_primary && <span className="text-[10px] text-rocheli-gold">★</span>}
+                      {s.is_completed && <span className="text-[10px] font-medium text-emerald-600">✓ Funded</span>}
+                    </div>
+                  </div>
+                  <span className="text-xs text-muted-foreground">{s.plan_name}</span>
+                  <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
+                    <div
+                      className={`h-full rounded-full ${s.is_completed ? "bg-emerald-500" : "bg-gradient-brand"}`}
+                      style={{ width: `${s.progress_pct}%` }}
+                    />
+                  </div>
+                  <div className="mt-1.5 text-xs text-muted-foreground">{s.progress_pct}% · {formatXAF(s.total_contributed)}</div>
+                </button>
+              ))}
+              <Link
+                href="/member/plans"
+                className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground hover:border-rocheli-blue/40"
               >
-                {s.label}
-                {s.is_primary && <span className="ml-1.5 text-[10px] text-rocheli-gold">★</span>}
-              </button>
-            ))}
-            <Link href="/member/plans">
-              <button className="rounded-xl border border-dashed border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:border-rocheli-blue/40">
                 + Add project
-              </button>
-            </Link>
+              </Link>
+            </div>
           </div>
         )}
 

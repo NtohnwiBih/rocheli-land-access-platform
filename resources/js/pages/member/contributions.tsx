@@ -52,6 +52,7 @@ type Row = {
   status: Status;
   has_proof: boolean;
   note: string | null;
+  project_id: number;
   project: string;
 };
 
@@ -61,14 +62,25 @@ type Project = {
   payment_method: string;
 };
 
+type ProjectBreakdown = {
+  id: number;
+  label: string;
+  target_price: number;
+  total_contributed: number;
+  this_year: number;
+  is_completed: boolean;
+};
+
 interface PageProps {
   contributions: Row[];
   projects: Project[];
+  project_breakdown: ProjectBreakdown[];
   stats: {
     total_contributed: number;
     this_year: number;
   };
   pending_count: number;
+  initial_project_filter: string;
   [key: string]: unknown;
 }
 
@@ -81,12 +93,13 @@ const formatXAF = (n: number) =>
 
 export default function Contributions() {
   const { props } = usePage<PageProps>();
-  const { contributions, projects, stats, pending_count } = props;
+  const { contributions, projects, project_breakdown, stats, pending_count, initial_project_filter } = props;
 
   const [open, setOpen] = useState(false);
   const [proofPreview, setProofPreview] = useState<string | null>(null);
   const [viewProofId, setViewProofId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
+  const [projectFilter, setProjectFilter] = useState<string>(initial_project_filter);;
   const fileRef = useRef<HTMLInputElement>(null);
 
   const { data, setData, post, processing, errors, reset } = useForm({
@@ -133,11 +146,13 @@ export default function Contributions() {
     });
   };
 
-  const filteredRows = contributions.filter(
-    (r) =>
+  const filteredRows = contributions.filter((r) => {
+    const matchesSearch =
       r.ref.toLowerCase().includes(search.toLowerCase()) ||
-      r.project.toLowerCase().includes(search.toLowerCase())
-  );
+      r.project.toLowerCase().includes(search.toLowerCase());
+    const matchesProject = projectFilter === "all" || String(r.project_id) === projectFilter;
+    return matchesSearch && matchesProject;
+  });
 
   return (
     <>
@@ -208,7 +223,14 @@ export default function Contributions() {
 
                   <div className="space-y-2">
                     <Label>Payment method</Label>
-                    <Select value={data.method} onValueChange={(v) => setData("method", v)}>
+                    <Select
+                      value={data.member_plan_id ? String(data.member_plan_id) : undefined}
+                      onValueChange={(v) => {
+                        const project = projects.find((p) => p.id === Number(v));
+                        setData("member_plan_id", Number(v));
+                        if (project) setData("method", project.payment_method);
+                      }}
+                    >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
@@ -316,17 +338,21 @@ export default function Contributions() {
           </div>
         )}
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          {[
-            ["Total contributed", formatXAF(stats.total_contributed)],
-            ["This year", formatXAF(stats.this_year)],
-          ].map(([l, v]) => (
-            <div key={l} className="rounded-2xl bg-card p-5 shadow-card">
-              <div className="text-xs uppercase tracking-wider text-muted-foreground">{l}</div>
-              <div className="mt-1 font-display text-2xl font-black">{v}</div>
-            </div>
-          ))}
-        </div>
+        {project_breakdown.length > 1 && (
+          <Select value={projectFilter} onValueChange={setProjectFilter}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All projects</SelectItem>
+              {project_breakdown.map((p) => (
+                <SelectItem key={p.id} value={String(p.id)}>
+                  {p.label}{p.is_completed ? " ✓" : ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
 
         <div className="rounded-3xl bg-card p-6 shadow-card">
           <div className="mb-5 flex flex-wrap items-center gap-3">
@@ -339,6 +365,19 @@ export default function Contributions() {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
+            {projects.length > 1 && (
+              <Select value={projectFilter} onValueChange={setProjectFilter}>
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All projects</SelectItem>
+                  {projects.map((p) => (
+                    <SelectItem key={p.id} value={String(p.id)}>{p.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
             <Button variant="outline">
               <Filter className="mr-1 h-4 w-4" /> Filter
             </Button>

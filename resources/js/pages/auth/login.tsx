@@ -34,8 +34,8 @@ export default function Login({ status, canResetPassword }: Props) {
 
     return (
         <>
-            <Head title="Log in" />
-            <AuthSplitLayout>
+        <Head title="Log in" />
+        <AuthSplitLayout>
 
         <div className="flex flex-col justify-between">
         <Link href="/"></Link>

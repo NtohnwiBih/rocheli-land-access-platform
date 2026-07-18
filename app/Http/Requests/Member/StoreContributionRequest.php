@@ -15,7 +15,7 @@ class StoreContributionRequest extends FormRequest
     {
         return [
             'amount' => ['required', 'numeric', 'min:1000'],
-            'method' => ['required', 'string', 'in:Bank transfer,Card,Direct debit,Cash deposit'],
+            'method' => ['required', 'string', 'in:MTN Mobile Money,Orange Money,Bank Transfer,Cash Deposit'],
             'proof' => ['required', 'file', 'image', 'max:5120'], // 5MB
             'note' => ['nullable', 'string', 'max:255'],
             'member_plan_id' => ['required', 'integer', 'exists:member_plans,id'],

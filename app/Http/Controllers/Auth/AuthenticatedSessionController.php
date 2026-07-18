@@ -20,6 +20,14 @@ class AuthenticatedSessionController extends Controller
         ]);
     }
 
+    public function login(): Response
+    {
+        return Inertia::render('auth/admin-login', [
+            'status' => session('status'),
+            'canResetPassword' => true,
+        ]);
+    }
+
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
@@ -27,6 +35,15 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         return redirect()->intended('/member');
+    }
+
+    public function adminStore(LoginRequest $request): RedirectResponse
+    {
+        $request->authenticate();
+
+        $request->session()->regenerate();
+
+        return redirect()->intended('/rocheli');
     }
 
     public function destroy(Request $request): RedirectResponse

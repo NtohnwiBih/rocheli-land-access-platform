@@ -15,10 +15,13 @@ class DashboardController extends Controller
         $member = auth()->user()->member;
 
         $subscriptions = $member
-            ? $member->memberPlans()->with('plan')->latest('subscribed_at')->get()
+            ? $member->memberPlans()->with('plan')->orderBy('subscribed_at')->get()
             : collect();
 
-        $selectedId = $request->integer('plan') ?: $subscriptions->firstWhere('is_primary', true)?->id ?? $subscriptions->first()?->id;
+        $selectedId = $request->integer('plan')
+            ?: $subscriptions->firstWhere('is_primary', true)?->id
+            ?? $subscriptions->first()?->id;
+
         $selected = $subscriptions->firstWhere('id', $selectedId);
 
         $successfulContributions = $selected
@@ -52,13 +55,22 @@ class DashboardController extends Controller
             : collect();
 
         return Inertia::render('member/index', [
-            'subscriptions' => $subscriptions->map(fn (MemberPlan $mp) => [
-                'id' => $mp->id,
-                'label' => $mp->displayName(),
-                'plan_name' => $mp->plan->name,
-                'status' => $mp->status,
-                'is_primary' => $mp->is_primary,
-            ]),
+            'subscriptions' => $subscriptions->map(function (MemberPlan $mp) {
+                $total = $mp->totalContributed();
+                $target = (float) $mp->plan->target_price;
+
+                return [
+                    'id' => $mp->id,
+                    'label' => $mp->displayName(),
+                    'plan_name' => $mp->plan->name,
+                    'status' => $mp->status,
+                    'is_primary' => $mp->is_primary,
+                    'is_completed' => $mp->isCompleted(),
+                    'total_contributed' => $total,
+                    'target_price' => $target,
+                    'progress_pct' => $target > 0 ? min(round(($total / $target) * 100), 100) : 0,
+                ];
+            }),
             'selected_plan_id' => $selected?->id,
             'member' => $selected ? [
                 'goal' => $selected->goal,
@@ -69,6 +81,7 @@ class DashboardController extends Controller
                 'contribution_amount' => $selected->contribution_amount,
                 'payment_method' => $selected->payment_method,
                 'status' => $selected->status,
+                'is_completed' => $selected->isCompleted(),
             ] : null,
             'stats' => [
                 'wallet_balance' => (float) $walletBalance,
