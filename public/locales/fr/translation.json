@@ -18,6 +18,21 @@
         "newHere": "Nouveau ici ?",
         "createAccount": "Créer un compte"
     },
+    "adminLogin": {
+        "backToSite": "Retour au site",
+        "contentStudio": "Studio de contenu",
+        "secureArea": "Zone sécurisée",
+        "title": "Connectez-vous à votre studio",
+        "subtitle": "Gérez les propriétés, articles, forfaits et membres depuis un seul endroit.",
+        "username": "Nom d'utilisateur",
+        "usernamePlaceholder": "admin@example.com",
+        "password": "Mot de passe",
+        "showPassword": "Afficher le mot de passe",
+        "hidePassword": "Masquer le mot de passe",
+        "signingIn": "Connexion en cours…",
+        "signIn": "Se connecter",
+        "footer": "Rocheli Real Properties · Studio de contenu"
+    },
     "register": {
         "badge": "Intégration",
         "title": "Rejoignez le Land Access Club",
@@ -256,6 +271,7 @@
             "nav": {
             "overview": "Aperçu",
             "contributions": "Cotisations",
+            "active-plan": "Abonnement",
             "property": "Ma propriété",
             "documents": "Documents",
             "notifications": "Notifications",
@@ -276,6 +292,7 @@
             "toggleTheme": "Changer de thème",
             "defaultMemberName": "Membre",
             "defaultMemberCode": "—",
+            "setting": "Paramètres",
             "notificationsDropdown": {
                 "title": "Notifications",
                 "empty": "Vous êtes à jour",
@@ -350,5 +367,105 @@
         "projectedValueLegend": "Valeur projetée",
         "sqm": "m²",
         "perYear": "%/an"
+    },
+    "plans": {
+        "title": "Mes projets",
+        "subtitle": "Gérez vos plans d'acquisition foncière, côte à côte.",
+        "addProject": "Ajouter un projet",
+        "primaryBadge": "Principal",
+        "noProjects": "Vous n'avez encore aucun projet.",
+        "startFirst": "Démarrer votre premier projet",
+        "progressLabel": "{{pct}}% de l'objectif",
+        "contributedOf": "{{contributed}} sur {{target}}",
+        "payingLabel": "Cotisation de {{amount}} / {{frequency}}",
+        "subscribedOn": "Souscrit le {{date}}",
+        "viewContributions": "Voir les cotisations",
+        "newProjectTitle": "Démarrer un nouveau projet",
+        "newProjectDesc": "Choisissez une formule et parlez-nous de ce projet. Il sera examiné comme toute nouvelle demande.",
+        "labelField": "Nom du projet (facultatif)",
+        "labelPlaceholder": "ex. Maison de retraite, Terrain familial",
+        "chooseGoal": "Quel est l'objectif de ce projet ?",
+        "chooseLocations": "Emplacements préférés",
+        "chooseLandType": "Type de terrain",
+        "chooseFrequency": "Fréquence de cotisation",
+        "chooseAmount": "Montant",
+        "choosePaymentMethod": "Méthode de paiement",
+        "cancel": "Annuler",
+        "submitProject": "Ajouter le projet",
+        "submitting": "Envoi en cours..."
+    },
+    "admin": {
+        "adminNav": {
+            "dashboard": "Tableau de bord",
+            "content": "Contenu du site",
+            "contentHome": "Accueil",
+            "contentAbout": "À propos",
+            "contentFaq": "FAQ",
+            "contentFooter": "Pied de page",
+            "properties": "Propriétés",
+            "articles": "Articles",
+            "plans": "Forfaits",
+            "members": "Membres",
+            "contacts": "Contacts"
+        },
+        "adminLayout": {
+            "backToSite": "Retour au site",
+            "expandSidebar": "Développer la barre latérale",
+            "collapseSidebar": "Réduire la barre latérale",
+            "close": "Fermer",
+            "adminFallback": "Admin",
+            "administrator": "Administrateur",
+            "brandName": "Rocheli CMS",
+            "searchPlaceholder": "Rechercher…",
+            "changeLanguage": "Changer de langue",
+            "english": "English",
+            "french": "Français",
+            "livePreview": "Aperçu en direct",
+            "toggleTheme": "Changer de thème",
+            "notifications": "Notifications",
+            "noNotifications": "Aucune notification pour le moment",
+            "viewAllContacts": "Voir tous les contacts",
+            "resetConfirm": "Réinitialiser toutes les données du CMS aux valeurs par défaut ? Cette action est irréversible."
+        },
+        "dashboard": {
+            "breadcrumb": "Tableau de bord",
+            "title": "Tableau de bord",
+            "overview": "Aperçu",
+            "welcomeBack": "Bon retour",
+            "subtitle": "Un studio unique pour chaque contenu, plan de contribution et prospect sur votre site Rocheli.",
+            "contactInbox": "Boîte de réception",
+            "new": "nouveau",
+            "stats": {
+            "properties": "Propriétés",
+            "propertiesHint": "{{count}} disponibles",
+            "articles": "Articles",
+            "articlesHint": "Publiés sur /resources",
+            "plans": "Forfaits",
+            "plansHint": "{{count}} populaires",
+            "members": "Membres",
+            "membersHint": "{{count}} actifs"
+            },
+            "recentMessages": {
+            "title": "Messages récents",
+            "subtitle": "Dernières soumissions du formulaire de contact public",
+            "viewInbox": "Voir la boîte de réception",
+            "empty": "Aucun message de contact pour le moment."
+            },
+            "newMembers": {
+            "title": "Nouveaux membres",
+            "subtitle": "Inscriptions au Land Access Club",
+            "empty": "Aucun membre pour le moment.",
+            "unnamed": "Sans nom"
+            },
+            "tips": {
+            "label": "Astuces du studio",
+            "title": "Tout ce que vous modifiez se reflète instantanément sur le site public.",
+            "tip1": "Les modifications ici sont enregistrées directement dans la base de données — visibles par tous les visiteurs.",
+            "tip2": "Utilisez {{siteContent}} pour modifier la page d'accueil et les informations de l'entreprise.",
+            "siteContent": "Contenu du site",
+            "tip3": "Les nouvelles propriétés et articles apparaissent instantanément dans les listes publiques.",
+            "editButton": "Modifier le contenu du site"
+            }
+        }
     }
 }

@@ -75,6 +75,7 @@ interface PageProps {
 const nav = [
   { href: "/member", key: "overview", icon: LayoutDashboard },
   { href: "/member/contributions", key: "contributions", icon: Wallet },
+  { href: "/member/plans", key: "active-plan", icon: Wallet },
   { href: "/member/property", key: "property", icon: Landmark },
   { href: "/member/documents", key: "documents", icon: FileText },
   { href: "/member/notifications", key: "notifications", icon: Bell },
@@ -280,7 +281,7 @@ export function MemberLayout({ children }: PropsWithChildren) {
                 </DropdownMenuContent>
               </DropdownMenu>
               <Badge className="hidden bg-rocheli-blue/10 text-rocheli-blue sm:inline-flex">
-                {user?.plan ?? member?.plan ?? t("member.dashboard.noPlanSelected")} {user?.plan ? t("member.dashboard.planSuffix") : ""}
+                {user?.plan ?? member?.plan ?? t("member.dashboard.noPlanSelected")}
               </Badge>
               <Avatar className="h-9 w-9">
                 <AvatarImage src={user?.avatar} />

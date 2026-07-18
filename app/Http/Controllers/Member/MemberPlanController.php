@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Member;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Member\StoreMemberPlanRequest;
+use App\Models\City;
 use App\Models\MemberPlan;
 use App\Models\Plan;
 use Illuminate\Http\RedirectResponse;
@@ -19,21 +20,27 @@ class MemberPlanController extends Controller
         $subscriptions = $member
             ->memberPlans()
             ->with('plan')
-            ->latest('subscribed_at')
+            ->orderBy('subscribed_at')
             ->get()
             ->map(function (MemberPlan $mp) {
-                $totalContributed = $mp->contributions()->where('status', 'successful')->sum('amount');
+                $totalContributed = $mp->totalContributed();
+                $target = (float) $mp->plan->target_price;
 
                 return [
                     'id' => $mp->id,
                     'label' => $mp->displayName(),
                     'plan_name' => $mp->plan->name,
-                    'target_price' => (float) $mp->plan->target_price,
-                    'total_contributed' => (float) $totalContributed,
+                    'target_price' => $target,
+                    'total_contributed' => $totalContributed,
+                    'progress_pct' => $target > 0 ? min(round(($totalContributed / $target) * 100), 100) : 0,
                     'contribution_frequency' => $mp->contribution_frequency,
                     'contribution_amount' => (float) $mp->contribution_amount,
+                    'goal' => $mp->goal,
+                    'land_type' => $mp->land_type,
                     'status' => $mp->status,
                     'is_primary' => $mp->is_primary,
+                    'is_completed' => $mp->isCompleted(),
+                    'completed_at' => $mp->completed_at?->format('M j, Y'),
                     'subscribed_at' => $mp->subscribed_at->format('M j, Y'),
                 ];
             });
@@ -49,6 +56,11 @@ class MemberPlanController extends Controller
                 'monthly_amount' => (float) $p->monthly_amount,
                 'is_flexible' => $p->is_flexible,
                 'is_featured' => $p->is_featured,
+            ]),
+            'cities' => City::active()->get()->map(fn (City $c) => [
+                'key' => $c->key,
+                'name_en' => $c->name_en,
+                'name_fr' => $c->name_fr,
             ]),
         ]);
     }

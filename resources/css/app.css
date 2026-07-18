@@ -167,7 +167,7 @@
   --input: rgba(255, 255, 255, 0.10);
   --ring: #FFD21A;
 
-  --sidebar: oklch(0.12 0.03 245);
+  --sidebar:  oklch(0.22 0.05 240);
   --sidebar-foreground: oklch(0.95 0.005 240);
   --sidebar-primary: oklch(0.72 0.14 220);
   --sidebar-primary-foreground: oklch(0.15 0.03 245);

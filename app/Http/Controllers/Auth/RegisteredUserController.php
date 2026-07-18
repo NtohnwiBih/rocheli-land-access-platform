@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\StoreMemberRequest;
 use App\Mail\NewMemberApplication;
 use App\Models\City;
 use App\Models\Member;
+use App\Models\MemberPlan;
 use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
@@ -80,6 +81,30 @@ class RegisteredUserController extends Controller
                 'status' => 'pending',
                 'submitted_at' => now(),
             ]);
+
+            $plan = Plan::where('name', $validated['plan'])->first();
+
+            if ($plan) {
+                MemberPlan::create([
+                    'member_id' => $member->id,
+                    'plan_id' => $plan->id,
+                    'label' => $plan->name,
+                    'goal' => $validated['goal'],
+                    'preferred_locations' => $validated['preferred_locations'] ?? [],
+                    'land_type' => $validated['land_type'],
+                    'contribution_frequency' => $validated['contribution_frequency'],
+                    'contribution_amount' => $validated['contribution_amount'],
+                    'payment_method' => $validated['payment_method'],
+                    'status' => 'pending',
+                    'is_primary' => true,
+                    'subscribed_at' => now(),
+                ]);
+            } else {
+                Log::warning('Registration completed but no matching Plan found — MemberPlan not created.', [
+                    'member_id' => $member->id,
+                    'plan_name' => $validated['plan'],
+                ]);
+            }
 
             return [$user, $member];
         });

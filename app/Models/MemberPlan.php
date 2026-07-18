@@ -20,8 +20,10 @@ class MemberPlan extends Model
         'contribution_amount',
         'payment_method',
         'status',
+        'completed_at',
         'is_primary',
         'subscribed_at',
+        'last_reminded_due_at',
     ];
 
     protected function casts(): array
@@ -31,6 +33,8 @@ class MemberPlan extends Model
             'contribution_amount' => 'decimal:2',
             'is_primary' => 'boolean',
             'subscribed_at' => 'datetime',
+            'completed_at' => 'datetime',
+            'last_reminded_due_at' => 'datetime',
         ];
     }
 
@@ -54,23 +58,46 @@ class MemberPlan extends Model
         return $this->label ?: $this->plan->name;
     }
 
-    public function lastSuccessfulContributionAt(): ?\Illuminate\Support\Carbon
+    public function isCompleted(): bool
     {
-        return $this->contributions()
-            ->where('status', 'successful')
-            ->latest()
-            ->value('created_at');
+        return $this->completed_at !== null;
     }
 
-    public function nextDueAt(): ?\Illuminate\Support\Carbon
+    public function totalContributed(): float
     {
-        $base = $this->lastSuccessfulContributionAt() ?? $this->subscribed_at;
+        return (float) $this->contributions()->where('status', 'successful')->sum('amount');
+    }
 
-        return match ($this->contribution_frequency) {
-            'Daily' => $base->copy()->addDay(),
-            'Weekly' => $base->copy()->addWeek(),
-            'Monthly' => $base->copy()->addMonth(),
-            default => null,
-        };
+    public function recalculateCompletion(): void
+    {
+        if ($this->isCompleted()) {
+            return; 
+        }
+
+        $target = (float) $this->plan->target_price;
+
+        if ($target <= 0 || $this->totalContributed() < $target) {
+            return; 
+        }
+
+        $this->update([
+            'completed_at' => now(),
+            'is_primary' => false,
+        ]);
+
+        if ($this->is_primary === false && $this->getOriginal('is_primary') === true) {
+            $this->promoteNextPrimary();
+        }
+    }
+
+    protected function promoteNextPrimary(): void
+    {
+        $next = self::where('member_id', $this->member_id)
+            ->whereNull('completed_at')
+            ->where('id', '!=', $this->id)
+            ->orderBy('subscribed_at')
+            ->first();
+
+        $next?->update(['is_primary' => true]);
     }
 }
