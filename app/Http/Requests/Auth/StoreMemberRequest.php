@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\Plan;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -24,7 +25,7 @@ class StoreMemberRequest extends FormRequest
             'gender' => ['required', Rule::in(['male', 'female', 'other'])],
             'occupation' => ['nullable', 'string', 'max:255'],
             'country_of_residence' => ['nullable', 'string', 'max:255'],
-            'city' => ['required', 'string', 'max:255'],
+            'city' => ['required', 'string', Rule::exists('cities', 'name_en')->where('is_active', true)],
             'password' => ['required', 'confirmed', Password::defaults()],
 
             // Step 2 — Identity verification
@@ -42,9 +43,40 @@ class StoreMemberRequest extends FormRequest
             'land_type' => ['required', 'string', 'max:255'],
 
             // Step 4 — Contribution
-            'plan' => ['required', 'string', 'max:255'],
-            'contribution_frequency' => ['required', Rule::in(['Daily', 'Weekly', 'Monthly'])],
-            'contribution_amount' => ['required', 'numeric', 'min:0'],
+            'plan' => ['required', 'string', Rule::exists('plans', 'name')->where('is_active', true)],
+            'contribution_frequency' => ['required', 'string', 'in:Daily,Weekly,Monthly'],
+            'contribution_amount' => [
+                'required',
+                'numeric',
+                'min:1',
+                function ($attribute, $value, $fail) {
+                    $plan = Plan::where('name', $this->input('plan'))->first();
+
+                    if (! $plan) {
+                        return; 
+                    }
+
+                    $frequency = $this->input('contribution_frequency');
+                    $expected = match ($frequency) {
+                        'Daily' => $plan->daily_amount,
+                        'Weekly' => $plan->weekly_amount,
+                        'Monthly' => $plan->monthly_amount,
+                        default => null,
+                    };
+
+                    if ($expected === null) {
+                        return;
+                    }
+
+                    if ($plan->is_flexible) {
+                        if ((float) $value < (float) $expected) {
+                            $fail("The contribution amount must be at least {$expected} for this plan.");
+                        }
+                    } elseif ((float) $value !== (float) $expected) {
+                        $fail("This plan requires exactly {$expected} for the selected frequency.");
+                    }
+                },
+            ],
             'payment_method' => ['required', 'string', 'max:255'],
 
             // Step 5 — Confirmation

@@ -2,7 +2,21 @@ import { ArrowRight, MapPin, MessageCircle, Phone } from "lucide-react";
 import { Eyebrow } from "../section";
 import { Button } from "@/components/ui/button";
 
-export default function ContactCTA() {
+type Props = {
+  content?: {
+    eyebrow?: string;
+    title?: string;
+    titleAccent?: string;
+    phone?: string;
+    whatsapp?: string;
+    ctaLabel?: string;
+  };
+};
+
+export default function ContactCTA({ content = {} }: Props) {
+  const phone = content.phone ?? "+237 6 55 00 00 00";
+  const whatsapp = content.whatsapp ?? phone;
+
   return (
     <section className="py-24">
       <div className="container-x">
@@ -17,21 +31,22 @@ export default function ContactCTA() {
           <div className="relative grid gap-12 lg:grid-cols-2 items-center">
             <div>
               <Eyebrow className="border-white/20 bg-white/5 text-white">
-                Ready when you are
+                {content.eyebrow ?? "Ready when you are"}
               </Eyebrow>
               <h2 className="mt-4 font-display text-4xl md:text-5xl font-semibold leading-[1.05] tracking-tight text-white">
-                Talk to an advisor.{" "}
-                <span className="italic text-gradient-gold">Own your first plot.</span>
+                {content.title ?? "Talk to an advisor."}{" "}
+                <span className="italic text-gradient-gold">
+                  {content.titleAccent ?? "Own your first plot."}
+                </span>
               </h2>
               <p className="mt-4 text-white/70 max-w-lg">
-                Book a 30-minute consultation. We'll walk you through eligibility,
-                available inventory and the best plan for your goals.
+                Book a 30-minute consultation. We'll walk you through eligibility, available inventory and the best plan for your goals.
               </p>
               <div className="mt-8 space-y-3">
                 {[
                   { icon: MapPin, t: "Bonapriso HQ · Douala, Cameroon" },
-                  { icon: Phone, t: "+237 6 55 00 00 00" },
-                  { icon: MessageCircle, t: "WhatsApp available 8am – 8pm" },
+                  { icon: Phone, t: phone },
+                  { icon: MessageCircle, t: `WhatsApp: ${whatsapp}` },
                 ].map((r) => (
                   <div key={r.t} className="flex items-center gap-3 text-white/80">
                     <span className="grid h-9 w-9 place-items-center rounded-full bg-white/10 border border-white/15">
@@ -43,40 +58,21 @@ export default function ContactCTA() {
               </div>
             </div>
 
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="glass rounded-3xl p-6 md:p-8 space-y-4"
-            >
+            <form onSubmit={(e) => e.preventDefault()} className="glass rounded-3xl p-6 md:p-8 space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
-                <input
-                  placeholder="Full name"
-                  className="w-full rounded-xl bg-white/10 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-white/50 outline-none focus:border-gold min-w-0"
-                />
-                <input
-                  placeholder="Phone / WhatsApp"
-                  className="w-full rounded-xl bg-white/10 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-white/50 outline-none focus:border-gold min-w-0"
-                />
+                <input placeholder="Full name" className="w-full rounded-xl bg-white/10 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-white/50 outline-none focus:border-gold min-w-0" />
+                <input placeholder="Phone / WhatsApp" className="w-full rounded-xl bg-white/10 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-white/50 outline-none focus:border-gold min-w-0" />
               </div>
-              <input
-                placeholder="Email address"
-                className="w-full rounded-xl bg-white/10 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-white/50 outline-none focus:border-gold"
-              />
+              <input placeholder="Email address" className="w-full rounded-xl bg-white/10 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-white/50 outline-none focus:border-gold" />
               <select className="w-full rounded-xl bg-white/10 border border-white/15 px-4 py-3 text-sm text-white outline-none focus:border-gold">
                 <option className="text-navy">I'm interested in…</option>
                 <option className="text-navy">Land Access Club membership</option>
                 <option className="text-navy">Buying a specific property</option>
                 <option className="text-navy">Investment advisory</option>
               </select>
-              <textarea
-                rows={4}
-                placeholder="Tell us about your goals…"
-                className="w-full rounded-xl bg-white/10 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-white/50 outline-none focus:border-gold resize-none"
-              />
-              <Button
-                type="submit"
-                className="w-full bg-gradient-gold text-navy hover:opacity-95 h-12 rounded-xl font-semibold"
-              >
-                Book my consultation <ArrowRight className="h-4 w-4" />
+              <textarea rows={4} placeholder="Tell us about your goals…" className="w-full rounded-xl bg-white/10 border border-white/15 px-4 py-3 text-sm text-white placeholder:text-white/50 outline-none focus:border-gold resize-none" />
+              <Button type="submit" className="w-full bg-gradient-gold text-navy hover:opacity-95 h-12 rounded-xl font-semibold">
+                {content.ctaLabel ?? "Book my consultation"} <ArrowRight className="h-4 w-4" />
               </Button>
             </form>
           </div>

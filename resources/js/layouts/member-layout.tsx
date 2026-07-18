@@ -33,8 +33,10 @@ import {
   PanelLeft,
   PanelLeftClose,
   Globe,
+  ChevronsUpDown,
 } from "lucide-react";
 import AppLogoIcon from "@/components/app-logo-icon";
+import { MemberMenuContent } from "@/components/member/MemberMenuContent";
 
 interface NotificationItem {
   id: string | number;
@@ -73,6 +75,7 @@ interface PageProps {
 const nav = [
   { href: "/member", key: "overview", icon: LayoutDashboard },
   { href: "/member/contributions", key: "contributions", icon: Wallet },
+  { href: "/member/plans", key: "active-plan", icon: Wallet },
   { href: "/member/property", key: "property", icon: Landmark },
   { href: "/member/documents", key: "documents", icon: FileText },
   { href: "/member/notifications", key: "notifications", icon: Bell },
@@ -119,8 +122,12 @@ export function MemberLayout({ children }: PropsWithChildren) {
   const sidebarWidth = collapsed ? "lg:w-20" : "lg:w-72";
   const mainOffset = collapsed ? "lg:pl-20" : "lg:pl-72";
 
+  const markRead = (id: string | number) => {
+    router.post(`/member/notifications/${id}/read`, {}, { preserveScroll: true, preserveState: true });
+  };
+
   function handleLogout() {
-    router.post("member./logout");
+    router.post("/logout");
   }
 
   return (
@@ -176,26 +183,18 @@ export function MemberLayout({ children }: PropsWithChildren) {
           })}
         </nav>
 
-        <div className={`absolute inset-x-3 bottom-4 rounded-2xl bg-sidebar-accent/60 p-4 transition-all ${collapsed ? "lg:p-2 lg:bottom-3" : ""}`}>
-          <div className={`flex items-center gap-3 ${collapsed ? "lg:justify-center" : ""}`}>
-            <Avatar className="h-10 w-10 shrink-0">
-              <AvatarImage src={user?.avatar} />
-              <AvatarFallback>{user?.name?.slice(0, 2).toUpperCase() ?? "M"}</AvatarFallback>
-            </Avatar>
-            <div className={`min-w-0 overflow-hidden transition-all ${collapsed ? "lg:w-0 lg:opacity-0" : "lg:w-auto lg:opacity-100"}`}>
-              <div className="truncate text-sm font-semibold">{user?.name ?? t("member.layout.defaultMemberName")}</div>
-              <div className="truncate text-xs text-white/60">
-                {user?.member_code ?? t("member.layout.defaultMemberCode")} · {user?.plan ?? member?.plan ?? t("member.dashboard.noPlanSelected")}
-              </div>
-            </div>
-            <button
-              onClick={handleLogout}
-              className={`ml-auto text-white/70 hover:text-white ${collapsed ? "lg:hidden" : ""}`}
-              aria-label={t("member.layout.logout")}
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
+        <div
+          className={`absolute inset-x-3 bottom-4 transition-all ${
+            collapsed ? "lg:bottom-3" : ""
+          }`}
+        >
+          <MemberMenuContent
+            user={user}
+            member={member}
+            collapsed={collapsed}
+            t={t}
+            handleLogout={handleLogout}
+          />
         </div>
       </aside>
 
@@ -230,7 +229,7 @@ export function MemberLayout({ children }: PropsWithChildren) {
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="relative">
                     <Bell className="h-4 w-4" />
-                    {unreadCount >= 0 && (
+                    {unreadCount > 0 && (
                         <span className="absolute right-1.5 top-1.5 flex h-2 w-2">
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rocheli-gold opacity-75" />
                         <span className="relative inline-flex h-2 w-2 rounded-full bg-rocheli-gold" />
@@ -241,7 +240,7 @@ export function MemberLayout({ children }: PropsWithChildren) {
                 <DropdownMenuContent align="end" className="w-80">
                     <DropdownMenuLabel className="flex items-center justify-between text-sm font-semibold">
                     {t("member.layout.notificationsDropdown.title")}
-                    {unreadCount >= 0 && (
+                    {unreadCount > 0 && (
                         <Badge variant="secondary" className="text-[10px]">{unreadCount}</Badge>
                     )}
                     </DropdownMenuLabel>
@@ -254,7 +253,11 @@ export function MemberLayout({ children }: PropsWithChildren) {
                     ) : (
                     <div className="max-h-80 overflow-y-auto">
                         {notifications.slice(0, 5).map((n) => (
-                        <DropdownMenuItem key={n.id} className="flex items-start gap-3 whitespace-normal py-2.5">
+                        <DropdownMenuItem
+                          key={n.id}
+                          onClick={() => !n.read_at && markRead(n.id)}
+                          className="flex items-start gap-3 whitespace-normal py-2.5"
+                        >
                             <span
                             className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
                                 n.tone === "success" ? "bg-emerald-500" : n.tone === "gold" ? "bg-rocheli-gold" : "bg-rocheli-blue"
@@ -278,7 +281,7 @@ export function MemberLayout({ children }: PropsWithChildren) {
                 </DropdownMenuContent>
               </DropdownMenu>
               <Badge className="hidden bg-rocheli-blue/10 text-rocheli-blue sm:inline-flex">
-                {user?.plan ?? member?.plan ?? t("member.dashboard.noPlanSelected")} {user?.plan ? t("member.dashboard.planSuffix") : ""}
+                {user?.plan ?? member?.plan ?? t("member.dashboard.noPlanSelected")}
               </Badge>
               <Avatar className="h-9 w-9">
                 <AvatarImage src={user?.avatar} />

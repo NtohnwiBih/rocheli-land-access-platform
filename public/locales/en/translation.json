@@ -18,6 +18,21 @@
         "newHere": "New here?",
         "createAccount": "Create an account"
     },
+    "adminLogin": {
+        "backToSite": "Back to site",
+        "contentStudio": "Content studio",
+        "secureArea": "Secure area",
+        "title": "Sign in to your studio",
+        "subtitle": "Manage properties, articles, plans, and members from one place.",
+        "username": "Username",
+        "usernamePlaceholder": "admin@example.com",
+        "password": "Password",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password",
+        "signingIn": "Signing in…",
+        "signIn": "Sign in",
+        "footer": "Rocheli Real Properties · Content studio"
+    },
     "register": {
         "badge": "Onboarding",
         "title": "Join the Land Access Club",
@@ -107,7 +122,10 @@
             "paymentMomo": "MTN Mobile Money",
             "paymentOrange": "Orange Money",
             "paymentBank": "Bank Transfer",
-            "paymentCash": "Cash Deposit"
+            "paymentCash": "Cash Deposit",
+            "amountFixedNote": "Fixed by your plan: {{amount}} per {{frequency}}.",
+            "amountMinimumNote": "Minimum: {{amount}} per {{frequency}}. You may contribute more.",
+            "frequencyPeriod": "period"
         },
 
         "step5": {
@@ -154,7 +172,9 @@
             "amountInvalid": "Enter a valid amount",
             "paymentMethodRequired": "Please select a payment method",
             "agreementsRequired": "Please accept all agreements to continue",
-            "signatureRequired": "Signature is required"
+            "signatureRequired": "Signature is required",
+            "amountBelowMinimum": "Amount must be at least {{min}} for this plan",
+            "amountMismatch": "This plan requires {{expected}} for the selected frequency"
         }
     },
     "verify": {
@@ -255,16 +275,17 @@
     "member": {
         "layout": {
             "nav": {
-            "overview": "Overview",
-            "contributions": "Contributions",
-            "property": "My Property",
-            "documents": "Documents",
-            "notifications": "Notifications",
-            "map": "Property Map",
-            "calculator": "Calculator",
-            "referrals": "Referrals",
-            "profile": "Profile",
-            "support": "Support"
+                "overview": "Overview",
+                "contributions": "Contributions",
+                "active-plan": "Subscription",
+                "property": "My Property",
+                "documents": "Documents",
+                "notifications": "Notifications",
+                "map": "Property Map",
+                "calculator": "Calculator",
+                "referrals": "Referrals",
+                "profile": "Profile",
+                "support": "Support"
             },
             "search": "Search anything...",
             "logout": "Log out",
@@ -277,6 +298,7 @@
             "toggleTheme": "Toggle theme",
             "defaultMemberName": "Member",
             "defaultMemberCode": "—",
+            "setting": "Settings",
             "notificationsDropdown": {
                 "title": "Notifications",
                 "empty": "You're all caught up",
@@ -321,6 +343,135 @@
             "notificationsTitle": "Notifications",
             "paid": "Paid",
             "scheduled": "Scheduled"
+        }
+    },
+    "calculator": {
+        "title": "Investment calculator",
+        "subtitle": "Project your land ownership journey.",
+        "syncedWith": "Synced with your {{plan}}",
+        "exploringScenario": "Exploring a scenario",
+        "planTarget": "Plan target",
+        "contributedSoFar": "Contributed so far",
+        "paying": "Paying",
+        "estTimeToCompletion": "Est. time to completion",
+        "complete": "Complete",
+        "yearSuffix_one": "yr",
+        "yearSuffix_other": "yrs",
+        "noPlanNotice": "You don't have an active plan yet, so this calculator is running in exploration mode with example numbers.",
+        "scenario": "Scenario",
+        "resetToMyPlan": "Reset to my plan",
+        "monthlyEquivalent": "Monthly equivalent (FCFA)",
+        "duration": "Duration: {{years}} years",
+        "projectedFutureValue": "Projected future value",
+        "projectedSavings": "Projected savings",
+        "estimatedLandSize": "Estimated land size",
+        "growthEst": "Growth (est.)",
+        "suggestedLocations": "Suggested locations",
+        "noLocationsAvailable": "No locations available yet.",
+        "findMatchingPlots": "Find matching plots",
+        "savedLegend": "Saved",
+        "projectedValueLegend": "Projected value",
+        "sqm": "sqm",
+        "perYear": "%/yr"
+    },
+    "plans": {
+        "title": "My Projects",
+        "subtitle": "Manage your land ownership plans, side by side.",
+        "addProject": "Add project",
+        "primaryBadge": "Primary",
+        "noProjects": "You don't have any projects yet.",
+        "startFirst": "Start your first project",
+        "progressLabel": "{{pct}}% of target",
+        "contributedOf": "{{contributed}} of {{target}}",
+        "payingLabel": "Paying {{amount}} / {{frequency}}",
+        "subscribedOn": "Subscribed {{date}}",
+        "viewContributions": "View contributions",
+        "newProjectTitle": "Start a new project",
+        "newProjectDesc": "Choose a plan and tell us about this project. It will be reviewed like any new application.",
+        "labelField": "Project name (optional)",
+        "labelPlaceholder": "e.g. Retirement home, Family land",
+        "chooseGoal": "What's this project for?",
+        "chooseLocations": "Preferred locations",
+        "chooseLandType": "Land type",
+        "chooseFrequency": "Contribution frequency",
+        "chooseAmount": "Amount",
+        "choosePaymentMethod": "Payment method",
+        "cancel": "Cancel",
+        "submitProject": "Add project",
+        "submitting": "Submitting..."
+    },
+    "admin": {
+        "adminNav": {
+            "dashboard": "Dashboard",
+            "content": "Site content",
+            "contentHome": "Home",
+            "contentAbout": "About",
+            "contentFaq": "FAQ",
+            "contentFooter": "Footer",
+            "properties": "Properties",
+            "articles": "Articles",
+            "plans": "Plans",
+            "members": "Members",
+            "contacts": "Contacts"
+        },
+        "adminLayout": {
+            "backToSite": "Back to site",
+            "expandSidebar": "Expand sidebar",
+            "collapseSidebar": "Collapse sidebar",
+            "close": "Close",
+            "adminFallback": "Admin",
+            "administrator": "Administrator",
+            "brandName": "Rocheli CMS",
+            "searchPlaceholder": "Search…",
+            "changeLanguage": "Change language",
+            "english": "English",
+            "french": "Français",
+            "livePreview": "Live preview",
+            "toggleTheme": "Toggle theme",
+            "notifications": "Notifications",
+            "noNotifications": "No notifications yet",
+            "viewAllContacts": "View all contacts",
+            "resetConfirm": "Reset all CMS data to defaults? This cannot be undone."
+        },
+        "dashboard": {
+            "breadcrumb": "Dashboard",
+            "title": "Dashboard",
+            "overview": "Overview",
+            "welcomeBack": "Welcome back",
+            "subtitle": "A single studio for every piece of content, contribution plan, and lead across your Rocheli site.",
+            "contactInbox": "Contact inbox",
+            "new": "new",
+            "stats": {
+            "properties": "Properties",
+            "propertiesHint": "{{count}} available",
+            "articles": "Articles",
+            "articlesHint": "Published to /resources",
+            "plans": "Plans",
+            "plansHint": "{{count}} popular",
+            "members": "Members",
+            "membersHint": "{{count}} active"
+            },
+            "recentMessages": {
+            "title": "Recent messages",
+            "subtitle": "Latest submissions from the public contact form",
+            "viewInbox": "View inbox",
+            "empty": "No contact messages yet."
+            },
+            "newMembers": {
+            "title": "New members",
+            "subtitle": "Land Access Club signups",
+            "empty": "No members yet.",
+            "unnamed": "Unnamed"
+            },
+            "tips": {
+            "label": "Studio tips",
+            "title": "Everything you edit reflects instantly across the public site.",
+            "tip1": "Changes here are saved directly to the database — visible to every visitor.",
+            "tip2": "Use {{siteContent}} to change the homepage hero and company details.",
+            "siteContent": "Site content",
+            "tip3": "New properties and articles appear in the public listings instantly.",
+            "editButton": "Edit site content"
+            }
         }
     }
 }
