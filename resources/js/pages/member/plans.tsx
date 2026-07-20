@@ -1,4 +1,5 @@
-import { Head, useForm, usePage } from "@inertiajs/react";
+import { Head, useForm, usePage, router } from "@inertiajs/react";
+import { useEcho } from '@laravel/echo-react';
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/custom-dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Plus, MapPin, Landmark, Star, CheckCircle2, ArrowLeft, ArrowRight, BadgeCheck } from "lucide-react";
+import { Plus, MapPin, Landmark, Star, CheckCircle2, ArrowLeft, ArrowRight, BadgeCheck, PauseCircle } from "lucide-react";
 
 type Subscription = {
   id: number;
@@ -30,7 +31,7 @@ type Subscription = {
   contribution_amount: number;
   goal: string;
   land_type: string;
-  status: "pending" | "under_review" | "approved" | "rejected";
+  status: "active" | "inactive" | "completed" | "suspended";
   is_primary: boolean;
   is_completed: boolean;
   completed_at: string | null;
@@ -74,16 +75,45 @@ const LAND_TYPES = ["Land", "Residential", "Commercial", "Agricultural", "Undeci
 const GOALS = ["Build a home", "Invest in land", "Buy for family", "Business project", "Other"];
 
 const statusColor: Record<Subscription["status"], string> = {
-  approved: "bg-emerald-500 text-white",
-  rejected: "bg-destructive text-destructive-foreground",
-  under_review: "bg-rocheli-blue text-white",
-  pending: "bg-muted text-muted-foreground",
+  active: "bg-emerald-500 text-white",
+  completed: "bg-emerald-600 text-white",
+  inactive: "bg-amber-500 text-white",
+  suspended: "bg-muted text-muted-foreground",
+};
+
+const statusLabel: Record<Subscription["status"], string> = {
+  active: "Active",
+  completed: "Fully funded",
+  inactive: "Inactive",
+  suspended: "Suspended",
 };
 
 export default function PlansPage() {
   const { t, i18n } = useTranslation();
   const { props } = usePage<PageProps>();
-  const { subscriptions, available_plans, cities } = props;
+  const { available_plans, cities } = props;
+
+  // Local state so a realtime update can patch the list without a full reload
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>(props.subscriptions);
+
+  useEffect(() => {
+    setSubscriptions(props.subscriptions);
+  }, [props.subscriptions]);
+
+  const memberId = (props as any).auth?.user?.member?.id as number | undefined;
+
+  useEcho(
+    memberId ? `member.${memberId}` : '',
+    '.ContributionStatusUpdated',
+    () => {
+      // A contribution's status changed — plan totals/progress may have
+      // shifted (e.g. approval increases total_contributed), so refresh
+      // just the subscriptions prop rather than the whole page.
+      router.reload({ only: ['subscriptions'] });
+    },
+    [memberId],
+    'private',
+  );
 
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
@@ -107,6 +137,20 @@ export default function PlansPage() {
     contribution_amount: "",
     payment_method: "",
   });
+
+  const { post: postSuspend, processing: suspending } = useForm({});
+
+  const suspendPlan = (id: number) => {
+    postSuspend(`/member/plans/${id}/suspend`, { preserveScroll: true });
+  };
+
+  // Members can hold at most 5 active/inactive projects at once. If they're at
+  // the cap, offer inline suspension of an inactive project instead of the wizard.
+  const activeOrInactiveCount = subscriptions.filter(
+    (s) => s.status === "active" || s.status === "inactive"
+  ).length;
+  const atCap = activeOrInactiveCount >= 5;
+  const inactiveSubs = subscriptions.filter((s) => s.status === "inactive");
 
   const selectedPlan = available_plans.find((p) => p.id === data.plan_id);
 
@@ -226,6 +270,55 @@ export default function PlansPage() {
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-2xl">
+              {atCap ? (
+                <>
+                  <DialogHeader>
+                    <DialogTitle>You've reached your project limit</DialogTitle>
+                    <DialogDescription>
+                      You can hold at most 5 active or inactive projects at a time. Suspend one below to free up
+                      a slot, then you can start a new project right away.
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <DialogBody>
+                    <div className="space-y-3 px-6 py-4">
+                      {inactiveSubs.length === 0 ? (
+                        <div className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+                          You don't have any inactive projects available to suspend. Contact support if you need
+                          to add another project.
+                        </div>
+                      ) : (
+                        inactiveSubs.map((s) => (
+                          <div
+                            key={s.id}
+                            className="flex items-center justify-between rounded-xl border border-border p-3"
+                          >
+                            <div>
+                              <div className="text-sm font-semibold">{s.label}</div>
+                              <div className="text-xs text-muted-foreground">{s.plan_name} · Inactive</div>
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={suspending}
+                              onClick={() => suspendPlan(s.id)}
+                            >
+                              <PauseCircle className="mr-1 h-3.5 w-3.5" /> Suspend
+                            </Button>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </DialogBody>
+
+                  <DialogFooter>
+                    <Button variant="ghost" onClick={closeDialog}>
+                      {t("plans.cancel")}
+                    </Button>
+                  </DialogFooter>
+                </>
+              ) : (
+                <>
               <DialogHeader>
                 <DialogTitle>{t("plans.newProjectTitle")}</DialogTitle>
                 <DialogDescription>{t("plans.newProjectDesc")}</DialogDescription>
@@ -253,7 +346,7 @@ export default function PlansPage() {
                 </div>
               </DialogHeader>
 
-              <DialogBody>
+               <DialogBody>
                 <div className="min-h-0 flex-1 overflow-y-auto px-6">
                   <div className="space-y-4 py-4">
                     {step === 0 && (
@@ -413,6 +506,8 @@ export default function PlansPage() {
                   </Button>
                 )}
               </DialogFooter>
+                </>
+              )}
             </DialogContent>
           </Dialog>
         </div>
@@ -428,7 +523,7 @@ export default function PlansPage() {
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {subscriptions.map((s) => (
-              <div key={s.id} className={`flex flex-col rounded-3xl bg-card p-6 shadow-card ${s.is_completed ? "opacity-90" : ""}`}>
+              <div key={s.id} className={`flex flex-col rounded-3xl bg-card p-6 shadow-card ${s.status === "completed" || s.status === "suspended" ? "opacity-90" : ""}`}>
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <div className="flex items-center gap-1.5">
@@ -437,13 +532,11 @@ export default function PlansPage() {
                     </div>
                     <span className="text-xs text-muted-foreground">{s.plan_name}</span>
                   </div>
-                  <Badge className={s.is_completed ? "bg-emerald-600 text-white" : statusColor[s.status]}>
-                    {s.is_completed ? (
+                  <Badge className={statusColor[s.status]}>
+                    {s.status === "completed" ? (
                       <span className="flex items-center gap-1"><BadgeCheck className="h-3 w-3" /> Fully funded</span>
-                    ) : s.status === "under_review" ? (
-                      "Under review"
                     ) : (
-                      s.status.charAt(0).toUpperCase() + s.status.slice(1)
+                      statusLabel[s.status]
                     )}
                   </Badge>
                 </div>
@@ -458,12 +551,12 @@ export default function PlansPage() {
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-muted">
                     <div
-                      className={`h-full rounded-full ${s.is_completed ? "bg-emerald-500" : "bg-gradient-brand"}`}
+                      className={`h-full rounded-full ${s.status === "completed" ? "bg-emerald-500" : "bg-gradient-brand"}`}
                       style={{ width: `${s.progress_pct}%` }}
                     />
                   </div>
                   <div className="mt-1.5 text-xs text-muted-foreground">
-                    {s.is_completed
+                    {s.status === "completed"
                       ? `Completed ${s.completed_at}`
                       : t("plans.contributedOf", { contributed: formatXAF(s.total_contributed), target: formatXAF(s.target_price) })}
                   </div>
@@ -474,9 +567,22 @@ export default function PlansPage() {
                   <div className="mt-0.5">{t("plans.subscribedOn", { date: s.subscribed_at })}</div>
                 </div>
 
-                <a href={`/member/contributions?project=${s.id}`} className="mt-4 text-sm font-medium text-rocheli-blue hover:underline">
-                  {t("plans.viewContributions")}
-                </a>
+                <div className="mt-4 flex items-center justify-between">
+                  <a href={`/member/contributions?project=${s.id}`} className="text-sm font-medium text-rocheli-blue hover:underline">
+                    {t("plans.viewContributions")}
+                  </a>
+
+                  {s.status === "inactive" && (
+                    <button
+                      type="button"
+                      disabled={suspending}
+                      onClick={() => suspendPlan(s.id)}
+                      className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-destructive"
+                    >
+                      <PauseCircle className="h-3.5 w-3.5" /> Suspend
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>

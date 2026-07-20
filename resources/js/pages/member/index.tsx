@@ -89,6 +89,8 @@ export default function DashboardOverview() {
   const recentContributions = props.recent_contributions;
   const { subscriptions, selected_plan_id } = props;
 
+  console.log("Dashboard subscriptions", subscriptions);
+
   const switchProject = (id: number) => {
     router.get("/member", { plan: id }, { preserveScroll: true, preserveState: true });
   };

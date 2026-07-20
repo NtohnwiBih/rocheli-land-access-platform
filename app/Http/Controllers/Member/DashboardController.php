@@ -68,7 +68,9 @@ class DashboardController extends Controller
                     'is_completed' => $mp->isCompleted(),
                     'total_contributed' => $total,
                     'target_price' => $target,
-                    'progress_pct' => $target > 0 ? min(round(($total / $target) * 100), 100) : 0,
+                    'progress_pct' => $target > 0
+                        ? min(round(($total / $target) * 100, 2), 100)
+                        : 0,
                 ];
             }),
             'selected_plan_id' => $selected?->id,

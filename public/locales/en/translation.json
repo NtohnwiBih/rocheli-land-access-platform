@@ -1,4 +1,22 @@
 {
+    "nav": {
+        "home": "Home",
+        "properties": "Properties",
+        "landClub": "Land Access Club",
+        "services": "Services",
+        "about": "About",
+        "resources": "Resources",
+        "contact": "Contact",
+        "becomeMember": "Become a Member",
+        "menu": "Menu",
+        "toggleTheme": "Toggle theme",
+        "openMenu": "Open menu",
+        "light": "Light",
+        "dark": "Dark",
+        "english": "English",
+        "french": "Français",
+        "admin": "Admin"
+    },
     "login":{
         "memberPortal": "Member Portal",
         "welcomeBack": "Welcome back.",
@@ -49,7 +67,6 @@
         "continue": "Continue",
         "submit": "Submit & continue",
         "submitting": "Submitting…",
-
         "step1": {
             "fullName": "Full name",
             "email": "Email",
@@ -65,10 +82,11 @@
             "country": "Country of residence",
             "city": "City",
             "cityPlaceholder": "Select...",
+            "preferredLanguage": "Preferred language for emails",
+            "preferredLanguageHint": "We'll send account and payment notifications in this language.",
             "password": "Password",
             "confirmPassword": "Confirm password"
         },
-
         "step2": {
             "idType": "ID type",
             "idTypePlaceholder": "Select...",
@@ -78,6 +96,8 @@
             "idNumber": "ID number",
             "uploadLabel": "Upload ID document (PNG/JPG/PDF, max 5MB)",
             "uploadPrompt": "Click to upload",
+            "uploadFrontLabel": "Upload front of ID (PNG/JPG/PDF, max 5MB)",
+            "uploadBackLabel": "Upload back of ID (PNG/JPG/PDF, max 5MB)",
             "kinTitle": "Next of kin (optional)",
             "kinName": "Full name",
             "kinRelationship": "Select relationship",
@@ -89,7 +109,6 @@
             "kinRelationshipOther": "Other",
             "kinPhone": "Phone"
         },
-
         "step3": {
             "goalLabel": "Why are you joining?",
             "goalBuildHome": "Build a home",
@@ -106,7 +125,6 @@
             "landTypeAgricultural": "Agricultural",
             "landTypeUndecided": "Undecided"
         },
-
         "step4": {
             "planTarget": "Target:",
             "planPopular": "Popular",
@@ -127,7 +145,6 @@
             "amountMinimumNote": "Minimum: {{amount}} per {{frequency}}. You may contribute more.",
             "frequencyPeriod": "period"
         },
-
         "step5": {
             "readyTitle": "You're all set!",
             "readyDesc": "Confirm the details below and submit to activate your membership.",
@@ -139,7 +156,6 @@
             },
             "signature": "Digital signature — full name"
         },
-
         "cities": {
             "yaounde": "Yaoundé",
             "douala": "Douala",
@@ -148,6 +164,11 @@
             "bamenda": "Bamenda",
             "bafoussam": "Bafoussam",
             "kribi": "Kribi"
+        },
+        "success": {
+            "title": "Registration successful!",
+            "checkEmail": "We've sent a verification link to your email address. Please check your inbox (and spam folder) and click the link to verify your account.",
+            "gotIt": "Got it"
         },
         "errors": {
             "fullNameRequired": "Full name is required",
@@ -164,6 +185,7 @@
             "idTypeRequired": "Please select an ID type",
             "idNumberRequired": "ID number is required",
             "idDocumentRequired": "Please upload your ID document",
+            "idDocumentBackRequired": "Please upload the back of your ID document",
             "goalRequired": "Please select a goal",
             "landTypeRequired": "Please select a land type",
             "planRequired": "Please select a plan",
@@ -280,6 +302,7 @@
                 "active-plan": "Subscription",
                 "property": "My Property",
                 "documents": "Documents",
+                "legal": "Legal Documents",
                 "notifications": "Notifications",
                 "map": "Property Map",
                 "calculator": "Calculator",
@@ -314,30 +337,34 @@
             "makeContribution": "Make contribution",
             "statement": "Statement",
             "stats": {
-            "walletBalance": "Wallet Balance",
-            "contributionsMade": "Contributions Made",
-            "outstanding": "Outstanding",
-            "plotReserved": "Plot Reserved",
-            "consecutiveMonths": "consecutive months",
-            "forReservedPlot": "for reserved plot"
+                "walletBalance": "Wallet Balance",
+                "contributionsMade": "Contributions Made",
+                "outstanding": "Outstanding",
+                "plotReserved": "Plot Reserved",
+                "consecutiveMonths": "consecutive months",
+                "forReservedPlot": "for reserved plot"
             },
             "savingsJourney": "Savings journey",
             "last8Months": "Last 8 months",
             "propertyStatus": {
-            "approved": "Approved",
-            "underReview": "Under Review",
-            "pending": "Pending Review",
-            "rejected": "Not Approved",
-            "none": "No application",
-            "locations_one": "Preferred location: {{list}}",
-            "locations_other": "Preferred locations: {{list}}",
-            "notSpecified": "Not specified",
-            "approvedNote": "A specific plot has been allocated. Full details are available in {{link}}.",
-            "myPropertyLink": "My Property",
-            "pendingNote": "No specific plot has been allocated yet. Plot allocation becomes available once your application is reviewed and eligibility is met.",
-            "viewProperty": "View property",
-            "viewApplication": "View application",
-            "askAdvisor": "Ask advisor"
+                "approved": "Approved",
+                "underReview": "Under Review",
+                "pending": "Pending Review",
+                "rejected": "Not Approved",
+                "active": "Active",
+                "inactive": "Inactive",
+                "completed": "Completed",
+                "suspended": "Suspended",
+                "none": "No application",
+                "locations_one": "Preferred location: {{list}}",
+                "locations_other": "Preferred locations: {{list}}",
+                "notSpecified": "Not specified",
+                "approvedNote": "A specific plot has been allocated. Full details are available in {{link}}.",
+                "myPropertyLink": "My Property",
+                "pendingNote": "No specific plot has been allocated yet. Plot allocation becomes available once your application is reviewed and eligibility is met.",
+                "viewProperty": "View property",
+                "viewApplication": "View application",
+                "askAdvisor": "Ask advisor"
             },
             "upcomingPayments": "Upcoming payments",
             "notificationsTitle": "Notifications",
@@ -408,8 +435,12 @@
             "contentAbout": "About",
             "contentFaq": "FAQ",
             "contentFooter": "Footer",
+            "categories": "Categories",
             "properties": "Properties",
             "articles": "Articles",
+            "testimonials": "Testimonials",
+            "faqs": "FAQs",
+            "legal": "Legal Documents",
             "plans": "Plans",
             "members": "Members",
             "contacts": "Contacts"
@@ -472,6 +503,13 @@
             "tip3": "New properties and articles appear in the public listings instantly.",
             "editButton": "Edit site content"
             }
+        },
+        "legalDocuments": {
+            "pageTitle": "Legal Documents — Rocheli",
+            "title": "Legal Documents",
+            "subtitle": "The terms and policies governing your membership. Available in English and French.",
+            "viewPdf": "View PDF",
+            "notAvailable": "Not yet available."
         }
     }
 }

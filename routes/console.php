@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command(SendPaymentReminders::class)->daily();
+Schedule::command('plans:mark-inactive')->daily();

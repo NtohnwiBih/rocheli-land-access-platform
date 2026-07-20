@@ -45,7 +45,11 @@ class HandleInertiaRequests extends Middleware
                 'user' => $user ? [
                     'name' => $user->name,
                     'email' => $user->email,
+                    'role' => $request->user()->role,
                     'member_code' => $member?->id ? 'RC-' . str_pad($member->id, 5, '0', STR_PAD_LEFT) : null,
+                    'member' => $request->user()->member
+                        ? ['id' => $request->user()->member->id]
+                        : null,
                     'plan' => $primaryPlan?->plan->name,
                     'avatar' => null,
                 ] : null,
@@ -60,6 +64,9 @@ class HandleInertiaRequests extends Middleware
                     'created_at' => $n->created_at->diffForHumans(),
                 ])
                 : [],
+            'flash' => [
+                'registered' => fn () => $request->session()->get('registered'),
+            ],
         ];
     }
 }

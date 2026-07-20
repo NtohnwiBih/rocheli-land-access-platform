@@ -1,52 +1,49 @@
-import { useEffect, useState } from 'react';
 import { Globe, Moon, Sun } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useLanguageTheme } from '@/hooks/use-language-theme';
+import { cn } from '@/lib/utils';
 
-type Lang = 'en' | 'fr';
+type Props = {
+  /** Pass true on pages with a transparent/dark hero (e.g. home) so the
+   *  buttons render in light text before the header goes solid. */
+  solid?: boolean;
+  /** Whether language changes should trigger an Inertia reload to refetch
+   *  server-localized content. Nav needs this; auth screens usually don't. */
+  reloadOnLanguageChange?: boolean;
+  className?: string;
+};
 
-export function LanguageThemeToggle() {
-    const [dark, setDark] = useState(false);
-    const { i18n } = useTranslation();
+export function LanguageThemeToggle({ solid = true, reloadOnLanguageChange = false, className }: Props) {
+  const { lang, dark, toggleLanguage, toggleDark, switching } = useLanguageTheme({
+    reloadOnLanguageChange,
+  });
 
-    // Derive display language directly from i18n's current language,
-    // so there's a single source of truth instead of duplicated state.
-    const lang = (i18n.language?.slice(0, 2).toLowerCase() as Lang) || 'en';
-
-    useEffect(() => {
-        document.documentElement.classList.toggle('dark', dark);
-    }, [dark]);
-
-    // On mount, restore the previously chosen language from sessionStorage
-    useEffect(() => {
-        const storedLang = (sessionStorage.getItem('language') as Lang) || 'fr';
-        if (storedLang !== i18n.language) {
-            i18n.changeLanguage(storedLang);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    const toggleLanguage = () => {
-        const nextLang: Lang = lang === 'en' ? 'fr' : 'en';
-        i18n.changeLanguage(nextLang);
-        sessionStorage.setItem('language', nextLang);
-    };
-
-    return (
-        <div className="flex items-center gap-2">
-            <button
-                onClick={toggleLanguage}
-                className="flex items-center gap-1.5 rounded-full border border-border/70 bg-background/80 px-3 py-1.5 text-xs font-semibold text-muted-foreground backdrop-blur transition hover:border-primary/40 hover:text-foreground"
-            >
-                <Globe className="h-3.5 w-3.5" />
-                {lang.toUpperCase()}
-            </button>
-            <button
-                onClick={() => setDark(!dark)}
-                className="grid h-9 w-9 place-items-center rounded-full border border-border/70 bg-background/80 text-muted-foreground backdrop-blur transition hover:border-primary/40 hover:text-foreground"
-                aria-label="Toggle theme"
-            >
-                {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
-        </div>
-    );
+  return (
+    <div className={cn('flex items-center gap-2', className)}>
+      <button
+        onClick={toggleLanguage}
+        disabled={switching}
+        className={cn(
+          'flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold backdrop-blur transition disabled:opacity-60',
+          solid
+            ? 'border-border/70 bg-background/80 text-muted-foreground hover:border-primary/40 hover:text-foreground'
+            : 'border-white/30 bg-white/10 text-white/90 hover:border-white/50 hover:text-white'
+        )}
+      >
+        <Globe className="h-3.5 w-3.5" />
+        {switching ? '…' : lang.toUpperCase()}
+      </button>
+      <button
+        onClick={toggleDark}
+        className={cn(
+          'grid h-9 w-9 place-items-center rounded-full border backdrop-blur transition',
+          solid
+            ? 'border-border/70 bg-background/80 text-muted-foreground hover:border-primary/40 hover:text-foreground'
+            : 'border-white/30 bg-white/10 text-white/90 hover:border-white/50 hover:text-white'
+        )}
+        aria-label="Toggle theme"
+      >
+        {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      </button>
+    </div>
+  );
 }

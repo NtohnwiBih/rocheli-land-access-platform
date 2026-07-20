@@ -35,9 +35,14 @@ import {
   Check,
   ChevronsDown,
   ChevronDown,
+  Quote,
+  HelpCircle,
+  Tag,
+  ScrollText,
 } from "lucide-react";
 import AppLogoIcon from "@/components/app-logo-icon";
 import { AdminMenuContent } from "@/components/admin/AdminMenuContent";
+import { pageSchemas } from "@/components/admin/content-schemas";
 
 interface ContactMessage {
   id: string | number;
@@ -45,6 +50,16 @@ interface ContactMessage {
   interest?: string;
   message: string;
   handled: boolean;
+  created_at: string;
+}
+
+interface NotificationItem {
+  id: string;
+  title: string;
+  body: string;
+  tone: string;
+  link: string | null;
+  read_at: string | null;
   created_at: string;
 }
 
@@ -57,6 +72,7 @@ interface PageProps {
       role?: string;
     };
   };
+  notifications?: NotificationItem[];
   contacts?: ContactMessage[];
   [key: string]: unknown;
 }
@@ -81,26 +97,34 @@ export function AdminLayout({ children }: PropsWithChildren) {
   const { t, i18n } = useTranslation();
   const user = props.auth?.user;
   const contacts = props.contacts ?? [];
-  const unread = contacts.filter((c) => !c.handled).length;
+  const notifications = props.notifications ?? [];
+  const unread = notifications.filter((n) => !n.read_at).length;
+
+  const markRead = (id: string) => {
+    router.post(`/rocheli/notifications/${id}/read`, {}, { preserveScroll: true, preserveState: true });
+  };
 
   const nav = [
     { href: "/rocheli", key: "dashboard", label: t("admin.adminNav.dashboard"), icon: LayoutDashboard, exact: true },
     {
-        key: "content",
-        label: t("admin.adminNav.content"),
-        icon: Settings,
-        exact: false,
-        children: [
-        { href: "/rocheli/content/home", key: "content-home", label: t("admin.adminNav.contentHome") },
-        { href: "/rocheli/content/about", key: "content-about", label: t("admin.adminNav.contentAbout") },
-        { href: "/rocheli/content/faq", key: "content-faq", label: t("admin.adminNav.contentFaq") },
-        { href: "/rocheli/content/footer", key: "content-footer", label: t("admin.adminNav.contentFooter") },
-        ],
+      key: "content",
+      label: t("admin.adminNav.content"),
+      icon: Settings,
+      exact: false,
+      children: pageSchemas.map((p) => ({
+        href: `/rocheli/content/${p.key}`,
+        key: `content-${p.key}`,
+        label: p.label,
+      })),
     },
+    { href: "/rocheli/categories", key: "categories", label: t("admin.adminNav.categories"), icon: Tag, exact: false },
     { href: "/rocheli/properties", key: "properties", label: t("admin.adminNav.properties"), icon: Building2, exact: false },
     { href: "/rocheli/articles", key: "articles", label: t("admin.adminNav.articles"), icon: Newspaper, exact: false },
+    { href: "/rocheli/testimonials", key: "testimonials", label: t("admin.adminNav.testimonials"), icon: Quote, exact: false },
+    { href: "/rocheli/faqs", key: "faqs", label: t("admin.adminNav.faqs"), icon: HelpCircle, exact: false },
     { href: "/rocheli/plans", key: "plans", label: t("admin.adminNav.plans"), icon: Wallet, exact: false },
     { href: "/rocheli/members", key: "members", label: t("admin.adminNav.members"), icon: Users, exact: false },
+    { href: "/rocheli/legal", key: "legal", label: t("admin.adminNav.legal"), icon: ScrollText, exact: false },
     { href: "/rocheli/contacts", key: "contacts", label: t("admin.adminNav.contacts"), icon: Mail, exact: false },
   ] as const;
 
@@ -159,18 +183,46 @@ export function AdminLayout({ children }: PropsWithChildren) {
   const active = nav.find((n) => "href" in n && (n.exact ? url === n.href : url.startsWith(n.href)));
 
   function handleLogout() {
-    router.post("admin./logout");
+    router.post(
+      "/logout",
+      {},
+      {
+        onSuccess: () => router.visit("/rocheli/login"),
+      },
+    );
   }
 
   function handleReset() {
-    if (confirm(t("admin.adminLayout.resetConfirm"))) {
-      router.post("admin./rocheli/reset", {}, { preserveScroll: true });
-    }
+      if (confirm(t("admin.adminLayout.resetConfirm"))) {
+        router.post("/rocheli/reset", {}, { preserveScroll: true });
+      }
   }
 
-  const recentContacts = [...contacts]
-    .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
-    .slice(0, 6);
+  function NotificationDot({ tone, read }: { tone: string; read: boolean }) {
+    return (
+      <span
+        className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
+          read
+            ? "bg-muted-foreground/30"
+            : tone === "success"
+            ? "bg-emerald-500"
+            : tone === "gold"
+            ? "bg-rocheli-gold"
+            : "bg-rocheli-blue"
+        }`}
+      />
+    );
+  }
+
+  function NotificationBody({ n }: { n: NotificationItem }) {
+    return (
+      <div className="min-w-0 flex-1">
+        <div className={`text-sm ${n.read_at ? "text-muted-foreground" : "font-semibold"}`}>{n.title}</div>
+        <div className="truncate text-xs text-muted-foreground">{n.body}</div>
+        <div className="mt-0.5 text-[10px] text-muted-foreground/70">{n.created_at}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -182,7 +234,7 @@ export function AdminLayout({ children }: PropsWithChildren) {
       >
         <div className="flex h-16 items-center justify-between border-b border-sidebar-border px-5">
           <Link
-            href="/admin"
+            href="/"
             className={`overflow-hidden transition-all ${collapsed ? "lg:w-0 lg:opacity-0" : "lg:w-auto lg:opacity-100"}`}
           >
             <AppLogoIcon />
@@ -198,6 +250,10 @@ export function AdminLayout({ children }: PropsWithChildren) {
           <button className="lg:hidden" onClick={() => setMobileNavOpen(false)} aria-label={t("admin.adminLayout.close")}>
             <X className="h-5 w-5" />
           </button>
+        </div>
+
+        <div className="px-6 pt-6 pb-2">
+          <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-semibold">Workspace</div>
         </div>
 
         <nav className="flex flex-col gap-1 p-3">
@@ -227,7 +283,11 @@ export function AdminLayout({ children }: PropsWithChildren) {
                             : "text-sidebar-foreground/75 hover:bg-sidebar-accent/60 hover:text-white"
                         }`}
                     >
-                        <n.icon className="h-4 w-4 shrink-0" />
+                        <n.icon className={`h-4 w-4 shrink-0 ${
+                          isGroupActive
+                          ? "text-rocheli-gold"
+                          : "text-sidebar-foreground/75"
+                        }`} />
                         <span
                         className={`flex-1 overflow-hidden text-left transition-all ${
                             collapsed ? "lg:w-0 lg:opacity-0" : "lg:w-auto lg:opacity-100"
@@ -283,7 +343,11 @@ export function AdminLayout({ children }: PropsWithChildren) {
                         : "text-sidebar-foreground/75 hover:bg-sidebar-accent/60 hover:text-white"
                     }`}
                 >
-                    <n.icon className="h-4 w-4 shrink-0" />
+                    <n.icon className={`h-4 w-4 shrink-0 ${
+                      isActive
+                      ? "text-rocheli-gold"
+                      : "text-sidebar-foreground/75"
+                    }`} />
                     <span
                     className={`flex-1 overflow-hidden transition-all ${collapsed ? "lg:w-0 lg:opacity-0" : "lg:w-auto lg:opacity-100"}`}
                     >
@@ -296,6 +360,7 @@ export function AdminLayout({ children }: PropsWithChildren) {
                         {badge}
                     </span>
                     )}
+                    {isActive && <span className={`ml-auto h-1.5 w-1.5 rounded-full bg-rocheli-gold ${collapsed ? "lg:hidden" : ""}`} />}
                 </Link>
                 );
             })}
@@ -439,32 +504,30 @@ export function AdminLayout({ children }: PropsWithChildren) {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
 
-                  {recentContacts.length === 0 ? (
+                  {notifications.length === 0 ? (
                     <div className="px-2 py-6 text-center text-sm text-muted-foreground">
                       {t("admin.adminLayout.noNotifications")}
                     </div>
                   ) : (
                     <div className="max-h-80 overflow-y-auto">
-                      {recentContacts.map((c) => (
-                        <DropdownMenuItem key={c.id} asChild className="whitespace-normal py-2.5">
-                          <Link href="/rocheli/contacts" className="flex items-start gap-3">
-                            <span
-                              className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
-                                c.handled ? "bg-muted-foreground/30" : "bg-rocheli-blue"
-                              }`}
-                            />
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center justify-between gap-2">
-                                <div className="truncate text-sm font-medium">{c.name}</div>
-                                <div className="shrink-0 text-[10px] text-muted-foreground">
-                                  {new Date(c.created_at).toLocaleDateString()}
-                                </div>
-                              </div>
-                              <div className="truncate text-xs text-muted-foreground">
-                                {c.interest || c.message}
-                              </div>
+                      {notifications.slice(0, 8).map((n) => (
+                        <DropdownMenuItem
+                          key={n.id}
+                          onClick={() => !n.read_at && markRead(n.id)}
+                          asChild={!!n.link}
+                          className="flex items-start gap-3 whitespace-normal py-2.5"
+                        >
+                          {n.link ? (
+                            <Link href={n.link} className="flex items-start gap-3">
+                              <NotificationDot tone={n.tone} read={!!n.read_at} />
+                              <NotificationBody n={n} />
+                            </Link>
+                          ) : (
+                            <div className="flex items-start gap-3">
+                              <NotificationDot tone={n.tone} read={!!n.read_at} />
+                              <NotificationBody n={n} />
                             </div>
-                          </Link>
+                          )}
                         </DropdownMenuItem>
                       ))}
                     </div>

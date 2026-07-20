@@ -27,11 +27,19 @@ class StoreMemberRequest extends FormRequest
             'country_of_residence' => ['nullable', 'string', 'max:255'],
             'city' => ['required', 'string', Rule::exists('cities', 'name_en')->where('is_active', true)],
             'password' => ['required', 'confirmed', Password::defaults()],
+            'preferred_locale' => ['required', 'string', 'in:en,fr'],
 
             // Step 2 — Identity verification
             'id_type' => ['required', Rule::in(['NIN', 'Passport', "Driver's License"])],
             'id_number' => ['required', 'string', 'max:100'],
             'id_document' => ['required', 'file', 'mimes:png,jpg,jpeg,pdf', 'max:5120'],
+            'id_document_back' => [
+                Rule::requiredIf(fn () => in_array($this->input('id_type'), ['NIN', 'Driver\'s License'])),
+                'nullable',
+                'file',
+                'mimes:png,jpg,jpeg,pdf',
+                'max:5120',
+            ],
             'kin_name' => ['nullable', 'string', 'max:255'],
             'kin_relationship' => ['nullable', 'string', 'max:100'],
             'kin_phone' => ['nullable', 'string', 'max:30'],

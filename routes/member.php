@@ -7,6 +7,7 @@ use App\Http\Controllers\Member\DashboardController;
 use App\Http\Controllers\Member\MemberPlanController;
 use App\Http\Controllers\Member\NotificationController;
 use App\Http\Controllers\Member\PropertyController;
+use App\Http\Controllers\Member\LegalDocumentController;
 
 Route::prefix('member')
     ->name('member.')
@@ -47,4 +48,10 @@ Route::prefix('member')
        
         Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead'])
             ->name('notifications.read-all');
+
+        Route::post('/plans/{memberPlan}/suspend', [MemberPlanController::class, 'suspend'])
+            ->name('plans.suspend');
+        
+        Route::get('/legal', [LegalDocumentController::class, 'index'])
+            ->name('legal');
     });

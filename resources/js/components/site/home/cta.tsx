@@ -7,6 +7,7 @@ type Props = {
     eyebrow?: string;
     title?: string;
     titleAccent?: string;
+    address?: string;
     phone?: string;
     whatsapp?: string;
     ctaLabel?: string;
@@ -16,6 +17,7 @@ type Props = {
 export default function ContactCTA({ content = {} }: Props) {
   const phone = content.phone ?? "+237 6 55 00 00 00";
   const whatsapp = content.whatsapp ?? phone;
+  const address = content.address;
 
   return (
     <section className="py-24">
@@ -44,7 +46,7 @@ export default function ContactCTA({ content = {} }: Props) {
               </p>
               <div className="mt-8 space-y-3">
                 {[
-                  { icon: MapPin, t: "Bonapriso HQ · Douala, Cameroon" },
+                  { icon: MapPin, t: address },
                   { icon: Phone, t: phone },
                   { icon: MessageCircle, t: `WhatsApp: ${whatsapp}` },
                 ].map((r) => (

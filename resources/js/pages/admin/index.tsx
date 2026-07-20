@@ -110,7 +110,7 @@ export default function Dashboard({ properties, articles, plans, members, contac
           </div>
           <Link
             href="/admin/contacts"
-            className="group relative overflow-hidden rounded-2xl border border-border bg-card px-5 py-4 shadow-card-soft hover:shadow-elegant transition"
+            className="group relative overflow-hidden rounded-lg border border-border bg-card px-5 py-4 shadow-card-soft hover:shadow-elegant transition"
           >
             <div className="flex items-center gap-3">
               <div className="grid h-10 w-10 place-items-center rounded-xl bg-gold/15 text-gold-dark">
@@ -133,7 +133,7 @@ export default function Dashboard({ properties, articles, plans, members, contac
             <Link
               key={s.label}
               href={s.to}
-              className="group relative overflow-hidden rounded-3xl border border-border bg-card p-6 hover:shadow-elegant hover:-translate-y-0.5 transition-all"
+              className="group relative overflow-hidden rounded-lg border border-border bg-card p-6 hover:shadow-elegant hover:-translate-y-0.5 transition-all"
             >
               <div className={`absolute -top-8 -right-8 h-24 w-24 rounded-full bg-gradient-to-br ${s.accent} opacity-10 group-hover:opacity-20 transition`} />
               <div className="relative">
@@ -156,7 +156,7 @@ export default function Dashboard({ properties, articles, plans, members, contac
 
         {/* Two-column: recent activity */}
         <div className="grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 rounded-3xl border border-border bg-card overflow-hidden">
+          <div className="lg:col-span-2 rounded-lg border border-border bg-card overflow-hidden">
             <div className="flex items-center justify-between px-6 py-5 border-b border-border">
               <div>
                 <div className="font-display text-lg font-semibold">{t('admin.dashboard.recentMessages.title')}</div>
@@ -193,7 +193,7 @@ export default function Dashboard({ properties, articles, plans, members, contac
             )}
           </div>
 
-          <div className="rounded-3xl border border-border bg-card overflow-hidden">
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
             <div className="px-6 py-5 border-b border-border">
               <div className="font-display text-lg font-semibold">{t('admin.dashboard.newMembers.title')}</div>
               <div className="text-xs text-muted-foreground">{t('admin.dashboard.newMembers.subtitle')}</div>
@@ -237,7 +237,7 @@ export default function Dashboard({ properties, articles, plans, members, contac
         </div>
 
         {/* Quick tips */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-navy text-white p-8 md:p-10">
+        <div className="relative overflow-hidden rounded-lg bg-gradient-navy text-white p-8 md:p-10">
           <div
             className="pointer-events-none absolute inset-0 opacity-60"
             style={{

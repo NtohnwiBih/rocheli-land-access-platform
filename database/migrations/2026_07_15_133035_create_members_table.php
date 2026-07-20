@@ -37,7 +37,7 @@ return new class extends Migration
             $table->string('signature')->nullable();
             $table->timestamp('agreed_at')->nullable();
             $table->enum('status', ['pending', 'under_review', 'approved', 'rejected'])
-                ->default('pending');
+                ->default('approved');
             $table->timestamp('submitted_at')->nullable();
 
             $table->timestamps();

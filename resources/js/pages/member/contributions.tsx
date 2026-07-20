@@ -1,5 +1,6 @@
-import { Head, useForm, usePage } from "@inertiajs/react";
-import { useRef, useState } from "react";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
+import { useEcho } from '@laravel/echo-react';
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -71,6 +72,12 @@ type ProjectBreakdown = {
   is_completed: boolean;
 };
 
+type ContributionUpdatedPayload = {
+  id: number;
+  status: Row["status"];
+  rejection_reason: string | null;
+};
+
 interface PageProps {
   contributions: Row[];
   projects: Project[];
@@ -93,7 +100,8 @@ const formatXAF = (n: number) =>
 
 export default function Contributions() {
   const { props } = usePage<PageProps>();
-  const { contributions, projects, project_breakdown, stats, pending_count, initial_project_filter } = props;
+  const { projects, project_breakdown, stats, pending_count, initial_project_filter } = props;
+  const [contributions, setContributions] = useState<Row[]>(props.contributions);
 
   const [open, setOpen] = useState(false);
   const [proofPreview, setProofPreview] = useState<string | null>(null);
@@ -109,6 +117,28 @@ export default function Contributions() {
     note: "",
     proof: null as File | null,
   });
+
+  useEffect(() => {
+    setContributions(props.contributions);
+  }, [props.contributions]);
+
+  const memberId = (props as any).auth?.user?.member?.id as number | undefined;
+  console.log('Echo debug — memberId:', memberId, 'channel:', memberId ? `member.${memberId}` : '(empty)');
+
+  useEcho<ContributionUpdatedPayload>(
+    memberId ? `member.${memberId}` : '',
+    '.ContributionStatusUpdated',
+    (e) => {
+      setContributions((prev) =>
+        prev.map((r) => (r.id === e.id ? { ...r, status: e.status } : r)),
+      );
+      toast.success(`Contribution ${e.id} updated to ${e.status}`);
+      
+      router.reload({ only: ['project_breakdown', 'stats', 'pending_count'] });
+    },
+    [memberId],
+    'private',
+  );
 
   const onFile = (f: File | null) => {
     if (!f) return;
@@ -224,12 +254,8 @@ export default function Contributions() {
                   <div className="space-y-2">
                     <Label>Payment method</Label>
                     <Select
-                      value={data.member_plan_id ? String(data.member_plan_id) : undefined}
-                      onValueChange={(v) => {
-                        const project = projects.find((p) => p.id === Number(v));
-                        setData("member_plan_id", Number(v));
-                        if (project) setData("method", project.payment_method);
-                      }}
+                      value={data.method}
+                      onValueChange={(v) => setData("method", v)}
                     >
                       <SelectTrigger>
                         <SelectValue />

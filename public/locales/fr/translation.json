@@ -1,4 +1,22 @@
 {
+    "nav": {
+        "home": "Accueil",
+        "properties": "Propriétés",
+        "landClub": "Land Access Club",
+        "services": "Services",
+        "about": "À propos",
+        "resources": "Ressources",
+        "contact": "Contact",
+        "becomeMember": "Devenir membre",
+        "menu": "Menu",
+        "toggleTheme": "Changer de thème",
+        "openMenu": "Ouvrir le menu",
+        "light": "Clair",
+        "dark": "Sombre",
+        "english": "English",
+        "french": "Français",
+        "admin": "Administrateur"
+    },
     "login":{
         "memberPortal": "Espace membre",
         "welcomeBack": "Content de vous revoir.",
@@ -63,6 +81,8 @@
             "occupation": "Profession",
             "country": "Pays de résidence",
             "city": "Ville",
+            "preferredLanguage": "Langue préférée pour les e-mails",
+            "preferredLanguageHint": "Nous enverrons les notifications de compte et de paiement dans cette langue.",
             "cityPlaceholder": "Sélectionner...",
             "password": "Mot de passe",
             "confirmPassword": "Confirmer le mot de passe"
@@ -76,6 +96,8 @@
             "idNumber": "Numéro de la pièce",
             "uploadLabel": "Télécharger la pièce d'identité (PNG/JPG/PDF, max 5 Mo)",
             "uploadPrompt": "Cliquez pour télécharger",
+            "uploadFrontLabel": "Téléchargez le recto de la pièce d'identité (PNG/JPG/PDF, max 5 Mo)",
+            "uploadBackLabel": "Téléchargez le verso de la pièce d'identité (PNG/JPG/PDF, max 5 Mo)",
             "kinTitle": "Personne à contacter (optionnel)",
             "kinName": "Nom complet",
             "kinRelationship": "Sélectionner la relation",
@@ -143,6 +165,11 @@
             "bafoussam": "Bafoussam",
             "kribi": "Kribi"
         },
+        "success": {
+            "title": "Inscription réussie !",
+            "checkEmail": "Nous avons envoyé un lien de vérification à votre adresse e-mail. Veuillez consulter votre boîte de réception (et vos courriers indésirables) et cliquer sur le lien pour vérifier votre compte.",
+            "gotIt": "Compris"
+        },
         "errors": {
             "fullNameRequired": "Le nom complet est requis",
             "emailRequired": "L'adresse e-mail est requise",
@@ -158,6 +185,7 @@
             "idTypeRequired": "Veuillez sélectionner un type de pièce d'identité",
             "idNumberRequired": "Le numéro de la pièce d'identité est requis",
             "idDocumentRequired": "Veuillez téléverser votre pièce d'identité",
+            "idDocumentBackRequired": "Veuillez télécharger le verso de votre pièce d'identité",
             "goalRequired": "Veuillez sélectionner un objectif",
             "landTypeRequired": "Veuillez sélectionner un type de terrain",
             "planRequired": "Veuillez sélectionner un plan",
@@ -275,6 +303,7 @@
             "property": "Ma propriété",
             "documents": "Documents",
             "notifications": "Notifications",
+            "legal": "Documents légaux",
             "map": "Carte des propriétés",
             "calculator": "Calculatrice",
             "referrals": "Parrainages",
@@ -402,8 +431,12 @@
             "contentAbout": "À propos",
             "contentFaq": "FAQ",
             "contentFooter": "Pied de page",
+            "categories": "Catégories",
             "properties": "Propriétés",
             "articles": "Articles",
+            "testimonials": "Témoignages",
+            "legal": "Documents légaux",
+            "faqs": "FAQ",
             "plans": "Forfaits",
             "members": "Membres",
             "contacts": "Contacts"
@@ -466,6 +499,13 @@
             "tip3": "Les nouvelles propriétés et articles apparaissent instantanément dans les listes publiques.",
             "editButton": "Modifier le contenu du site"
             }
+        },
+        "legalDocuments": {
+            "pageTitle": "Documents juridiques — Rocheli",
+            "title": "Documents juridiques",
+            "subtitle": "Les conditions et politiques régissant votre adhésion. Disponibles en anglais et en français.",
+            "viewPdf": "Voir le PDF",
+            "notAvailable": "Pas encore disponible."
         }
     }
 }
