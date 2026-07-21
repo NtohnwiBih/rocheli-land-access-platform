@@ -1,26 +1,47 @@
 import { Link, usePage } from "@inertiajs/react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "motion/react";
-import { Menu, X, Moon, Sun, ChevronDown, Globe, Sparkles } from "lucide-react";
+import { Menu, X, ChevronDown, Sparkles, LayoutDashboard, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useLanguageTheme } from "@/hooks/use-language-theme";
+import { LanguageThemeToggle } from "@/components/language-toggle";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/properties", label: "Properties" },
-  { href: "/land-access-club", label: "Land Access Club" },
-  { href: "/services", label: "Services" },
-  { href: "/about", label: "About" },
-  { href: "/resources", label: "Resources" },
-  { href: "/contact", label: "Contact" },
-];
+type AuthUser = {
+  name: string;
+  email: string;
+  role: "admin" | "member";
+};
+
+type PageProps = {
+  auth: {
+    user: AuthUser | null;
+  };
+  [key: string]: unknown;
+};
 
 export function Nav() {
-  const { url } = usePage();
+  const { url, props } = usePage<PageProps>();
+  const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [dark, setDark] = useState(false);
-  const [lang, setLang] = useState<"EN" | "FR">("EN");
+
+  const user = props.auth?.user ?? null;
+
+  const { lang, dark, toggleLanguage, toggleDark } = useLanguageTheme({
+    reloadOnLanguageChange: true,
+  });
+
+  const navLinks = [
+    { href: "/", label: t("nav.home") },
+    { href: "/properties", label: t("nav.properties") },
+    { href: "/land-access-club", label: t("nav.landClub") },
+    { href: "/services", label: t("nav.services") },
+    { href: "/about", label: t("nav.about") },
+    { href: "/resources", label: t("nav.resources") },
+    { href: "/contact", label: t("nav.contact") },
+  ];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -29,20 +50,17 @@ export function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
-
-  // Inertia has no built-in "active link" concept (unlike TanStack Router),
-  // so we derive it ourselves from the current visited URL.
   const isActive = (href: string) => (href === "/" ? url === "/" : url.startsWith(href));
 
-  // Only the home page has a full-bleed dark hero behind the nav, so white
-  // nav text only makes sense there. Every other route gets the "scrolled"
-  // (solid background, dark text) treatment from the start, regardless of
-  // actual scroll position.
   const isHome = url === "/";
   const solid = scrolled || !isHome;
+
+ const accountHref = user?.role === "admin" ? "/rocheli" : "/member";
+  const accountLabel = user
+    ? user.role === "admin"
+      ? t("nav.admin")
+      : user.name.split(" ")[0]
+    : null;
 
   return (
     <>
@@ -56,11 +74,7 @@ export function Nav() {
       >
         <div className="container-x flex h-18 items-center justify-between py-3">
           <Link href="/" className="group flex items-center gap-2.5 shrink-0">
-            <img
-              src="/logo1.png"
-              alt="Rocheli Real Properties"
-              className="h-14 w-auto"
-            />
+            <img src="/logo1.png" alt="Rocheli Real Properties" className="h-14 w-auto" />
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">
@@ -88,33 +102,31 @@ export function Nav() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => setLang(lang === "EN" ? "FR" : "EN")}
-              className="hidden md:flex items-center gap-1.5 rounded-full border border-border/70 px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:border-primary/40 transition"
-            >
-              <Globe className="h-3.5 w-3.5" />
-              {lang}
-            </button>
-            <button
-              onClick={() => setDark(!dark)}
-              className="hidden md:grid place-items-center h-9 w-9 rounded-full border border-border/70 text-muted-foreground hover:text-foreground hover:border-primary/40 transition"
-              aria-label="Toggle theme"
-            >
-              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
+            <div className="hidden md:block">
+              <LanguageThemeToggle solid={solid} reloadOnLanguageChange />
+            </div>
+
             <Button
               asChild
               className="hidden md:inline-flex bg-gradient-blue text-white shadow-glow hover:opacity-95 rounded-full px-5 h-10"
             >
-              <Link href="/land-access-club">
-                <Sparkles className="h-4 w-4" />
-                Become a Member
+              <Link href={user ? accountHref : "/register"}>
+                {user ? (
+                  user.role === "admin" ? (
+                    <LayoutDashboard className="h-4 w-4" />
+                  ) : (
+                    <User className="h-4 w-4" />
+                  )
+                ) : (
+                  <Sparkles className="h-4 w-4" />
+                )}
+                {user ? accountLabel : t("nav.becomeMember")}
               </Link>
             </Button>
             <button
               onClick={() => setMobileOpen(true)}
               className="lg:hidden grid place-items-center h-10 w-10 rounded-full border border-border/70"
-              aria-label="Open menu"
+              aria-label={t("nav.openMenu")}
             >
               <Menu className="h-5 w-5" />
             </button>
@@ -142,7 +154,7 @@ export function Nav() {
               className="absolute right-0 top-0 h-full w-[85%] max-w-sm bg-background shadow-elegant flex flex-col"
             >
               <div className="flex items-center justify-between p-5 border-b border-border">
-                <span className="font-display text-lg font-bold">Menu</span>
+                <span className="font-display text-lg font-bold">{t("nav.menu")}</span>
                 <button
                   onClick={() => setMobileOpen(false)}
                   className="grid place-items-center h-10 w-10 rounded-full border border-border"
@@ -167,29 +179,23 @@ export function Nav() {
                 ))}
               </nav>
               <div className="p-5 border-t border-border space-y-3">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setLang(lang === "EN" ? "FR" : "EN")}
-                    className="flex-1 flex items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-xs font-semibold"
-                  >
-                    <Globe className="h-3.5 w-3.5" /> {lang}
-                  </button>
-                  <button
-                    onClick={() => setDark(!dark)}
-                    className="flex-1 flex items-center justify-center gap-1.5 rounded-full border border-border px-3 py-2 text-xs font-semibold"
-                  >
-                    {dark ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-                    {dark ? "Light" : "Dark"}
-                  </button>
-                </div>
+                <LanguageThemeToggle solid reloadOnLanguageChange className="justify-center" />
                 <Button
                   asChild
                   className="w-full bg-gradient-blue text-white rounded-full h-11"
                   onClick={() => setMobileOpen(false)}
                 >
-                  <Link href="/land-access-club">
-                    <Sparkles className="h-4 w-4" />
-                    Become a Member
+                  <Link href={user ? accountHref : "/register"}>
+                    {user ? (
+                      user.role === "admin" ? (
+                        <LayoutDashboard className="h-4 w-4" />
+                      ) : (
+                        <User className="h-4 w-4" />
+                      )
+                    ) : (
+                      <Sparkles className="h-4 w-4" />
+                    )}
+                    {user ? accountLabel : t("nav.becomeMember")}
                   </Link>
                 </Button>
               </div>

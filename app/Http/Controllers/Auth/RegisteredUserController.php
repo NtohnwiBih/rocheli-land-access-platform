@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\StoreMemberRequest;
-use App\Mail\NewMemberApplication;
+use App\Mail\WelcomeMember;
+use Illuminate\Support\Facades\Mail;
 use App\Models\City;
 use App\Models\Member;
 use App\Models\MemberPlan;
@@ -15,7 +16,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -41,6 +41,34 @@ class RegisteredUserController extends Controller
         ]);
     }
 
+    public function complete(): Response
+    {
+        return Inertia::render('auth/register', [
+            ...$this->registerPageProps(),
+            'registered' => true,
+        ]);
+    }
+
+    private function registerPageProps(): array
+    {
+        return [
+            'plans' => Plan::active()->get()->map(fn (Plan $p) => [
+                'name' => $p->name,
+                'target_price' => (float) $p->target_price,
+                'daily_amount' => (float) $p->daily_amount,
+                'weekly_amount' => (float) $p->weekly_amount,
+                'monthly_amount' => (float) $p->monthly_amount,
+                'is_flexible' => $p->is_flexible,
+                'is_featured' => $p->is_featured,
+            ]),
+            'cities' => City::active()->get()->map(fn (City $c) => [
+                'key' => $c->key,
+                'name_en' => $c->name_en,
+                'name_fr' => $c->name_fr,
+            ]),
+        ];
+    }
+
     public function store(StoreMemberRequest $request)
     {
         $validated = $request->validated();
@@ -52,9 +80,14 @@ class RegisteredUserController extends Controller
                 'email' => $validated['email'] ?? null,
                 'gender' => $validated['gender'],
                 'password' => Hash::make($validated['password']),
+                'preferred_locale' => $validated['preferred_locale'],
             ]);
 
             $documentPath = $request->file('id_document')->store('id-documents', 'local');
+
+            $documentBackPath = $request->hasFile('id_document_back')
+                ? $request->file('id_document_back')->store('id-documents', 'local')
+                : null;
 
             $member = Member::create([
                 'user_id' => $user->id,
@@ -65,6 +98,7 @@ class RegisteredUserController extends Controller
                 'id_type' => $validated['id_type'],
                 'id_number' => $validated['id_number'],
                 'id_document_path' => $documentPath,
+                'id_document_back_path' => $documentBackPath,
                 'kin_name' => $validated['kin_name'] ?? null,
                 'kin_relationship' => $validated['kin_relationship'] ?? null,
                 'kin_phone' => $validated['kin_phone'] ?? null,
@@ -78,7 +112,7 @@ class RegisteredUserController extends Controller
                 'agreements' => $validated['agreements'],
                 'signature' => $validated['signature'],
                 'agreed_at' => now(),
-                'status' => 'pending',
+                'status' => 'approved',
                 'submitted_at' => now(),
             ]);
 
@@ -95,7 +129,7 @@ class RegisteredUserController extends Controller
                     'contribution_frequency' => $validated['contribution_frequency'],
                     'contribution_amount' => $validated['contribution_amount'],
                     'payment_method' => $validated['payment_method'],
-                    'status' => 'pending',
+                    'status' => 'active',
                     'is_primary' => true,
                     'subscribed_at' => now(),
                 ]);
@@ -113,16 +147,19 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        try {
-            Mail::to(config('mail.company_notification_email'))
-                ->send(new NewMemberApplication($member->fresh(['user'])));
-        } catch (\Throwable $e) {
-            Log::error('Failed to send new member application notification', [
-                'member_id' => $member->id,
-                'error' => $e->getMessage(),
-            ]);
+        if ($user->email) {
+            try {
+                Mail::to($user->email)->send(new WelcomeMember($user));
+            } catch (\Throwable $e) {
+                Log::error('Failed to send welcome email', [
+                    'user_id' => $user->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+
+            $user->sendEmailVerificationNotification();
         }
 
-        return redirect()->route('member.dashboard');
+        return redirect()->route('register.complete');
     }
 }

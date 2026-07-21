@@ -90,6 +90,16 @@ class MemberPlan extends Model
         }
     }
 
+    public function lastContributionAt(): ?\Illuminate\Support\Carbon
+    {
+        return $this->contributions()->max('created_at');
+    }
+
+    public function suspend(): void
+    {
+        $this->update(['status' => 'suspended']);
+    }
+
     protected function promoteNextPrimary(): void
     {
         $next = self::where('member_id', $this->member_id)

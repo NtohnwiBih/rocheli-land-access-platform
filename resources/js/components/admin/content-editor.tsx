@@ -97,7 +97,7 @@ export function ContentEditor({ page, content: initialContent }: Props) {
         />
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[240px_1fr] items-start">
-          <nav className="rounded-2xl border border-border bg-card p-2 lg:sticky lg:top-4">
+          <nav className="border border-border bg-card p-2 lg:sticky lg:top-4">
             <div className="flex items-center justify-between px-4 py-2">
               <h3 className="text-sm font-semibold">Sections</h3>
               <span className="text-xs text-muted-foreground">{pageDef.sections.length} total</span>
@@ -127,7 +127,7 @@ export function ContentEditor({ page, content: initialContent }: Props) {
           </nav>
 
           {currentSection && (
-            <section className="rounded-3xl border border-border bg-card p-6 md:p-8 space-y-5">
+            <section className="border border-border bg-card p-6 md:p-8 space-y-5">
               <div className="flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold">{currentSection.label}</h2>
                 <Button

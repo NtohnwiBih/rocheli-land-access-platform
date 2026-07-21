@@ -19,7 +19,7 @@ class SendPaymentReminders extends Command
     public function handle(): void
     {
         $plans = MemberPlan::query()
-            ->whereIn('status', ['pending', 'under_review', 'approved'])
+            ->whereIn('status', ['active', 'inactive', 'completed', 'suspended'])
             ->with('member.user')
             ->get();
 

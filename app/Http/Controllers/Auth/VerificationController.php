@@ -7,6 +7,12 @@ use App\Http\Requests\Auth\SendVerificationCodeRequest;
 use App\Http\Requests\Auth\VerifyCodeRequest;
 use App\Services\VerificationCodeService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewMemberApplication;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -18,12 +24,8 @@ class VerificationController extends Controller
 
     public function notice(): Response
     {
-        $user = Auth::user();
-
-        return Inertia::render('auth/verify-account', [
-            'email' => $user->email,
-            'phone' => $user->phone,
-            'resendAvailableInSeconds' => 45,
+        return Inertia::render('auth/verify-email', [
+            'status' => session('status'),
         ]);
     }
 
@@ -63,5 +65,45 @@ class VerificationController extends Controller
         }
 
         return back()->with('status', 'email-verified');
+    }
+
+    public function verifyEmail(EmailVerificationRequest $request): RedirectResponse
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->route('member.dashboard');
+        }
+
+        $request->fulfill();
+
+        $member = $request->user()->member;
+
+        if ($member) {
+            try {
+                Mail::to(config('mail.company_notification_email'))
+                    ->send(new NewMemberApplication($member->fresh(['user'])));
+            } catch (\Throwable $e) {
+                Log::error('Failed to send new member application notification', [
+                    'member_id' => $member->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        } else {
+            Log::warning('Email verified but no associated member found — notification not sent.', [
+                'user_id' => $request->user()->id,
+            ]);
+        }
+
+        return redirect()->route('member.dashboard')->with('success', 'Email verified.');
+    }
+
+    public function resendEmail(Request $request): RedirectResponse
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->route('member.dashboard');
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('success', 'Verification link sent.');
     }
 }

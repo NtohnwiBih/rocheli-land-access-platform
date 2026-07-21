@@ -1,4 +1,4 @@
-import { Head, useForm } from "@inertiajs/react";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
 import { FormEventHandler, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckCircle2, ArrowLeft, ArrowRight, EyeOff, Eye } from "lucide-react";
+import { CheckCircle2, ArrowLeft, ArrowRight, EyeOff, Eye, MailCheck } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -14,6 +14,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { AuthNavLayout } from "@/layouts/auth/auth-nav-layout";
 
@@ -26,12 +34,14 @@ type MemberForm = {
   occupation: string;
   country_of_residence: string;
   city: string;
+  preferred_locale: string;
   password: string;
   password_confirmation: string;
 
   id_type: string;
   id_number: string;
   id_document: File | null;
+  id_document_back: File | null;
 
   goal: string;
   preferred_locations: string[];
@@ -70,18 +80,35 @@ type CityData = {
 interface RegisterPageProps {
   plans: PlanData[];
   cities: CityData[];
+  registered?: boolean;
 }
+
+type FlashProps = {
+  flash?: { registered?: boolean };
+};
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d)/;
 
 
-export default function RegisterPage({ plans, cities }: RegisterPageProps) {
+export default function RegisterPage({ plans, cities, registered = false }: RegisterPageProps) {
   const { t, i18n } = useTranslation();
+  const { props } = usePage<FlashProps>();
   const [step, setStep] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
   const [clientErrors, setClientErrors] = useState<ClientErrors>({});
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+
+  useEffect(() => {
+    if (registered) {
+      setShowSuccessDialog(true);
+    }
+  }, [registered]);
+
+  const goToDashboard = () => {
+    router.visit("/member");
+  };
 
   const steps = [
     t("register.steps.0"), t("register.steps.1"), t("register.steps.2"), t("register.steps.3"), t("register.steps.4"),
@@ -97,11 +124,13 @@ export default function RegisterPage({ plans, cities }: RegisterPageProps) {
     occupation: "",
     country_of_residence: "",
     city: "",
+    preferred_locale: i18n.language === "fr" ? "fr" : "en",
     password: "",
     password_confirmation: "",
     id_type: "",
     id_number: "",
     id_document: null,
+    id_document_back: null,
     goal: "",
     preferred_locations: [],
     land_type: "",
@@ -127,6 +156,14 @@ export default function RegisterPage({ plans, cities }: RegisterPageProps) {
     key: c.key,
     label: i18n.language === "fr" ? c.name_fr : c.name_en,
   }));
+
+  const requiresBackUpload = data.id_type === "NIN" || data.id_type === "Driver's License";
+
+  useEffect(() => {
+    if (!requiresBackUpload && data.id_document_back) {
+      setField("id_document_back", null);
+    }
+  }, [data.id_type]);
 
   const selectedPlan = plans.find((p) => p.name === data.plan);
 
@@ -248,6 +285,9 @@ export default function RegisterPage({ plans, cities }: RegisterPageProps) {
       }
       if (!data.id_document) {
         errs.id_document = t("register.errors.idDocumentRequired");
+      }
+      if ((data.id_type === "NIN" || data.id_type === "Driver's License") && !data.id_document_back) {
+        errs.id_document_back = t("register.errors.idDocumentBackRequired");
       }
     }
 
@@ -422,6 +462,20 @@ export default function RegisterPage({ plans, cities }: RegisterPageProps) {
                 {showError("city") && <p className="mt-1 text-xs text-destructive">{showError("city")}</p>}
               </div>
 
+              <div className="sm:col-span-2">
+                <Label>{t("register.step1.preferredLanguage")}</Label>
+                <Select value={data.preferred_locale} onValueChange={(v) => setField("preferred_locale", v)}>
+                  <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="fr">Français</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t("register.step1.preferredLanguageHint")}
+                </p>
+              </div>
+
               <div>
                 <Label>{t("register.step1.password")}</Label>
                 <div className="relative mt-1.5">
@@ -487,18 +541,40 @@ export default function RegisterPage({ plans, cities }: RegisterPageProps) {
                 {showError("id_number") && <p className="mt-1 text-xs text-destructive">{showError("id_number")}</p>}
               </div>
 
-              <div>
-                <Label>{t("register.step2.uploadLabel")}</Label>
-                <label className="mt-1.5 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border p-8 text-center text-sm text-muted-foreground hover:border-rocheli-blue">
-                  {data.id_document ? data.id_document.name : t("register.step2.uploadPrompt")}
-                  <input
-                    type="file"
-                    accept=".png,.jpg,.jpeg,.pdf"
-                    className="hidden"
-                    onChange={(e) => setField("id_document", e.target.files?.[0] ?? null)}
-                  />
-                </label>
-                {showError("id_document") && <p className="mt-1 text-xs text-destructive">{showError("id_document")}</p>}
+              <div className={requiresBackUpload ? "grid gap-4 sm:grid-cols-2" : ""}>
+                <div>
+                  <Label>
+                    {requiresBackUpload
+                      ? t("register.step2.uploadFrontLabel")
+                      : t("register.step2.uploadLabel")}
+                  </Label>
+                  <label className="mt-1.5 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border p-8 text-center text-sm text-muted-foreground hover:border-rocheli-blue">
+                    {data.id_document ? data.id_document.name : t("register.step2.uploadPrompt")}
+                    <input
+                      type="file"
+                      accept=".png,.jpg,.jpeg,.pdf"
+                      className="hidden"
+                      onChange={(e) => setField("id_document", e.target.files?.[0] ?? null)}
+                    />
+                  </label>
+                  {showError("id_document") && <p className="mt-1 text-xs text-destructive">{showError("id_document")}</p>}
+                </div>
+
+                {requiresBackUpload && (
+                  <div>
+                    <Label>{t("register.step2.uploadBackLabel")}</Label>
+                    <label className="mt-1.5 flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border p-8 text-center text-sm text-muted-foreground hover:border-rocheli-blue">
+                      {data.id_document_back ? data.id_document_back.name : t("register.step2.uploadPrompt")}
+                      <input
+                        type="file"
+                        accept=".png,.jpg,.jpeg,.pdf"
+                        className="hidden"
+                        onChange={(e) => setField("id_document_back", e.target.files?.[0] ?? null)}
+                      />
+                    </label>
+                    {showError("id_document_back") && <p className="mt-1 text-xs text-destructive">{showError("id_document_back")}</p>}
+                  </div>
+                )}
               </div>
 
               <div className="mt-4 rounded-2xl border border-border p-5">
@@ -740,6 +816,26 @@ export default function RegisterPage({ plans, cities }: RegisterPageProps) {
           </div>
         </form>
       </div>
+      <Dialog open={showSuccessDialog} onOpenChange={(open) => !open && goToDashboard()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-rocheli-blue/10">
+              <MailCheck className="h-6 w-6 text-rocheli-blue" />
+            </div>
+            <DialogTitle className="text-center">
+              {t("register.success.title")}
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              {t("register.success.checkEmail")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button variant="brand" onClick={goToDashboard}>
+              {t("register.success.gotIt")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

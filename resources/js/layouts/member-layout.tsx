@@ -34,6 +34,7 @@ import {
   PanelLeftClose,
   Globe,
   ChevronsUpDown,
+  ScrollText,
 } from "lucide-react";
 import AppLogoIcon from "@/components/app-logo-icon";
 import { MemberMenuContent } from "@/components/member/MemberMenuContent";
@@ -62,6 +63,7 @@ interface PageProps {
     preferred_locations: string[];
     land_type: string;
     plan: string;
+    plan_name?: { en: string; fr: string } | null;
     contribution_frequency: string;
     contribution_amount: string;
     payment_method: string;
@@ -79,11 +81,12 @@ const nav = [
   { href: "/member/property", key: "property", icon: Landmark },
   { href: "/member/documents", key: "documents", icon: FileText },
   { href: "/member/notifications", key: "notifications", icon: Bell },
-  { href: "/member/map", key: "map", icon: Map },
+  // { href: "/member/map", key: "map", icon: Map },
   { href: "/member/calculator", key: "calculator", icon: Calculator },
   { href: "/member/referrals", key: "referrals", icon: Users },
   { href: "/member/profile", key: "profile", icon: User },
   { href: "/member/support", key: "support", icon: LifeBuoy },
+  { href: "/member/legal", key: "legal", icon: ScrollText },
 ] as const satisfies readonly { href: string; key: string; icon: typeof LayoutDashboard }[];
 
 function getInitialDark(): boolean {
@@ -119,6 +122,10 @@ export function MemberLayout({ children }: PropsWithChildren) {
     window.localStorage.setItem("lang", next);
   }
 
+  const planLabel = member?.plan_name
+    ? (i18n.language === "fr" ? member.plan_name.fr : member.plan_name.en)
+    : user?.plan ?? t("member.dashboard.noPlanSelected");
+
   const sidebarWidth = collapsed ? "lg:w-20" : "lg:w-72";
   const mainOffset = collapsed ? "lg:pl-20" : "lg:pl-72";
 
@@ -126,9 +133,15 @@ export function MemberLayout({ children }: PropsWithChildren) {
     router.post(`/member/notifications/${id}/read`, {}, { preserveScroll: true, preserveState: true });
   };
 
-  function handleLogout() {
-    router.post("/logout");
-  }
+ function handleLogout() {
+  router.post(
+    "/logout",
+    {},
+    {
+      onSuccess: () => router.visit("/login"),
+    },
+  );
+}
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -184,7 +197,7 @@ export function MemberLayout({ children }: PropsWithChildren) {
         </nav>
 
         <div
-          className={`absolute inset-x-3 bottom-4 transition-all ${
+          className={`absolute inset-x-3 bottom-0 transition-all ${
             collapsed ? "lg:bottom-3" : ""
           }`}
         >
@@ -252,23 +265,21 @@ export function MemberLayout({ children }: PropsWithChildren) {
                     </div>
                     ) : (
                     <div className="max-h-80 overflow-y-auto">
-                        {notifications.slice(0, 5).map((n) => (
-                        <DropdownMenuItem
-                          key={n.id}
-                          onClick={() => !n.read_at && markRead(n.id)}
-                          className="flex items-start gap-3 whitespace-normal py-2.5"
-                        >
+                      {notifications.slice(0, 5).map((n) => (
+                        <DropdownMenuItem key={n.id} asChild className="flex items-start gap-3 whitespace-normal py-2.5">
+                          <Link href={`/member/notifications/${n.id}`}>
                             <span
-                            className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
+                              className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
                                 n.tone === "success" ? "bg-emerald-500" : n.tone === "gold" ? "bg-rocheli-gold" : "bg-rocheli-blue"
-                            }`}
+                              }`}
                             />
                             <div className="min-w-0 flex-1">
-                            <div className={`text-sm ${n.read_at ? "text-muted-foreground" : "font-semibold"}`}>{n.title}</div>
-                            <div className="truncate text-xs text-muted-foreground">{n.body}</div>
+                              <div className={`text-sm ${n.read_at ? "text-muted-foreground" : "font-semibold"}`}>{n.title}</div>
+                              <div className="truncate text-xs text-muted-foreground">{n.body}</div>
                             </div>
+                          </Link>
                         </DropdownMenuItem>
-                        ))}
+                      ))}
                     </div>
                     )}
 
@@ -281,7 +292,7 @@ export function MemberLayout({ children }: PropsWithChildren) {
                 </DropdownMenuContent>
               </DropdownMenu>
               <Badge className="hidden bg-rocheli-blue/10 text-rocheli-blue sm:inline-flex">
-                {user?.plan ?? member?.plan ?? t("member.dashboard.noPlanSelected")}
+                {planLabel}
               </Badge>
               <Avatar className="h-9 w-9">
                 <AvatarImage src={user?.avatar} />

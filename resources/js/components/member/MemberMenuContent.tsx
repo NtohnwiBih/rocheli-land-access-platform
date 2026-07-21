@@ -95,8 +95,8 @@ export function MemberMenuContent({ user, member, collapsed, t, handleLogout }: 
       {/* Trigger */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className={`flex w-full items-center gap-3 rounded-2xl text-left transition-all p-2 ${
-          open ? "bg-sidebar-accent/50" : ""
+        className={`flex w-full items-center gap-2 rounded-2xl bg-sidebar-accent/60 p-4 text-left transition-all ${
+          open ? "bg-sidebar-accent" : ""
         } ${collapsed ? "lg:justify-center lg:p-2" : ""}`}
       >
         <Avatar className="h-9 w-9 shrink-0">

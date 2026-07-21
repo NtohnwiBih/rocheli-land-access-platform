@@ -39,4 +39,22 @@ class Plan extends Model
     {
         return $query->where('is_active', true)->orderBy('sort_order');
     }
+
+    public static function generateUniqueSlug(string $name, ?int $ignoreId = null): string
+    {
+        $base = \Illuminate\Support\Str::slug($name);
+        $slug = $base;
+        $suffix = 2;
+
+        while (
+            self::where('slug', $slug)
+                ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+                ->exists()
+        ) {
+            $slug = "{$base}-{$suffix}";
+            $suffix++;
+        }
+
+        return $slug;
+    }
 }
