@@ -1,24 +1,12 @@
-import { Head, useForm, usePage, router } from "@inertiajs/react";
+import { usePage, router, Head } from "@inertiajs/react";
 import { useEcho } from '@laravel/echo-react';
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogBody,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/custom-dialog";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Plus, MapPin, Landmark, Star, CheckCircle2, ArrowLeft, ArrowRight, BadgeCheck, PauseCircle } from "lucide-react";
+import { useForm } from "@inertiajs/react";
+import { Plus, MapPin, Landmark, Star, BadgeCheck, PauseCircle } from "lucide-react";
+import { AddProjectDialog } from "@/components/member/AddProjectDialog";
 
 type Subscription = {
   id: number;
@@ -69,11 +57,6 @@ const formatXAF = (n: number) =>
     maximumFractionDigits: 0,
   }).format(n);
 
-const FREQUENCIES = ["Daily", "Weekly", "Monthly"];
-const PAYMENT_METHODS = ["MTN Mobile Money", "Orange Money", "Bank Transfer", "Cash Deposit"];
-const LAND_TYPES = ["Land", "Residential", "Commercial", "Agricultural", "Undecided"];
-const GOALS = ["Build a home", "Invest in land", "Buy for family", "Business project", "Other"];
-
 const statusColor: Record<Subscription["status"], string> = {
   active: "bg-emerald-500 text-white",
   completed: "bg-emerald-600 text-white",
@@ -89,7 +72,7 @@ const statusLabel: Record<Subscription["status"], string> = {
 };
 
 export default function PlansPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { props } = usePage<PageProps>();
   const { available_plans, cities } = props;
 
@@ -115,35 +98,6 @@ export default function PlansPage() {
     'private',
   );
 
-  const [open, setOpen] = useState(false);
-  const [step, setStep] = useState(0);
-  const [clientErrors, setClientErrors] = useState<Record<string, string>>({});
-
-  const wizardSteps = ["Plan", "Details", "Contribution"];
-  const pct = ((step + 1) / wizardSteps.length) * 100;
-
-  const CITIES = cities.map((c) => ({
-    key: c.key,
-    label: i18n.language === "fr" ? c.name_fr : c.name_en,
-  }));
-
-  const { data, setData, post, processing, errors, reset } = useForm({
-    plan_id: null as number | null,
-    label: "",
-    goal: "",
-    preferred_locations: [] as string[],
-    land_type: "",
-    contribution_frequency: "",
-    contribution_amount: "",
-    payment_method: "",
-  });
-
-  const { post: postSuspend, processing: suspending } = useForm({});
-
-  const suspendPlan = (id: number) => {
-    postSuspend(`/member/plans/${id}/suspend`, { preserveScroll: true });
-  };
-
   // Members can hold at most 5 active/inactive projects at once. If they're at
   // the cap, offer inline suspension of an inactive project instead of the wizard.
   const activeOrInactiveCount = subscriptions.filter(
@@ -152,105 +106,8 @@ export default function PlansPage() {
   const atCap = activeOrInactiveCount >= 5;
   const inactiveSubs = subscriptions.filter((s) => s.status === "inactive");
 
-  const selectedPlan = available_plans.find((p) => p.id === data.plan_id);
-
-  const planAmountForFrequency = (plan: PlanData | undefined, frequency: string): number | null => {
-    if (!plan) return null;
-    if (frequency === "Daily") return plan.daily_amount;
-    if (frequency === "Weekly") return plan.weekly_amount;
-    if (frequency === "Monthly") return plan.monthly_amount;
-    return null;
-  };
-
-  const expectedAmount = planAmountForFrequency(selectedPlan, data.contribution_frequency);
-
-  useEffect(() => {
-    if (expectedAmount !== null) {
-      setData("contribution_amount", String(expectedAmount));
-    }
-  }, [data.plan_id, data.contribution_frequency]);
-
-  const toggleLocation = (loc: string, checked: boolean) => {
-    setData(
-      "preferred_locations",
-      checked
-        ? [...data.preferred_locations, loc]
-        : data.preferred_locations.filter((l) => l !== loc)
-    );
-  };
-
-  const validateStep = (currentStep: number): Record<string, string> => {
-    const errs: Record<string, string> = {};
-
-    if (currentStep === 0) {
-      if (!data.plan_id) errs.plan_id = "Please select a plan.";
-    }
-
-    if (currentStep === 1) {
-      if (!data.goal) errs.goal = "Please select a goal.";
-      if (!data.land_type) errs.land_type = "Please select a land type.";
-    }
-
-    if (currentStep === 2) {
-      if (!data.contribution_frequency) errs.contribution_frequency = "Please select a frequency.";
-      if (!data.contribution_amount) {
-        errs.contribution_amount = "Amount is required.";
-      } else {
-        const amountNum = Number(data.contribution_amount);
-        if (amountNum <= 0) {
-          errs.contribution_amount = "Enter a valid amount.";
-        } else if (expectedAmount !== null) {
-          if (selectedPlan?.is_flexible) {
-            if (amountNum < expectedAmount) {
-              errs.contribution_amount = `Minimum is ${formatXAF(expectedAmount)}.`;
-            }
-          } else if (amountNum !== expectedAmount) {
-            errs.contribution_amount = `This plan requires exactly ${formatXAF(expectedAmount)}.`;
-          }
-        }
-      }
-      if (!data.payment_method) errs.payment_method = "Please select a payment method.";
-    }
-
-    return errs;
-  };
-
-  const goNext = () => {
-    const stepErrors = validateStep(step);
-    if (Object.keys(stepErrors).length > 0) {
-      setClientErrors(stepErrors);
-      return;
-    }
-    setClientErrors({});
-    setStep((s) => Math.min(wizardSteps.length - 1, s + 1));
-  };
-
-  const goBack = () => {
-    setClientErrors({});
-    setStep((s) => Math.max(0, s - 1));
-  };
-
-  const showError = (field: string) => clientErrors[field] || (errors as Record<string, string>)[field];
-
-  const closeDialog = () => {
-    setOpen(false);
-    setStep(0);
-    setClientErrors({});
-    reset();
-  };
-
-  const submit = () => {
-    const stepErrors = validateStep(2);
-    if (Object.keys(stepErrors).length > 0) {
-      setClientErrors(stepErrors);
-      return;
-    }
-
-    post("/member/plans", {
-      preserveScroll: true,
-      onSuccess: () => closeDialog(),
-    });
-  };
+  const { post: postSuspend, processing: suspending } = useForm({});
+  const suspendPlan = (id: number) => postSuspend(`/member/plans/${id}/suspend`, { preserveScroll: true });
 
   return (
     <>
@@ -263,262 +120,33 @@ export default function PlansPage() {
             <p className="text-sm text-muted-foreground">{t("plans.subtitle")}</p>
           </div>
 
-          <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) closeDialog(); }}>
-            <DialogTrigger asChild>
-              <Button variant="brand">
-                <Plus className="mr-1 h-4 w-4" /> {t("plans.addProject")}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-2xl">
-              {atCap ? (
-                <>
-                  <DialogHeader>
-                    <DialogTitle>You've reached your project limit</DialogTitle>
-                    <DialogDescription>
-                      You can hold at most 5 active or inactive projects at a time. Suspend one below to free up
-                      a slot, then you can start a new project right away.
-                    </DialogDescription>
-                  </DialogHeader>
-
-                  <DialogBody>
-                    <div className="space-y-3 px-6 py-4">
-                      {inactiveSubs.length === 0 ? (
-                        <div className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-                          You don't have any inactive projects available to suspend. Contact support if you need
-                          to add another project.
-                        </div>
-                      ) : (
-                        inactiveSubs.map((s) => (
-                          <div
-                            key={s.id}
-                            className="flex items-center justify-between rounded-xl border border-border p-3"
-                          >
-                            <div>
-                              <div className="text-sm font-semibold">{s.label}</div>
-                              <div className="text-xs text-muted-foreground">{s.plan_name} · Inactive</div>
-                            </div>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              disabled={suspending}
-                              onClick={() => suspendPlan(s.id)}
-                            >
-                              <PauseCircle className="mr-1 h-3.5 w-3.5" /> Suspend
-                            </Button>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </DialogBody>
-
-                  <DialogFooter>
-                    <Button variant="ghost" onClick={closeDialog}>
-                      {t("plans.cancel")}
-                    </Button>
-                  </DialogFooter>
-                </>
-              ) : (
-                <>
-              <DialogHeader>
-                <DialogTitle>{t("plans.newProjectTitle")}</DialogTitle>
-                <DialogDescription>{t("plans.newProjectDesc")}</DialogDescription>
-
-                <div className="mt-2">
-                  <div className="mb-2 flex items-center justify-between text-xs font-medium text-muted-foreground">
-                    <span>Step {step + 1} of {wizardSteps.length}</span>
-                    <span>{wizardSteps[step]}</span>
-                  </div>
-                  <div className="h-1.5 overflow-hidden rounded-full bg-border">
-                    <div className="h-full rounded-full bg-gradient-brand transition-all" style={{ width: `${pct}%` }} />
-                  </div>
-                  <ol className="mt-3 flex gap-2">
-                    {wizardSteps.map((s, i) => (
-                      <li
-                        key={s}
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ${
-                          i <= step ? "bg-rocheli-blue/10 text-rocheli-blue" : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {i < step && <CheckCircle2 className="h-3 w-3" />} {s}
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              </DialogHeader>
-
-               <DialogBody>
-                <div className="min-h-0 flex-1 overflow-y-auto px-6">
-                  <div className="space-y-4 py-4">
-                    {step === 0 && (
-                      <>
-                        <div className="space-y-2">
-                          <Label>{t("plans.labelField")}</Label>
-                          <Input
-                            placeholder={t("plans.labelPlaceholder")}
-                            value={data.label}
-                            onChange={(e) => setData("label", e.target.value)}
-                          />
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>Plan</Label>
-                          <div className="grid gap-2 sm:grid-cols-2">
-                            {available_plans.map((p) => (
-                              <label
-                                key={p.id}
-                                className={`relative flex cursor-pointer flex-col rounded-xl border p-3 text-sm transition-colors hover:border-rocheli-blue ${
-                                  data.plan_id === p.id ? "border-rocheli-gold bg-rocheli-gold/5" : "border-border"
-                                }`}
-                              >
-                                <input
-                                  type="radio"
-                                  name="plan_id"
-                                  className="sr-only"
-                                  checked={data.plan_id === p.id}
-                                  onChange={() => setData("plan_id", p.id)}
-                                />
-                                <span className="font-semibold">{p.name}</span>
-                                <span className="text-xs text-muted-foreground">{formatXAF(p.target_price)}</span>
-                              </label>
-                            ))}
-                          </div>
-                          {showError("plan_id") && <p className="text-xs text-destructive">{showError("plan_id")}</p>}
-                        </div>
-                      </>
-                    )}
-
-                    {step === 1 && (
-                      <>
-                        <div className="space-y-2">
-                          <Label>{t("plans.chooseGoal")}</Label>
-                          <RadioGroup value={data.goal} onValueChange={(v) => setData("goal", v)} className="grid gap-2 sm:grid-cols-2">
-                            {GOALS.map((g) => (
-                              <label key={g} className="flex cursor-pointer items-center gap-2 rounded-lg border border-border p-2.5 text-sm hover:border-rocheli-blue">
-                                <RadioGroupItem value={g} /> {g}
-                              </label>
-                            ))}
-                          </RadioGroup>
-                          {showError("goal") && <p className="text-xs text-destructive">{showError("goal")}</p>}
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>{t("plans.chooseLocations")}</Label>
-                          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                            {CITIES.map((c) => (
-                              <label key={c.key} className="flex cursor-pointer items-center gap-2 rounded-lg border border-border p-2.5 text-sm hover:border-rocheli-blue">
-                                <Checkbox
-                                  checked={data.preferred_locations.includes(c.label)}
-                                  onCheckedChange={(checked) => toggleLocation(c.label, Boolean(checked))}
-                                />
-                                {c.label}
-                              </label>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>{t("plans.chooseLandType")}</Label>
-                          <RadioGroup value={data.land_type} onValueChange={(v) => setData("land_type", v)} className="grid gap-2 sm:grid-cols-3">
-                            {LAND_TYPES.map((lt) => (
-                              <label key={lt} className="flex cursor-pointer items-center gap-2 rounded-lg border border-border p-2.5 text-sm hover:border-rocheli-blue">
-                                <RadioGroupItem value={lt} /> {lt}
-                              </label>
-                            ))}
-                          </RadioGroup>
-                          {showError("land_type") && <p className="text-xs text-destructive">{showError("land_type")}</p>}
-                        </div>
-                      </>
-                    )}
-
-                    {step === 2 && (
-                      <>
-                        <div className="space-y-2">
-                          <Label>{t("plans.chooseFrequency")}</Label>
-                          <div className="flex flex-wrap gap-2">
-                            {FREQUENCIES.map((f) => (
-                              <button
-                                type="button"
-                                key={f}
-                                onClick={() => setData("contribution_frequency", f)}
-                                className={`rounded-full border-2 px-4 py-1.5 text-sm font-semibold transition ${
-                                  data.contribution_frequency === f
-                                    ? "border-rocheli-gold bg-rocheli-gold text-rocheli-navy"
-                                    : "border-border hover:border-rocheli-gold/60"
-                                }`}
-                              >
-                                {f}
-                              </button>
-                            ))}
-                          </div>
-                          {showError("contribution_frequency") && <p className="text-xs text-destructive">{showError("contribution_frequency")}</p>}
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>{t("plans.chooseAmount")}</Label>
-                          <Input
-                            type="number"
-                            value={data.contribution_amount}
-                            min={expectedAmount ?? undefined}
-                            readOnly={selectedPlan ? !selectedPlan.is_flexible : false}
-                            onChange={(e) => setData("contribution_amount", e.target.value)}
-                          />
-                          {showError("contribution_amount") && <p className="text-xs text-destructive">{showError("contribution_amount")}</p>}
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label>{t("plans.choosePaymentMethod")}</Label>
-                          <RadioGroup value={data.payment_method} onValueChange={(v) => setData("payment_method", v)} className="grid gap-2 sm:grid-cols-2">
-                            {PAYMENT_METHODS.map((m) => (
-                              <label key={m} className="flex cursor-pointer items-center gap-2 rounded-lg border border-border p-2.5 text-sm hover:border-rocheli-blue">
-                                <RadioGroupItem value={m} /> {m}
-                              </label>
-                            ))}
-                          </RadioGroup>
-                          {showError("payment_method") && <p className="text-xs text-destructive">{showError("payment_method")}</p>}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </DialogBody>
-
-              <DialogFooter className="sm:justify-between">
-                <Button
-                  variant="ghost"
-                  onClick={step === 0 ? closeDialog : goBack}
-                  disabled={processing}
-                >
-                  {step === 0 ? (
-                    t("plans.cancel")
-                  ) : (
-                    <>
-                      <ArrowLeft className="mr-1 h-4 w-4" /> Back
-                    </>
-                  )}
-                </Button>
-                {step < wizardSteps.length - 1 ? (
-                  <Button variant="brand" onClick={goNext}>
-                    Continue <ArrowRight className="ml-1 h-4 w-4" />
-                  </Button>
-                ) : (
-                  <Button variant="brand" onClick={submit} disabled={processing}>
-                    {processing ? t("plans.submitting") : t("plans.submitProject")}
-                  </Button>
-                )}
-              </DialogFooter>
-                </>
-              )}
-            </DialogContent>
-          </Dialog>
+          <AddProjectDialog
+            availablePlans={available_plans}
+            cities={cities}
+            atCap={atCap}
+            inactiveSubs={inactiveSubs}
+            onSuspend={suspendPlan}
+            suspending={suspending}
+          />
         </div>
 
         {subscriptions.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-border bg-card p-12 text-center">
             <Landmark className="mx-auto h-8 w-8 text-muted-foreground" />
             <p className="mt-3 text-sm text-muted-foreground">{t("plans.noProjects")}</p>
-            <Button variant="brand" className="mt-4" onClick={() => setOpen(true)}>
-              <Plus className="mr-1 h-4 w-4" /> {t("plans.startFirst")}
-            </Button>
+            <AddProjectDialog
+              availablePlans={available_plans}
+              cities={cities}
+              atCap={atCap}
+              inactiveSubs={inactiveSubs}
+              onSuspend={suspendPlan}
+              suspending={suspending}
+              trigger={
+                <Button variant="brand" className="mt-4">
+                  <Plus className="mr-1 h-4 w-4" /> {t("plans.startFirst")}
+                </Button>
+              }
+            />
           </div>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">

@@ -15,7 +15,8 @@ class StorePropertyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['required', 'string', 'max:255'],
+            'title_en' => ['required', 'string', 'max:255'],
+            'title_fr' => ['required', 'string', 'max:255'],
             'city_id' => ['required', 'integer', 'exists:cities,id'],
             'location' => ['required', 'string', 'max:255'],
             'size' => ['required', 'string', 'max:100'],
@@ -24,7 +25,8 @@ class StorePropertyRequest extends FormRequest
             'price' => ['required', 'string', 'max:100'],
             'price_value' => ['nullable', 'numeric'],
             'status' => ['required', Rule::in(['Available', 'Selling Fast', 'Reserved', 'Sold'])],
-            'description' => ['nullable', 'string'],
+            'description_en' => ['nullable', 'string'],
+            'description_fr' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'max:5120'],
         ];
     }

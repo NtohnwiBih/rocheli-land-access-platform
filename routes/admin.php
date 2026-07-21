@@ -2,11 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Admin\AppointmentActionController;
 use App\Http\Controllers\Admin\ArticleController;
+use App\Http\Controllers\Admin\ContactController;
+use App\Http\Controllers\Admin\ContactCenterController;
+use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ContentController;
 use App\Http\Controllers\Admin\ContributionController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EnquiryController;
 use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\PropertyController;
@@ -85,4 +90,26 @@ Route::prefix('rocheli')
 
         Route::resource('plans', PlanController::class)
             ->except(['show', 'create', 'edit']);
+
+        Route::get('enquiries', [EnquiryController::class, 'index'])
+            ->name('enquiries.index');
+
+        Route::get('enquiries/{enquiry}', [EnquiryController::class, 'show'])
+            ->name('enquiries.show');
+
+        Route::post('enquiries/{enquiry}/respond', [EnquiryController::class, 'respond'])
+            ->name('enquiries.respond');
+
+        Route::get('contacts', [ContactCenterController::class, 'index'])->name('contacts.index');
+
+        Route::post('contacts/{contact}/handled', [ContactMessageController::class, 'markHandled'])
+            ->name('contacts.handled');
+        Route::delete('contacts/{contact}', [ContactMessageController::class, 'destroy'])
+            ->name('contacts.destroy');
+
+        Route::post('appointments/{appointment}/confirm', [AppointmentActionController::class, 'confirm'])->name('appointments.confirm');
+        Route::post('appointments/{appointment}/cancel', [AppointmentActionController::class, 'cancel'])->name('appointments.cancel');
+
+        Route::get('enquiries/{enquiry}', [EnquiryController::class, 'show'])->name('enquiries.show');
+        Route::post('enquiries/{enquiry}/respond', [EnquiryController::class, 'respond'])->name('enquiries.respond');
     });

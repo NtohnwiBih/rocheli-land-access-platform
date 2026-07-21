@@ -336,6 +336,7 @@
             "memberId": "Member ID · {{code}}",
             "makeContribution": "Make contribution",
             "statement": "Statement",
+            "notificationsEmpty": "No notifications yet.",
             "stats": {
                 "walletBalance": "Wallet Balance",
                 "contributionsMade": "Contributions Made",
@@ -369,7 +370,109 @@
             "upcomingPayments": "Upcoming payments",
             "notificationsTitle": "Notifications",
             "paid": "Paid",
-            "scheduled": "Scheduled"
+            "scheduled": "Scheduled",
+            "ownership": {
+                "title": "Ownership progress",
+                "toOwnership": "to ownership",
+                "contributed": "Contributed",
+                "remaining": "Remaining"
+            },
+            "projects": {
+                "title": "My Projects",
+                "manageAll": "Manage all",
+                "funded": "Funded",
+                "addProject": "Add project"
+            },
+            "recentContributions": {
+                "title": "Recent contributions",
+                "empty": "No contributions yet.",
+                "viewAll": "View all contributions"
+            }
+        },
+        "notifications": {
+            "title": "Notifications",
+            "subtitle": "Payments, property alerts and announcements.",
+            "markAllRead": "Mark all as read",
+            "empty": "You don't have any notifications yet."
+        },
+        "notificationDetail": {
+            "back": "Back to notifications",
+            "new": "New"
+        },
+        "support": {
+            "title": "Support",
+            "subtitle": "Have a question about your plan, a payment, or your property? Send us a message.",
+            "category": "Category",
+            "categoryPlaceholder": "What's this about?",
+            "categories": {
+                "payments": "Payments",
+                "property": "Property",
+                "account": "Account",
+                "documents": "Documents",
+                "other": "Other"
+            },
+            "subject": "Subject",
+            "subjectPlaceholder": "e.g. Question about my September contribution",
+            "message": "Message",
+            "messagePlaceholder": "Tell us more...",
+            "send": "Send message",
+            "sending": "Sending...",
+            "successToast": "Your message has been sent — we'll be in touch shortly.",
+            "errorToast": "Couldn't send your message. Please try again.",
+            "otherWays": "Other ways to reach us",
+            "whatsapp": "WhatsApp"
+        },
+        "profile": {
+            "title": "Profile",
+            "subtitle": "Manage your personal details and next of kin information.",
+            "memberIdFallback": "Member",
+            "emailVerified": "Email verified",
+            "emailUnverified": "Email unverified",
+            "phoneVerified": "Phone verified",
+            "phoneUnverified": "Phone unverified",
+            "personalInfo": {
+                "title": "Personal information",
+                "fullName": "Full name",
+                "email": "Email",
+                "phone": "Phone",
+                "whatsapp": "WhatsApp",
+                "gender": "Gender",
+                "genderPlaceholder": "Select",
+                "genderMale": "Male",
+                "genderFemale": "Female",
+                "genderOther": "Other",
+                "occupation": "Occupation",
+                "country": "Country of residence",
+                "city": "City"
+            },
+            "kin": {
+                "title": "Next of kin",
+                "fullName": "Full name",
+                "relationship": "Relationship",
+                "phone": "Phone"
+            },
+            "save": "Save changes",
+            "saving": "Saving...",
+            "successToast": "Profile updated.",
+            "membership": {
+                    "title": "Membership",
+                    "plan": "Plan",
+                    "contribution": "Contribution",
+                    "paymentMethod": "Payment method",
+                    "landType": "Land type"
+                },
+                "identification": {
+                    "title": "Identification",
+                    "note": "To update your ID documents, contact support.",
+                    "idType": "ID type",
+                    "idNumber": "ID number"
+                },
+                "statuses": {
+                    "approved": "Approved",
+                    "rejected": "Rejected",
+                    "under_review": "Under review",
+                    "pending": "Pending"
+                }
         }
     },
     "calculator": {
@@ -443,6 +546,7 @@
             "legal": "Legal Documents",
             "plans": "Plans",
             "members": "Members",
+            "enquiries": "Enquiries",
             "contacts": "Contacts"
         },
         "adminLayout": {
@@ -510,6 +614,76 @@
             "subtitle": "The terms and policies governing your membership. Available in English and French.",
             "viewPdf": "View PDF",
             "notAvailable": "Not yet available."
+        },
+        "enquiries": {
+            "title": "Property enquiries",
+            "subtitle": "Member enquiries sent from property listings.",
+            "filterAll": "All",
+            "filterNew": "New",
+            "filterInReview": "In review",
+            "filterResponded": "Responded",
+            "colMember": "Member",
+            "colProperty": "Property",
+            "colInterest": "Interest",
+            "colReceived": "Received",
+            "colStatus": "Status",
+            "view": "View",
+            "empty": "No enquiries yet.",
+            "backToList": "Back",
+            "viewMemberProfile": "View member profile",
+            "viewListing": "View listing",
+            "colPhone": "Phone",
+            "colEmail": "Email",
+            "colInterestedIn": "Interested in",
+            "message": "Message",
+            "yourResponse": "Your response",
+            "responsePlaceholder": "Write your reply to the member…",
+            "lastResponded": "Last responded {{date}}",
+            "sendResponse": "Send response",
+            "updateResponse": "Update response",
+            "sending": "Sending…",
+            "statusNew": "New",
+            "statusInReview": "In review",
+            "statusResponded": "Responded"
+        }
+    },
+    "property": {
+        "myProperty": {
+            "title": "My properties",
+            "subtitle": "Browse verified listings and send enquiries directly to our allocation team.",
+            "enquirySent_one": "{{count}} enquiry sent",
+            "enquirySent_other": "{{count}} enquiries sent",
+            "searchPlaceholder": "Search by title or location...",
+            "allStatuses": "All statuses",
+            "statuses": {
+                "Available": "Available",
+                "Selling Fast": "Selling Fast",
+                "Reserved": "Reserved",
+                "Sold": "Sold"
+            },
+            "from": "From",
+            "sendEnquiry": "Send enquiry",
+            "unavailable": "Unavailable",
+            "noMatch": "No properties match your search.",
+            "myEnquiries": {
+                "title": "My enquiries",
+                "subtitle": "Track the status of enquiries you've sent to our team.",
+                "empty": "No enquiries yet. Send one from any property above.",
+                "sentOn": "Sent {{date}}",
+                "view": "View",
+                "statuses": {
+                    "Sent": "Sent",
+                    "In review": "In review",
+                    "Responded": "Responded"
+                }
+            },
+            "errorToast": "Couldn't send your enquiry. Please try again."
+        },
+        "enquiryDialog": {
+            "yourMessage": "Your message",
+            "teamResponse": "Team response",
+            "noResponseYet": "Our team hasn't responded yet — you'll be notified as soon as they do.",
+            "sentOn": "Sent {{date}}"
         }
     }
 }

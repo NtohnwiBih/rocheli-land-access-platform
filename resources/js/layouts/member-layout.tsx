@@ -81,7 +81,7 @@ const nav = [
   { href: "/member/property", key: "property", icon: Landmark },
   { href: "/member/documents", key: "documents", icon: FileText },
   { href: "/member/notifications", key: "notifications", icon: Bell },
-  { href: "/member/map", key: "map", icon: Map },
+  // { href: "/member/map", key: "map", icon: Map },
   { href: "/member/calculator", key: "calculator", icon: Calculator },
   { href: "/member/referrals", key: "referrals", icon: Users },
   { href: "/member/profile", key: "profile", icon: User },
@@ -197,7 +197,7 @@ export function MemberLayout({ children }: PropsWithChildren) {
         </nav>
 
         <div
-          className={`absolute inset-x-3 bottom-4 transition-all ${
+          className={`absolute inset-x-3 bottom-0 transition-all ${
             collapsed ? "lg:bottom-3" : ""
           }`}
         >
@@ -265,23 +265,21 @@ export function MemberLayout({ children }: PropsWithChildren) {
                     </div>
                     ) : (
                     <div className="max-h-80 overflow-y-auto">
-                        {notifications.slice(0, 5).map((n) => (
-                        <DropdownMenuItem
-                          key={n.id}
-                          onClick={() => !n.read_at && markRead(n.id)}
-                          className="flex items-start gap-3 whitespace-normal py-2.5"
-                        >
+                      {notifications.slice(0, 5).map((n) => (
+                        <DropdownMenuItem key={n.id} asChild className="flex items-start gap-3 whitespace-normal py-2.5">
+                          <Link href={`/member/notifications/${n.id}`}>
                             <span
-                            className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
+                              className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
                                 n.tone === "success" ? "bg-emerald-500" : n.tone === "gold" ? "bg-rocheli-gold" : "bg-rocheli-blue"
-                            }`}
+                              }`}
                             />
                             <div className="min-w-0 flex-1">
-                            <div className={`text-sm ${n.read_at ? "text-muted-foreground" : "font-semibold"}`}>{n.title}</div>
-                            <div className="truncate text-xs text-muted-foreground">{n.body}</div>
+                              <div className={`text-sm ${n.read_at ? "text-muted-foreground" : "font-semibold"}`}>{n.title}</div>
+                              <div className="truncate text-xs text-muted-foreground">{n.body}</div>
                             </div>
+                          </Link>
                         </DropdownMenuItem>
-                        ))}
+                      ))}
                     </div>
                     )}
 

@@ -7,6 +7,8 @@ use App\Http\Requests\Member\StoreEnquiryRequest;
 use App\Models\Enquiry;
 use App\Models\Property;
 use App\Models\PropertyMedia;
+use App\Models\User;
+use App\Notifications\NewPropertyEnquiry;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -39,7 +41,7 @@ class PropertyController extends Controller
                 ]),
             ]);
 
-        $enquiries = $member
+       $enquiries = $member
             ->enquiries()
             ->with('property')
             ->latest()
@@ -52,6 +54,7 @@ class PropertyController extends Controller
                     'image' => $e->property->image_url,
                 ],
                 'message' => $e->message ?: 'General enquiry',
+                'response' => $e->response,
                 'status' => match ($e->status) {
                     'sent' => 'Sent',
                     'in_review' => 'In review',
@@ -71,13 +74,19 @@ class PropertyController extends Controller
         $member = $request->user()->member;
         $validated = $request->validated();
 
-        Enquiry::create([
+        $enquiry = Enquiry::create([
             'member_id' => $member->id,
             'property_id' => $validated['property_id'],
             'interest' => $validated['interest'],
             'message' => $validated['message'] ?? null,
             'status' => 'sent',
         ]);
+
+        $enquiry->load('member.user', 'property');
+
+        User::where('role', 'admin')->get()->each(
+            fn (User $admin) => $admin->notify(new NewPropertyEnquiry($enquiry))
+        );
 
         return back()->with('success', 'Enquiry sent — our team will respond within 24 hours.');
     }

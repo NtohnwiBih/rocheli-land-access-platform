@@ -19,9 +19,9 @@ class PropertyController extends Controller
     public function index(): Response
     {
         return Inertia::render('admin/properties/index', [
-            'properties' => Property::with('category')->latest()->get()->map(fn (Property $p) => [
+            'properties' => Property::with(['category', 'city'])->latest()->get()->map(fn (Property $p) => [
                 'id' => $p->id,
-                'title' => $p->title,
+                'title' => $p->titleForLocale('en'),
                 'location' => $p->location,
                 'city' => $p->city?->name_en ?? '—',
                 'category' => $p->category?->name['en'] ?? '—',
@@ -49,7 +49,7 @@ class PropertyController extends Controller
             ? $request->file('image')->store('properties', 'public')
             : null;
 
-        Property::create([...$validated, 'image_path' => $imagePath]);
+        Property::create([...$this->mapPayload($validated), 'image_path' => $imagePath]);
 
         return redirect()->route('admin.properties.index')->with('success', 'Property created.');
     }
@@ -59,7 +59,8 @@ class PropertyController extends Controller
         return Inertia::render('admin/properties/form', [
             'property' => [
                 'id' => $property->id,
-                'title' => $property->title,
+                'title_en' => $property->title['en'] ?? '',
+                'title_fr' => $property->title['fr'] ?? '',
                 'city_id' => $property->city_id,
                 'location' => $property->location,
                 'size' => $property->size,
@@ -68,7 +69,8 @@ class PropertyController extends Controller
                 'price' => $property->price,
                 'price_value' => $property->price_value,
                 'status' => $property->status,
-                'description' => $property->description,
+                'description_en' => $property->description['en'] ?? '',
+                'description_fr' => $property->description['fr'] ?? '',
                 'image' => $property->image_url,
                 'media' => $property->media()->orderBy('sort_order')->get()->map(fn (PropertyMedia $m) => [
                     'id' => $m->id,
@@ -95,7 +97,7 @@ class PropertyController extends Controller
             $imagePath = $request->file('image')->store('properties', 'public');
         }
 
-        $property->update([...$validated, 'image_path' => $imagePath]);
+        $property->update([...$this->mapPayload($validated), 'image_path' => $imagePath]);
 
         return redirect()->route('admin.properties.index')->with('success', 'Property updated.');
     }
@@ -117,10 +119,6 @@ class PropertyController extends Controller
         return back()->with('success', 'Property removed.');
     }
 
-    /**
-     * Gallery uploads — supports multiple images/videos attached to a
-     * property, appended after any existing media (sort_order continues).
-     */
     public function storeMedia(StorePropertyMediaRequest $request, Property $property): RedirectResponse
     {
         $nextOrder = $property->media()->max('sort_order') + 1;
@@ -151,6 +149,25 @@ class PropertyController extends Controller
         $media->delete();
 
         return back()->with('success', 'Media removed.');
+    }
+
+    protected function mapPayload(array $validated): array
+    {
+        return [
+            'title' => ['en' => $validated['title_en'], 'fr' => $validated['title_fr']],
+            'city_id' => $validated['city_id'],
+            'location' => $validated['location'],
+            'size' => $validated['size'],
+            'type' => $validated['type'],
+            'category_id' => $validated['category_id'],
+            'price' => $validated['price'],
+            'price_value' => $validated['price_value'] ?? null,
+            'status' => $validated['status'],
+            'description' => [
+                'en' => $validated['description_en'] ?? '',
+                'fr' => $validated['description_fr'] ?? '',
+            ],
+        ];
     }
 
     protected function categoryOptions(): array

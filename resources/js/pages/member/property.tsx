@@ -30,6 +30,7 @@ import {
   CheckCircle2,
   PlayCircle,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type PropertyStatus = "Available" | "Reserved" | "Sold" | "Selling Fast";
 
@@ -60,6 +61,7 @@ type Enquiry = {
   property: { id: number; title: string; image: string | null };
   message: string;
   status: EnquiryStatus;
+  response: string | null;
   date: string;
 };
 
@@ -78,6 +80,8 @@ export default function MyProperty() {
   const [selected, setSelected] = useState<Property | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [lightbox, setLightbox] = useState<PropertyMediaItem | null>(null);
+  const [viewingEnquiry, setViewingEnquiry] = useState<Enquiry | null>(null);
+  const { t } = useTranslation();
 
   const { data, setData, post, processing, reset } = useForm({
     property_id: null as number | null,
@@ -107,7 +111,7 @@ export default function MyProperty() {
         setSubmitted(true);
       },
       onError: () => {
-        toast.error("Couldn't send your enquiry. Please try again.");
+        toast.error(t("property.myProperty.errorToast"));
       },
     });
   };
@@ -127,18 +131,16 @@ export default function MyProperty() {
 
   return (
     <>
-      <Head title="My Property — Rocheli" />
+      <Head title={`${t("property.myProperty.title")} — Rocheli`} />
 
       <div className="space-y-6">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <h1 className="font-display text-2xl font-black md:text-3xl">My properties</h1>
-            <p className="text-sm text-muted-foreground">
-              Browse verified listings and send enquiries directly to our allocation team.
-            </p>
+            <h1 className="font-display text-2xl font-black md:text-3xl">{t("property.myProperty.title")}</h1>
+            <p className="text-sm text-muted-foreground">{t("property.myProperty.subtitle")}</p>
           </div>
           <Badge className="w-fit bg-rocheli-blue/10 text-rocheli-blue hover:bg-rocheli-blue/15">
-            {enquiries.length} enquiry{enquiries.length === 1 ? "" : "ies"} sent
+            {t("property.myProperty.enquirySent", { count: enquiries.length })}
           </Badge>
         </div>
 
@@ -149,7 +151,7 @@ export default function MyProperty() {
             <Input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Search by title or location..."
+              placeholder={t("property.myProperty.searchPlaceholder")}
               className="pl-10"
             />
           </div>
@@ -158,11 +160,11 @@ export default function MyProperty() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All statuses</SelectItem>
-              <SelectItem value="Available">Available</SelectItem>
-              <SelectItem value="Selling Fast">Selling Fast</SelectItem>
-              <SelectItem value="Reserved">Reserved</SelectItem>
-              <SelectItem value="Sold">Sold</SelectItem>
+              <SelectItem value="all">{t("property.myProperty.allStatuses")}</SelectItem>
+              <SelectItem value="Available">{t("property.myProperty.statuses.Available")}</SelectItem>
+              <SelectItem value="Selling Fast">{t("property.myProperty.statuses.Selling Fast")}</SelectItem>
+              <SelectItem value="Reserved">{t("property.myProperty.statuses.Reserved")}</SelectItem>
+              <SelectItem value="Sold">{t("property.myProperty.statuses.Sold")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -187,7 +189,7 @@ export default function MyProperty() {
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-rocheli-navy/70 via-transparent to-transparent" />
                 <Badge className={`absolute left-4 top-4 border-0 ${statusColor[p.status]}`}>
-                  {p.status}
+                  {t(`property.myProperty.statuses.${p.status}`)}
                 </Badge>
                 <div className="absolute bottom-3 left-4 text-xs font-medium uppercase tracking-wider text-white/90">
                   {p.type}
@@ -205,7 +207,7 @@ export default function MyProperty() {
                 </div>
                 <div className="mt-1 border-t border-border pt-3">
                   <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                    From
+                    {t("property.myProperty.from")}
                   </div>
                   <div className="font-display text-xl font-extrabold text-rocheli-blue-dark">
                     {p.price}
@@ -218,28 +220,26 @@ export default function MyProperty() {
                   disabled={p.status === "Sold"}
                 >
                   <MessageCircle className="mr-1 h-4 w-4" />
-                  {p.status === "Sold" ? "Unavailable" : "Send enquiry"}
+                  {p.status === "Sold" ? t("property.myProperty.unavailable") : t("property.myProperty.sendEnquiry")}
                 </Button>
               </div>
             </div>
           ))}
           {filtered.length === 0 && (
             <div className="col-span-full rounded-2xl border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">
-              No properties match your search.
+              {t("property.myProperty.noMatch")}
             </div>
           )}
         </div>
 
         {/* Enquiries history */}
         <div className="rounded-3xl bg-card p-6 shadow-card">
-          <h3 className="font-display text-lg font-bold">My enquiries</h3>
-          <p className="text-sm text-muted-foreground">
-            Track the status of enquiries you've sent to our team.
-          </p>
+          <h3 className="font-display text-lg font-bold">{t("property.myProperty.myEnquiries.title")}</h3>
+          <p className="text-sm text-muted-foreground">{t("property.myProperty.myEnquiries.subtitle")}</p>
           <div className="mt-5 space-y-3">
             {enquiries.length === 0 && (
               <div className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-                No enquiries yet. Send one from any property above.
+                {t("property.myProperty.myEnquiries.empty")}
               </div>
             )}
             {enquiries.map((e) => (
@@ -269,14 +269,16 @@ export default function MyProperty() {
                             : "border-rocheli-blue/40 text-rocheli-blue"
                       }
                     >
-                      {e.status}
+                      {t(`property.myProperty.myEnquiries.statuses.${e.status}`)}
                     </Badge>
                   </div>
                   <p className="mt-1 line-clamp-1 text-sm text-muted-foreground">{e.message}</p>
-                  <div className="mt-1 text-xs text-muted-foreground">Sent {e.date}</div>
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    {t("property.myProperty.myEnquiries.sentOn", { date: e.date })}
+                  </div>
                 </div>
-                <Button variant="outline" size="sm">
-                  View
+                <Button variant="outline" size="sm" onClick={() => setViewingEnquiry(e)}>
+                  {t("property.myProperty.myEnquiries.view")}
                 </Button>
               </div>
             ))}
@@ -284,124 +286,41 @@ export default function MyProperty() {
         </div>
 
         {/* Enquiry dialog */}
-        <Dialog open={!!selected} onOpenChange={(o) => !o && closeDialog()}>
+        <Dialog open={!!viewingEnquiry} onOpenChange={(o) => !o && setViewingEnquiry(null)}>
           <DialogContent className="max-w-lg">
-            {selected && !submitted && (
+            {viewingEnquiry && (
               <>
                 <DialogHeader>
-                  <DialogTitle className="font-display text-xl">
-                    Enquire about {selected.title}
-                  </DialogTitle>
+                  <DialogTitle className="font-display text-xl">{viewingEnquiry.property.title}</DialogTitle>
                   <DialogDescription>
-                    Our allocation officer will respond within 24 hours.
+                    {t("property.enquiryDialog.sentOn", { date: viewingEnquiry.date })}
                   </DialogDescription>
                 </DialogHeader>
 
-                <div className="flex items-center gap-3 rounded-xl bg-muted/40 p-3">
-                  {selected.image ? (
-                    <img src={selected.image} alt="" className="h-14 w-14 rounded-lg object-cover" />
+                <div className="space-y-4">
+                  <div>
+                    <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                      {t("property.enquiryDialog.yourMessage")}
+                    </div>
+                    <p className="mt-1 rounded-xl border border-border p-3 text-sm">{viewingEnquiry.message}</p>
+                  </div>
+
+                  {viewingEnquiry.response ? (
+                    <div>
+                      <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                        {t("property.enquiryDialog.teamResponse")}
+                      </div>
+                      <p className="mt-1 rounded-xl bg-rocheli-blue/5 border border-rocheli-blue/20 p-3 text-sm">
+                        {viewingEnquiry.response}
+                      </p>
+                    </div>
                   ) : (
-                    <div className="h-14 w-14 rounded-lg bg-muted" />
+                    <div className="rounded-xl bg-muted p-3 text-sm text-muted-foreground">
+                      {t("property.enquiryDialog.noResponseYet")}
+                    </div>
                   )}
-                  <div className="flex-1">
-                    <div className="text-sm font-semibold">{selected.title}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {selected.location} · {selected.size}
-                    </div>
-                  </div>
-                  <div className="font-display text-sm font-black text-rocheli-blue-dark">
-                    {selected.price}
-                  </div>
                 </div>
-
-                {selected.media.length > 0 && (
-                    <div className="space-y-2">
-                        <Label className="text-xs uppercase tracking-wider text-muted-foreground">Gallery</Label>
-                        <div className="grid grid-cols-4 gap-2">
-                        {selected.media.map((m) => (
-                            <button
-                            key={m.id}
-                            type="button"
-                            onClick={() => setLightbox(m)}
-                            className="group relative aspect-square overflow-hidden rounded-lg border border-border"
-                            >
-                            {m.type === "image" ? (
-                                <img
-                                src={m.src}
-                                alt={m.caption ?? ""}
-                                className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                                />
-                            ) : (
-                                <div className="flex h-full w-full items-center justify-center bg-muted">
-                                <PlayCircle className="h-6 w-6 text-muted-foreground" />
-                                </div>
-                            )}
-                            {m.is_featured && (
-                                <span className="absolute left-1 top-1 rounded bg-rocheli-gold px-1 text-[9px] font-bold text-rocheli-navy">
-                                ★
-                                </span>
-                            )}
-                            </button>
-                        ))}
-                        </div>
-                    </div>
-                )}
-
-                <div className="grid gap-3">
-                  <div>
-                    <Label>I'm interested in</Label>
-                    <Select
-                      value={data.interest}
-                      onValueChange={(v) => setData("interest", v)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="info">More information</SelectItem>
-                        <SelectItem value="inspection">Site inspection</SelectItem>
-                        <SelectItem value="installments">Installment plan</SelectItem>
-                        <SelectItem value="reserve">Reserving this plot</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="msg">Message</Label>
-                    <Textarea
-                      id="msg"
-                      rows={4}
-                      value={data.message}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData("message", e.target.value)}
-                      placeholder="Tell us what you'd like to know..."
-                    />
-                  </div>
-                </div>
-
-                <DialogFooter>
-                  <Button variant="outline" onClick={closeDialog}>
-                    Cancel
-                  </Button>
-                  <Button variant="brand" onClick={submitEnquiry} disabled={processing}>
-                    <Send className="mr-1 h-4 w-4" /> {processing ? "Sending..." : "Send enquiry"}
-                  </Button>
-                </DialogFooter>
               </>
-            )}
-
-            {selected && submitted && (
-              <div className="py-6 text-center">
-                <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-emerald-500/15 text-emerald-600">
-                  <CheckCircle2 className="h-7 w-7" />
-                </div>
-                <h3 className="mt-4 font-display text-xl font-black">Enquiry sent</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  We've received your enquiry about <b>{selected.title}</b>. Our allocation team
-                  will reach out within 24 hours.
-                </p>
-                <Button variant="brand" className="mt-5" onClick={closeDialog}>
-                  Close
-                </Button>
-              </div>
             )}
           </DialogContent>
         </Dialog>

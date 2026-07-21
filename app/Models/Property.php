@@ -27,7 +27,10 @@ class Property extends Model
     protected function casts(): array
     {
         return [
+            'title' => 'array',
+            'description' => 'array',
             'price_value' => 'decimal:2',
+
         ];
     }
 
@@ -59,5 +62,15 @@ class Property extends Model
     public function city()
     {
         return $this->belongsTo(City::class);
+    }
+
+    public function titleForLocale(string $locale): string
+    {
+        return $this->title[$locale] ?? $this->title['en'] ?? '';
+    }
+
+    public function descriptionForLocale(string $locale): ?string
+    {
+        return $this->description[$locale] ?? $this->description['en'] ?? null;
     }
 }

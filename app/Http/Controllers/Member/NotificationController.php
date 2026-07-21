@@ -29,6 +29,28 @@ class NotificationController extends Controller
         ]);
     }
 
+    public function show(string $id): Response
+    {
+        $notification = auth()->user()->notifications()->where('id', $id)->firstOrFail();
+
+        if (! $notification->read_at) {
+            $notification->markAsRead();
+        }
+
+        return Inertia::render('member/notification-detail', [
+            'notification' => [
+                'id' => $notification->id,
+                'title' => $notification->data['title'] ?? '',
+                'body' => $notification->data['body'] ?? '',
+                'tone' => $notification->data['tone'] ?? 'info',
+                'data' => $notification->data,
+                'read_at' => $notification->read_at?->toIso8601String(),
+                'created_at' => $notification->created_at->toIso8601String(),
+                'created_at_human' => $notification->created_at->diffForHumans(),
+            ],
+        ]);
+    }
+
     public function markRead(string $id): RedirectResponse
     {
         auth()->user()->notifications()->where('id', $id)->first()?->markAsRead();

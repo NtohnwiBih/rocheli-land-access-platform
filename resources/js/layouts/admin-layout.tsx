@@ -39,6 +39,7 @@ import {
   HelpCircle,
   Tag,
   ScrollText,
+  MessageCircle,
 } from "lucide-react";
 import AppLogoIcon from "@/components/app-logo-icon";
 import { AdminMenuContent } from "@/components/admin/AdminMenuContent";
@@ -119,6 +120,7 @@ export function AdminLayout({ children }: PropsWithChildren) {
     },
     { href: "/rocheli/categories", key: "categories", label: t("admin.adminNav.categories"), icon: Tag, exact: false },
     { href: "/rocheli/properties", key: "properties", label: t("admin.adminNav.properties"), icon: Building2, exact: false },
+    { href: "/rocheli/enquiries", key: "enquiries", label: t("admin.adminNav.enquiries"), icon: MessageCircle, exact: false },
     { href: "/rocheli/articles", key: "articles", label: t("admin.adminNav.articles"), icon: Newspaper, exact: false },
     { href: "/rocheli/testimonials", key: "testimonials", label: t("admin.adminNav.testimonials"), icon: Quote, exact: false },
     { href: "/rocheli/faqs", key: "faqs", label: t("admin.adminNav.faqs"), icon: HelpCircle, exact: false },

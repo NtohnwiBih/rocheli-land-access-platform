@@ -52,6 +52,7 @@ class HandleInertiaRequests extends Middleware
                         : null,
                     'plan' => $primaryPlan?->plan->name,
                     'avatar' => null,
+                    'created_at' => $user->created_at?->toIso8601String(),
                 ] : null,
             ],
             'notifications' => fn () => $user
