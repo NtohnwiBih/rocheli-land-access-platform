@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller; 
 use App\Models\ContactMessage;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
