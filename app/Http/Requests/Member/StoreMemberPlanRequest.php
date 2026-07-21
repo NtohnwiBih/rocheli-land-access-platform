@@ -4,6 +4,7 @@ namespace App\Http\Requests\Member;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class StoreMemberPlanRequest extends FormRequest
 {
@@ -24,5 +25,19 @@ class StoreMemberPlanRequest extends FormRequest
             'contribution_amount' => ['required', 'numeric', 'min:1'],
             'payment_method' => ['required', 'string', 'in:MTN Mobile Money,Orange Money,Bank Transfer,Cash Deposit'],
         ];
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $member = $this->user()?->member;
+
+            if ($member && $member->memberPlans()->whereIn('status', ['active', 'inactive'])->count() >= 5) {
+                $validator->errors()->add(
+                    'plan_id',
+                    'You have reached the maximum of 5 projects. Please contact support if you need more.'
+                );
+            }
+        });
     }
 }

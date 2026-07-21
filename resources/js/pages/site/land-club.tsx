@@ -74,7 +74,7 @@ export default function LandClub({ content = {}, testimonials, faqs }: Props) {
           "A fintech-grade savings program that ends with a legally registered land title in your name — no lotteries, no shortcuts, no surprises."
         }
         buttons={[
-          { label: hero.ctaPrimaryLabel ?? "Start my membership", href: "/contact", icon: <ArrowRight className="h-4 w-4" /> },
+          { label: hero.ctaPrimaryLabel ?? "Start my membership", href: "/register", icon: <ArrowRight className="h-4 w-4" /> },
           { label: hero.ctaSecondaryLabel ?? "Browse eligible properties", href: "/properties", variant: "outline" },
         ]}
       />

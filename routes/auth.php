@@ -36,6 +36,10 @@ Route::middleware('guest')->group(function () {
         ->name('password.store');
 });
 
+Route::get('register/complete', [RegisteredUserController::class, 'complete'])
+    ->middleware('auth')
+    ->name('register.complete');
+
 Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
@@ -43,9 +47,17 @@ Route::middleware('auth')->group(function () {
     Route::get('verify-account', [VerificationController::class, 'notice'])
         ->name('verification.notice');
 
-    Route::post('verification.send', [VerificationController::class, 'send'])
-        ->name('verification.send');
+    // Route::post('verification.send', [VerificationController::class, 'send'])
+    //     ->name('verification.send');
 
-    Route::post('verification.verify', [VerificationController::class, 'verify'])
+    // Route::post('verification.verify', [VerificationController::class, 'verify'])
+    //     ->name('verification.verify');
+
+    Route::get('verify-email/{id}/{hash}', [VerificationController::class, 'verifyEmail'])
+        ->middleware(['signed'])
         ->name('verification.verify');
+
+    Route::post('email/verification-notification', [VerificationController::class, 'resendEmail'])
+        ->middleware(['throttle:6,1'])
+        ->name('verification.send');
 });

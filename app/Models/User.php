@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\ResetPasswordNotification;
+use App\Notifications\VerifyEmailNotification;
+use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;   
+use Illuminate\Contracts\Auth\MustVerifyEmail; 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, MustVerifyEmailTrait;
 
     protected $fillable = [
         'name',
@@ -18,6 +21,7 @@ class User extends Authenticatable
         'gender',
         'password',
         'role',
+        'preferred_locale',
     ];
 
     protected $hidden = [
@@ -39,17 +43,23 @@ class User extends Authenticatable
         return $this->hasOne(Member::class);
     }
 
-    /**
-     * A user is fully verified once whichever channel(s) they registered
-     * with have been confirmed. Adjust if you want to require BOTH.
-     */
     public function hasVerifiedAnyChannel(): bool
     {
         return $this->email_verified_at !== null || $this->phone_verified_at !== null;
     }
 
+    public function hasVerifiedEmail(): bool
+    {
+        return $this->email === null || $this->email_verified_at !== null;
+    }
+
     public function sendPasswordResetNotification($token): void
     {
         $this->notify(new ResetPasswordNotification($token));
+    }
+
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new VerifyEmailNotification);
     }
 }

@@ -21,16 +21,23 @@ class UpcomingPaymentReminder extends Notification
 
     public function toArray(object $notifiable): array
     {
+        $locale = $notifiable->preferred_locale ?? 'en';
         $due = $this->memberPlan->nextDueAt();
+        $amount = number_format((float) $this->memberPlan->contribution_amount) . ' FCFA';
+        $dueDate = $due?->format('M j, Y') ?? ($locale === 'fr' ? 'bientôt' : 'soon');
+
+        if ($locale === 'fr') {
+            return [
+                'title' => 'Paiement à venir',
+                'body' => "{$amount} dû pour {$this->memberPlan->displayName()} le {$dueDate}",
+                'tone' => 'gold',
+                'member_plan_id' => $this->memberPlan->id,
+            ];
+        }
 
         return [
             'title' => 'Upcoming payment',
-            'body' => sprintf(
-                '%s due for %s on %s',
-                number_format((float) $this->memberPlan->contribution_amount) . ' FCFA',
-                $this->memberPlan->displayName(),
-                $due?->format('M j, Y') ?? 'soon',
-            ),
+            'body' => "{$amount} due for {$this->memberPlan->displayName()} on {$dueDate}",
             'tone' => 'gold',
             'member_plan_id' => $this->memberPlan->id,
         ];

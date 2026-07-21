@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Member;
 
 use App\Http\Controllers\Controller;
 use App\Models\MemberPlan;
+use App\Models\Plan;
+use App\Models\City;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -68,7 +70,9 @@ class DashboardController extends Controller
                     'is_completed' => $mp->isCompleted(),
                     'total_contributed' => $total,
                     'target_price' => $target,
-                    'progress_pct' => $target > 0 ? min(round(($total / $target) * 100), 100) : 0,
+                    'progress_pct' => $target > 0
+                        ? min(round(($total / $target) * 100, 2), 100)
+                        : 0,
                 ];
             }),
             'selected_plan_id' => $selected?->id,
@@ -92,6 +96,21 @@ class DashboardController extends Controller
             ],
             'savings_data' => $savingsData,
             'recent_contributions' => $recentContributions,
+            'available_plans' => Plan::active()->get()->map(fn (Plan $p) => [
+                'id' => $p->id,
+                'name' => $p->name,
+                'target_price' => (float) $p->target_price,
+                'daily_amount' => (float) $p->daily_amount,
+                'weekly_amount' => (float) $p->weekly_amount,
+                'monthly_amount' => (float) $p->monthly_amount,
+                'is_flexible' => $p->is_flexible,
+                'is_featured' => $p->is_featured,
+            ]),
+            'cities' => City::active()->get()->map(fn (City $c) => [
+                'key' => $c->key,
+                'name_en' => $c->name_en,
+                'name_fr' => $c->name_fr,
+            ]),
         ]);
     }
 }

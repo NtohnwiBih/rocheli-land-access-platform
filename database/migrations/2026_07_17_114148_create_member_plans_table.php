@@ -23,8 +23,8 @@ return new class extends Migration
             $table->string('contribution_frequency');
             $table->decimal('contribution_amount', 12, 2);
             $table->string('payment_method');
-            $table->enum('status', ['pending', 'under_review', 'approved', 'rejected'])
-                ->default('pending');
+            $table->enum('status', ['active', 'inactive', 'completed', 'suspended'])
+                ->default('suspended');
             // The subscription created automatically at registration.
             $table->boolean('is_primary')->default(false);
             $table->timestamp('subscribed_at')->useCurrent();

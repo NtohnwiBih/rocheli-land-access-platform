@@ -1,4 +1,4 @@
-import { Head, Link, router, usePage } from "@inertiajs/react";
+import { Head, Link, router, useForm, usePage } from "@inertiajs/react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +24,28 @@ import {
   Tooltip,
   CartesianGrid,
 } from "recharts";
+import { AddProjectDialog } from "@/components/member/AddProjectDialog";
+import { AddContributionDialog } from "@/components/member/AddContributionDialog";
+
+interface NotificationItem {
+  id: string | number;
+  title: string;
+  body: string;
+  tone: "success" | "info" | "gold";
+  read_at: string | null;
+  created_at: string;
+}
+
+interface PlanData {
+  id: number;
+  name: string;
+  target_price: number;
+  daily_amount: number;
+  weekly_amount: number;
+  monthly_amount: number;
+  is_flexible: boolean;
+  is_featured: boolean;
+}
 
 interface PageProps {
   auth: {
@@ -33,6 +55,7 @@ interface PageProps {
       member_code?: string;
       plan?: string;
       avatar?: string;
+      created_at?: string;
     };
   };
   member?: {
@@ -55,9 +78,18 @@ interface PageProps {
   };
   savings_data: { m: string; v: number }[];
   recent_contributions: { date: string; amount: number; status: string }[];
+  notifications?: NotificationItem[]; 
+  available_plans: PlanData[];
+  cities?: CityData[];
   [key: string]: unknown;
   subscriptions: Subscription[];
   selected_plan_id: number | null;
+}
+
+interface CityData {
+  key: string;
+  name_en: string;
+  name_fr: string;
 }
 
 type Subscription = {
@@ -87,7 +119,8 @@ export default function DashboardOverview() {
   const stats = props.stats;
   const savingsData = props.savings_data;
   const recentContributions = props.recent_contributions;
-  const { subscriptions, selected_plan_id } = props;
+  const { subscriptions, selected_plan_id, available_plans, cities } = props;
+  const notifications = props.notifications ?? [];
 
   const switchProject = (id: number) => {
     router.get("/member", { plan: id }, { preserveScroll: true, preserveState: true });
@@ -135,6 +168,25 @@ export default function DashboardOverview() {
     ? savingsData.reduce((sum, d) => sum + d.v, 0)
     : 0;
 
+  const activePlan =
+    subscriptions.find((s) => s.id === selected_plan_id) ??
+    subscriptions.find((s) => s.is_primary) ??
+    subscriptions[0];
+
+  const ownershipPct = activePlan ? Math.min(activePlan.progress_pct, 100) : 0;
+  const contributed = activePlan ? activePlan.total_contributed : 0;
+  const remaining = activePlan ? Math.max(activePlan.target_price - activePlan.total_contributed, 0) : 0;
+
+  const activeOrInactiveCount = subscriptions.filter(
+    (s) => s.status === "active" || s.status === "inactive"
+  ).length;
+  const atCap = activeOrInactiveCount >= 5;
+  const inactiveSubs = subscriptions.filter((s) => s.status === "inactive");
+
+  const { post: postSuspend, processing: suspending } = useForm({});
+  const suspendPlan = (id: number) => postSuspend(`/member/plans/${id}/suspend`, { preserveScroll: true });
+
+
   return (
     <>
       <Head title="Dashboard — Rocheli">
@@ -149,7 +201,7 @@ export default function DashboardOverview() {
             <div>
               <Badge className="mb-3 border-white/20 bg-white/10 text-white">
                 <Sparkles className="mr-1 h-3 w-3 text-rocheli-gold" />{" "}
-                {user?.plan ?? member?.plan ?? t("member.dashboard.noPlanSelected")}
+                {user?.plan ?? member?.plan ?? t("member.dashboard.noPlanSelected")} . {statusLabel()}
               </Badge>
               <h1 className="font-display text-3xl font-black md:text-4xl">
                 {t("member.dashboard.welcomeBack", { name: firstName })}
@@ -160,9 +212,19 @@ export default function DashboardOverview() {
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Link href="/member/contributions">
-                <Button variant="gold" size="lg"><Plus className="mr-1 h-4 w-4" /> {t("member.dashboard.makeContribution")}</Button>
-              </Link>
+              <AddContributionDialog
+                projects={subscriptions.map((s) => ({
+                  id: s.id,
+                  label: s.label,
+                  payment_method: "", // see note below
+                  contribution_frequency: null,
+                  contribution_amount: null,
+                }))}
+                defaultProjectId={activePlan?.id}
+                trigger={
+                  <Button variant="gold" size="lg"><Plus className="mr-1 h-4 w-4" /> {t("member.dashboard.makeContribution")}</Button>
+                }
+              />
               <Button variant="hero" size="lg"><Download className="mr-1 h-4 w-4" /> {t("member.dashboard.statement")}</Button>
             </div>
           </div>
@@ -171,9 +233,9 @@ export default function DashboardOverview() {
         {subscriptions.length > 0 && (
           <div className="rounded-3xl bg-card p-6 shadow-card">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="font-display text-lg font-bold">My Projects</h3>
+              <h3 className="font-display text-lg font-bold">{t("member.dashboard.projects.title")}</h3>
               <Link href="/member/plans" className="text-sm font-medium text-rocheli-blue hover:underline">
-                Manage all
+                {t("member.dashboard.projects.manageAll")}
               </Link>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -189,10 +251,10 @@ export default function DashboardOverview() {
                     <span className="text-sm font-semibold">{s.label}</span>
                     <div className="flex items-center gap-1">
                       {s.is_primary && <span className="text-[10px] text-rocheli-gold">★</span>}
-                      {s.is_completed && <span className="text-[10px] font-medium text-emerald-600">✓ Funded</span>}
+                      {s.is_completed && <span className="text-[10px] font-medium text-emerald-600">✓ {t("member.dashboard.projects.funded")}</span>}
                     </div>
                   </div>
-                  <span className="text-xs text-muted-foreground">{s.plan_name}</span>
+                  <span className="text-xs text-muted-foreground">{statusLabel()}</span>
                   <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
                     <div
                       className={`h-full rounded-full ${s.is_completed ? "bg-emerald-500" : "bg-gradient-brand"}`}
@@ -202,12 +264,22 @@ export default function DashboardOverview() {
                   <div className="mt-1.5 text-xs text-muted-foreground">{s.progress_pct}% · {formatXAF(s.total_contributed)}</div>
                 </button>
               ))}
-              <Link
-                href="/member/plans"
-                className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground hover:border-rocheli-blue/40"
-              >
-                + Add project
-              </Link>
+              <AddProjectDialog
+                availablePlans={available_plans}
+                cities={cities ?? []}
+                atCap={atCap}
+                inactiveSubs={inactiveSubs}
+                onSuspend={suspendPlan}
+                suspending={suspending}
+                trigger={
+                  <button
+                    type="button"
+                    className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border p-4 text-sm text-muted-foreground hover:border-rocheli-blue/40"
+                  >
+                    + {t("member.dashboard.projects.addProject")}
+                  </button>
+                }
+              />
             </div>
           </div>
         )}
@@ -223,7 +295,7 @@ export default function DashboardOverview() {
                 <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
               </div>
               <div className="mt-4 text-xs uppercase tracking-wider text-muted-foreground">{s.label}</div>
-              <div className="mt-1 font-display text-2xl font-black">{s.value}</div>
+              <div className="mt-1 font-display text-lg lg:text-2xl font-black">{s.value}</div>
               <div className="mt-1 text-xs text-muted-foreground">{s.delta}</div>
             </div>
           ))}
@@ -325,13 +397,53 @@ export default function DashboardOverview() {
           {/* Right column */}
           <div className="space-y-6">
             <div className="rounded-3xl bg-card p-6 shadow-card">
+              <h3 className="font-display text-base font-bold">{t("member.dashboard.ownership.title")}</h3>
+              <div className="mt-4 grid place-items-center">
+                <div className="relative h-40 w-40">
+                  <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
+                    <circle cx="50" cy="50" r="42" stroke="var(--color-border)" strokeWidth="10" fill="none" />
+                    <circle
+                      cx="50" cy="50" r="42"
+                      stroke="url(#grad)"
+                      strokeWidth="10"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeDasharray={`${2 * Math.PI * 42 * (ownershipPct / 100)} ${2 * Math.PI * 42}`}
+                    />
+                    <defs>
+                      <linearGradient id="grad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stopColor="var(--rocheli-blue)" />
+                        <stop offset="100%" stopColor="var(--rocheli-gold)" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <div className="absolute inset-0 grid place-items-center text-center">
+                    <div>
+                      <div className="font-display text-3xl font-black">{ownershipPct}%</div>
+                      <div className="text-xs text-muted-foreground">{t("member.dashboard.ownership.toOwnership")}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 grid grid-cols-2 gap-3 text-center text-xs">
+                <div className="rounded-xl bg-muted p-3">
+                  <div className="font-semibold">{formatXAF(contributed)}</div>
+                  <div className="text-muted-foreground">{t("member.dashboard.ownership.contributed")}</div>
+                </div>
+                <div className="rounded-xl bg-muted p-3">
+                  <div className="font-semibold">{formatXAF(remaining)}</div>
+                  <div className="text-muted-foreground">{t("member.dashboard.ownership.remaining")}</div>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-3xl bg-card p-6 shadow-card">
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="font-display text-base font-bold">Recent contributions</h3>
+                <h3 className="font-display text-base font-bold">{t("member.dashboard.recentContributions.title")}</h3>
                 <Building2 className="h-4 w-4 text-muted-foreground" />
               </div>
               <div className="space-y-3">
                 {recentContributions.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No contributions yet.</p>
+                  <p className="text-sm text-muted-foreground">{t("member.dashboard.recentContributions.empty")}</p>
                 ) : (
                   recentContributions.map((p, i) => (
                     <div key={i} className="flex items-center justify-between rounded-xl border border-border p-3">
@@ -349,7 +461,7 @@ export default function DashboardOverview() {
                 )}
               </div>
               <Link href="/member/contributions" className="mt-4 block text-center text-sm font-medium text-rocheli-blue hover:underline">
-                View all contributions
+                {t("member.dashboard.recentContributions.viewAll")}
               </Link>
             </div>
 
@@ -358,7 +470,32 @@ export default function DashboardOverview() {
                 <h3 className="font-display text-base font-bold">{t("member.dashboard.notificationsTitle")}</h3>
                 <Bell className="h-4 w-4 text-muted-foreground" />
               </div>
-              <p className="text-sm text-muted-foreground">No notifications yet.</p>
+              <div className="space-y-3">
+                {notifications.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">{t("member.dashboard.notificationsEmpty")}</p>
+                ) : (
+                  notifications.slice(0, 5).map((n) => (
+                    <div key={n.id} className="flex gap-3">
+                      <div
+                        className={`mt-1 h-2 w-2 shrink-0 rounded-full ${
+                          n.tone === "success" ? "bg-emerald-500" : n.tone === "gold" ? "bg-rocheli-gold" : "bg-rocheli-blue"
+                        }`}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className={`truncate text-sm ${n.read_at ? "text-muted-foreground" : "font-semibold"}`}>
+                          {n.title}
+                        </div>
+                        <div className="truncate text-xs text-muted-foreground">{n.body}</div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+              {notifications.length > 0 && (
+                <Link href="/member/notifications" className="mt-4 block text-center text-sm font-medium text-rocheli-blue hover:underline">
+                  {t("member.layout.notificationsDropdown.viewAll")}
+                </Link>
+              )}
             </div>
           </div>
         </div>

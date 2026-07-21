@@ -12,9 +12,11 @@ class Property extends Model
 
     protected $fillable = [
         'title',
+        'city_id',
         'location',
         'size',
         'type',
+        'category_id',
         'price',
         'price_value',
         'image_path',
@@ -25,7 +27,10 @@ class Property extends Model
     protected function casts(): array
     {
         return [
+            'title' => 'array',
+            'description' => 'array',
             'price_value' => 'decimal:2',
+
         ];
     }
 
@@ -47,5 +52,25 @@ class Property extends Model
     public function getImageUrlAttribute(): ?string
     {
         return $this->image_path ? Storage::disk('public')->url($this->image_path) : null;
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function titleForLocale(string $locale): string
+    {
+        return $this->title[$locale] ?? $this->title['en'] ?? '';
+    }
+
+    public function descriptionForLocale(string $locale): ?string
+    {
+        return $this->description[$locale] ?? $this->description['en'] ?? null;
     }
 }

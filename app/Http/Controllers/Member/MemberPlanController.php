@@ -7,6 +7,8 @@ use App\Http\Requests\Member\StoreMemberPlanRequest;
 use App\Models\City;
 use App\Models\MemberPlan;
 use App\Models\Plan;
+use App\Models\User;
+use App\Notifications\NewPlanSubscribed;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -32,14 +34,16 @@ class MemberPlanController extends Controller
                     'plan_name' => $mp->plan->name,
                     'target_price' => $target,
                     'total_contributed' => $totalContributed,
-                    'progress_pct' => $target > 0 ? min(round(($totalContributed / $target) * 100), 100) : 0,
+                    'progress_pct' => $target > 0
+                        ? min(round(($totalContributed / $target) * 100, 2), 100)
+                        : 0,
                     'contribution_frequency' => $mp->contribution_frequency,
                     'contribution_amount' => (float) $mp->contribution_amount,
                     'goal' => $mp->goal,
                     'land_type' => $mp->land_type,
                     'status' => $mp->status,
                     'is_primary' => $mp->is_primary,
-                    'is_completed' => $mp->isCompleted(),
+                    'is_completed' => $mp->status === 'completed',
                     'completed_at' => $mp->completed_at?->format('M j, Y'),
                     'subscribed_at' => $mp->subscribed_at->format('M j, Y'),
                 ];
@@ -70,7 +74,7 @@ class MemberPlanController extends Controller
         $member = $request->user()->member;
         $validated = $request->validated();
 
-        MemberPlan::create([
+        $memberPlan = MemberPlan::create([
             'member_id' => $member->id,
             'plan_id' => $validated['plan_id'],
             'label' => $validated['label'] ?? null,
@@ -80,11 +84,32 @@ class MemberPlanController extends Controller
             'contribution_frequency' => $validated['contribution_frequency'],
             'contribution_amount' => $validated['contribution_amount'],
             'payment_method' => $validated['payment_method'],
-            'status' => 'pending',
+            'status' => 'active',
             'is_primary' => false,
             'subscribed_at' => now(),
         ]);
 
+        $memberPlan->load('member.user');
+
+        User::where('role', 'admin')->get()->each(
+            fn (User $admin) => $admin->notify(new NewPlanSubscribed($memberPlan))
+        );
+
         return back()->with('success', 'New project added — awaiting review.');
+    }
+
+    public function suspend(MemberPlan $memberPlan): RedirectResponse
+    {
+        $member = auth()->user()->member;
+
+        abort_unless($memberPlan->member_id === $member->id, 403);
+
+        if ($memberPlan->status !== 'inactive') {
+            return back()->with('error', 'Only inactive plans can be suspended.');
+        }
+
+        $memberPlan->suspend();
+
+        return back()->with('success', 'Project suspended. You can now create a new one.');
     }
 }

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Member\StoreContributionRequest;
 use App\Models\Contribution;
 use App\Models\MemberPlan;
+use App\Models\User;
+use App\Notifications\NewContributionSubmitted;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -91,7 +93,7 @@ class ContributionController extends Controller
 
         $proofPath = $request->file('proof')->store('contribution-proofs', 'private');
 
-        Contribution::create([
+        $contribution = Contribution::create([
             'member_id' => $member->id,
             'member_plan_id' => $memberPlan->id,
             'amount' => $validated['amount'],
@@ -101,6 +103,12 @@ class ContributionController extends Controller
             'note' => $validated['note'] ?? null,
             'status' => 'pending',
         ]);
+
+        $contribution->load('memberPlan.member.user');
+
+        User::where('role', 'admin')->get()->each(
+            fn (User $admin) => $admin->notify(new NewContributionSubmitted($contribution))
+        );
 
         return back()->with('success', 'Contribution submitted — awaiting admin validation.');
     }

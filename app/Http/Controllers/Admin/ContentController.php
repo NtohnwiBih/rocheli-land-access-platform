@@ -18,10 +18,14 @@ class ContentController extends Controller
         'about' => ['story', 'mission'],
         'services' => ['intro'],
         'land-club' => ['hero'],
+        'resources' => ['hero', 'featured', 'articles'],
         'contact' => ['intro'],
     ];
 
-    public function __construct(protected SiteContentRepositoryInterface $siteContent) {}
+    public function __construct(protected SiteContentRepositoryInterface $siteContent)
+    {
+        $this->pages = config('site-content');
+    }
 
     public function edit(string $page): Response
     {

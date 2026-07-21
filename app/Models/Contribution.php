@@ -11,6 +11,7 @@ class Contribution extends Model
 
     protected $fillable = [
         'member_id',
+        'member_plan_id',
         'amount',
         'method',
         'reference',

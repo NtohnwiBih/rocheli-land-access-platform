@@ -17,7 +17,6 @@ return new class extends Migration
             $table->json('title'); 
             $table->json('excerpt')->nullable();
             $table->json('body')->nullable();
-            $table->json('category'); 
             $table->string('author')->nullable();
             $table->string('read_time')->nullable(); 
             $table->string('image_path')->nullable();

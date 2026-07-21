@@ -18,6 +18,7 @@ class Member extends Model
         'id_type',
         'id_number',
         'id_document_path',
+        'id_document_back_path',
         'kin_name',
         'kin_relationship',
         'kin_phone',
