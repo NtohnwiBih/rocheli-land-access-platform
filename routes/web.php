@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 use App\Http\Controllers\Frontend\AboutController;
 use App\Http\Controllers\Frontend\AppointmentController;
 use App\Http\Controllers\Frontend\ContactController;
@@ -19,6 +20,10 @@ Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 Route::get('/appointments/availability', [AppointmentController::class, 'availability'])->name('appointments.availability');
 Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+
+Route::fallback(function () {
+    return Inertia::render('errors/not-found');
+});
 
 require __DIR__.'/settings.php';
 require __DIR__.'/admin.php';

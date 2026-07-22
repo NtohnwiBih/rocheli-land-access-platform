@@ -11,6 +11,8 @@ type HeroContent = {
   subtitle?: string;
   ctaPrimaryLabel?: string;
   ctaSecondaryLabel?: string;
+  ctaPrimaryUrl?: string;
+  ctaSecondaryUrl?: string;
   watchStoryLabel?: string;
   statMembersLabel?: string;
   statPropertiesLabel?: string;
@@ -33,6 +35,8 @@ export default function Hero({ content = {} }: Props) {
       "Join the Land Access Club and take a structured path toward verified land and property ownership across Cameroon's most promising cities.",
     ctaPrimaryLabel: content.ctaPrimaryLabel ?? "Become a Member",
     ctaSecondaryLabel: content.ctaSecondaryLabel ?? "Explore Properties",
+    ctaPrimaryUrl: content.ctaPrimaryUrl || "/properties",
+    ctaSecondaryUrl: content.ctaSecondaryUrl || "/land-access-club",
     watchStoryLabel: content.watchStoryLabel ?? "Watch the story",
     statMembersLabel: content.statMembersLabel ?? "Members building wealth",
     statPropertiesLabel: content.statPropertiesLabel ?? "Acres actively managed",
@@ -84,7 +88,7 @@ export default function Hero({ content = {} }: Props) {
               size="lg"
               className="bg-gradient-gold text-navy hover:opacity-95 rounded-full h-14 px-7 text-base font-semibold shadow-elegant"
             >
-              <Link href="/land-access-club">
+              <Link href={c.ctaPrimaryUrl}>
                 {c.ctaPrimaryLabel} <ArrowRight className="h-4 w-4" />
               </Link>
             </Button>
@@ -94,7 +98,7 @@ export default function Hero({ content = {} }: Props) {
               size="lg"
               className="rounded-full h-14 px-6 text-base font-semibold border-white/30 bg-white/5 text-white hover:bg-white/15 backdrop-blur-md"
             >
-              <Link href="/properties">{c.ctaSecondaryLabel}</Link>
+              <Link href={c.ctaSecondaryUrl}>{c.ctaSecondaryLabel}</Link>
             </Button>
             <button className="inline-flex items-center gap-2.5 text-sm font-medium text-white/90 hover:text-gold transition">
               <span className="grid h-11 w-11 place-items-center rounded-full bg-white/15 backdrop-blur-md border border-white/25">

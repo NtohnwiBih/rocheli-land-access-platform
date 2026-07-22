@@ -63,12 +63,12 @@ class ContactContentSeeder extends Seeder
             'offices' => [
                 'en' => [
                     'items' => [
-                        ['city' => 'Yaoundé', 'address' => 'Bastos, Avenue de l\'Indépendance', 'phone' => '+237 6 55 11 11 11', 'hours' => 'Mon–Fri · 8am – 5pm'],
+                        ['city' => 'Yaoundé', 'address' => 'Chapelle Elig-Effa', 'phone' => '+237 6 55 11 11 11', 'hours' => 'Mon–Fri · 8am – 5pm'],
                     ],
                 ],
                 'fr' => [
                     'items' => [
-                        ['city' => 'Yaoundé', 'address' => 'Bastos, Avenue de l\'Indépendance', 'phone' => '+237 6 55 11 11 11', 'hours' => 'Lun–Ven · 8h – 17h'],
+                        ['city' => 'Yaoundé', 'address' => 'Chapelle Elig-Effa', 'phone' => '+237 6 55 11 11 11', 'hours' => 'Lun–Ven · 8h – 17h'],
                     ],
                 ],
             ],

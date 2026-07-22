@@ -27,6 +27,8 @@ export const pageSchemas: PageDefinition[] = [
           { type: 'textarea', key: 'subtitle', label: 'Subtitle' },
           { type: 'text', key: 'ctaPrimaryLabel', label: 'Primary CTA label' },
           { type: 'text', key: 'ctaSecondaryLabel', label: 'Secondary CTA label' },
+          { type: 'text', key: 'ctaPrimaryUrl', label: 'Primary button link'},
+          { type: 'text', key: 'ctaSecondaryUrl', label: 'Secondary button link'},
           { type: 'text', key: 'watchStoryLabel', label: 'Watch story label' },
           { type: 'text', key: 'statMembersLabel', label: 'Members stat label' },
           { type: 'text', key: 'statPropertiesLabel', label: 'Properties stat label' },
