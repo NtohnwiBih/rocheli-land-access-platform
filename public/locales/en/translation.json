@@ -685,5 +685,54 @@
             "noResponseYet": "Our team hasn't responded yet — you'll be notified as soon as they do.",
             "sentOn": "Sent {{date}}"
         }
+    },
+    "contact": {
+        "meta": {
+            "title": "Contact - Rocheli Real Properties",
+            "description": "Talk to a Rocheli advisor. Book a consultation, visit our offices, or chat on WhatsApp.",
+            "ogTitle": "Contact Rocheli Real Properties",
+            "ogDescription": "Book a consultation or visit our office in Yaounde"
+        },
+        "hero": {
+            "eyebrow": "Contact us",
+            "title": "Let's talk about your",
+            "titleAccent": "first plot.",
+            "description": "Book a 30-minute consultation with an advisor. Visit our office. Or ping us on WhatsApp - whichever works for you."
+        },
+        "form": {
+            "title": "Send us a message",
+            "subtitle": "We'll respond within one business day.",
+            "interests": {
+            "landAccessClub": "Land Access Club",
+            "buyProperty": "Buy a property",
+            "investmentAdvisory": "Investment advisory",
+            "partnershipPress": "Partnership / Press",
+            "other": "Other"
+            },
+            "fields": {
+            "name": { "label": "Full name", "placeholder": "Amina Nkeng" },
+            "phone": { "label": "Phone / WhatsApp", "placeholder": "+237 ..." },
+            "email": { "label": "Email address", "placeholder": "you@example.com" },
+            "interest": { "label": "Interest" },
+            "message": { "label": "Message", "placeholder": "Tell us about your goals..." }
+            }
+        },
+        "booking": {
+            "title": "Book an advisor",
+            "body": "Pick a 30-minute slot with a Rocheli advisor. Available Mon-Sat.",
+            "loading": "Loading available times...",
+            "noSlotsLeft": "Nothing left that day - try another.",
+            "submitting": "Sending...",
+            "submit": "Send message & confirm slot"
+        },
+        "confirmed": {
+            "title": "You're booked",
+            "subtitle": "We've sent a confirmation and an advisor will meet you at the scheduled time.",
+            "bookAnother": "Book another slot"
+        },
+        "whatsapp": {
+            "title": "Chat on WhatsApp",
+            "subtitle": "Response time under 15 minutes . 8am - 8pm"
+        }
     }
 }

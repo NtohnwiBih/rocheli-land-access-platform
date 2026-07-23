@@ -10,16 +10,28 @@ class Appointment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'phone', 'email', 'interest', 'message',
-        'appointment_date', 'appointment_time', 'status', 'confirmed_at',
+        'name',
+        'email',
+        'phone',
+        'interest',
+        'message',
+        'appointment_date',
+        'appointment_time',
+        'status',
     ];
 
-    protected function casts(): array
+    protected $casts = [
+        'appointment_date' => 'date',
+        'appointment_time' => 'datetime:H:i',
+    ];
+
+    public function scopeConfirmed($query)
     {
-        return [
-            'appointment_date' => 'date',
-            'appointment_time' => 'datetime:H:i',
-            'confirmed_at' => 'datetime',
-        ];
+        return $query->where('status', 'confirmed');
+    }
+
+    public function getShortTimeAttribute(): string
+    {
+        return $this->appointment_time->format('H:i');
     }
 }

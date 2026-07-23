@@ -685,5 +685,54 @@
             "noResponseYet": "Notre équipe n'a pas encore répondu — vous serez averti dès que ce sera le cas.",
             "sentOn": "Envoyé le {{date}}"
         }
+    },
+    "contact": {
+        "meta": {
+            "title": "Contact - Rocheli Real Properties",
+            "description": "Parlez a un conseiller Rocheli. Reservez une consultation, visitez nos bureaux ou ecrivez-nous sur WhatsApp.",
+            "ogTitle": "Contactez Rocheli Real Properties",
+            "ogDescription": "Reservez une consultation ou visitez notre bureau a Yaounde"
+        },
+        "hero": {
+            "eyebrow": "Contactez-nous",
+            "title": "Parlons de votre",
+            "titleAccent": "premiere parcelle.",
+            "description": "Reservez une consultation de 30 minutes avec un conseiller. Visitez notre bureau. Ou ecrivez-nous sur WhatsApp - comme vous preferez."
+        },
+        "form": {
+            "title": "Envoyez-nous un message",
+            "subtitle": "Nous repondons sous un jour ouvre.",
+            "interests": {
+            "landAccessClub": "Land Access Club",
+            "buyProperty": "Acheter une propriete",
+            "investmentAdvisory": "Conseil en investissement",
+            "partnershipPress": "Partenariat / Presse",
+            "other": "Autre"
+            },
+            "fields": {
+            "name": { "label": "Nom complet", "placeholder": "Amina Nkeng" },
+            "phone": { "label": "Telephone / WhatsApp", "placeholder": "+237 ..." },
+            "email": { "label": "Adresse e-mail", "placeholder": "vous@exemple.com" },
+            "interest": { "label": "Interet" },
+            "message": { "label": "Message", "placeholder": "Parlez-nous de vos objectifs..." }
+            }
+        },
+        "booking": {
+            "title": "Reservez un conseiller",
+            "body": "Choisissez un creneau de 30 minutes avec un conseiller Rocheli. Disponible du lundi au samedi.",
+            "loading": "Chargement des disponibilites...",
+            "noSlotsLeft": "Plus rien ce jour-la - essayez un autre jour.",
+            "submitting": "Envoi en cours...",
+            "submit": "Envoyer le message et confirmer le creneau"
+        },
+        "confirmed": {
+            "title": "C'est reserve",
+            "subtitle": "Nous avons envoye une confirmation, un conseiller vous retrouvera a l'heure prevue.",
+            "bookAnother": "Reserver un autre creneau"
+        },
+        "whatsapp": {
+            "title": "Discuter sur WhatsApp",
+            "subtitle": "Reponse en moins de 15 minutes . 8h - 20h"
+        }
     }
 }

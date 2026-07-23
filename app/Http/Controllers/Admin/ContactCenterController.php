@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
-use App\Models\ContactMessage;
+use App\Models\Contact;
 use App\Models\Enquiry;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -16,14 +16,15 @@ class ContactCenterController extends Controller
     {
         $tab = $request->string('tab', 'all')->toString();
 
-        $contacts = ContactMessage::latest()->get()->map(fn (ContactMessage $c) => [
+        $contacts = Contact::latest()->get()->map(fn (Contact $c) => [
             'id' => $c->id,
             'type' => 'contact',
             'name' => $c->name,
             'phone' => $c->phone,
             'email' => $c->email,
             'summary' => $c->interest ?? $c->message ?? 'General enquiry',
-            'status' => $c->handled ? 'handled' : 'new',
+            'status' => $c->status,
+            'message' => $c->message,
             'created_at' => $c->created_at->diffForHumans(),
             'timestamp' => $c->created_at->timestamp,
         ]);
@@ -45,9 +46,9 @@ class ContactCenterController extends Controller
         $enquiries = Enquiry::with(['member.user', 'property'])->latest()->get()->map(fn (Enquiry $e) => [
             'id' => $e->id,
             'type' => 'enquiry',
-            'name' => $e->member->user->name,
-            'phone' => $e->member->user->phone,
-            'email' => $e->member->user->email,
+            'name' => $e->contact_name,
+            'phone' => $e->contact_phone,
+            'email' => $e->contact_email,
             'summary' => $e->property->titleForLocale('en') . ' — ' . $e->interest,
             'status' => $e->status,
             'created_at' => $e->created_at->diffForHumans(),
