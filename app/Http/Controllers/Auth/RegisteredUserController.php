@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\StoreMemberRequest;
-use App\Mail\WelcomeMember;
-use Illuminate\Support\Facades\Mail;
 use App\Models\City;
 use App\Models\Member;
 use App\Models\MemberPlan;
@@ -148,15 +146,6 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         if ($user->email) {
-            try {
-                Mail::to($user->email)->send(new WelcomeMember($user));
-            } catch (\Throwable $e) {
-                Log::error('Failed to send welcome email', [
-                    'user_id' => $user->id,
-                    'error' => $e->getMessage(),
-                ]);
-            }
-
             $user->sendEmailVerificationNotification();
         }
 

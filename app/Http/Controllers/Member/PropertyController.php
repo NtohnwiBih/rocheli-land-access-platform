@@ -17,6 +17,7 @@ class PropertyController extends Controller
 {
     public function index(): Response
     {
+        $locale = app()->getLocale();
         $member = auth()->user()->member;
 
         $properties = Property::query()
@@ -25,7 +26,11 @@ class PropertyController extends Controller
             ->get()
             ->map(fn (Property $p) => [
                 'id' => $p->id,
-                'title' => $p->title,
+                // Was $p->title — the raw translatable attribute (all locales).
+                // That object then hit .toLowerCase() in the search filter and
+                // crashed. Resolve to the current locale, same as the frontend
+                // PropertyController does.
+                'title' => $p->titleForLocale($locale),
                 'location' => $p->location,
                 'size' => $p->size,
                 'type' => $p->type,
@@ -41,7 +46,7 @@ class PropertyController extends Controller
                 ]),
             ]);
 
-       $enquiries = $member
+        $enquiries = $member
             ->enquiries()
             ->with('property')
             ->latest()
@@ -50,7 +55,7 @@ class PropertyController extends Controller
                 'id' => $e->id,
                 'property' => [
                     'id' => $e->property->id,
-                    'title' => $e->property->title,
+                    'title' => $e->property->titleForLocale($locale),
                     'image' => $e->property->image_url,
                 ],
                 'message' => $e->message ?: 'General enquiry',

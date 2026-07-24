@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('interest')->nullable();
             $table->text('message')->nullable();
 
-            $table->enum('status', ['sent', 'read', 'responded'])->default('sent');
+            $table->enum('status', ['sent', 'in_review', 'responded'])->default('sent');
             $table->text('response')->nullable();
             $table->foreignId('responded_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamp('responded_at')->nullable();

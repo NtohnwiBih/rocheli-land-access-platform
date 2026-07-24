@@ -23,7 +23,7 @@ class StoreEnquiryRequest extends FormRequest
 
             // Only required when nobody is logged in — a member's contact
             // details already live on their account, so the form hides
-            // these fields entirely when authenticated (see the frontend).
+            // these fields entirely when authenticated 
             'name' => [Rule::requiredIf($isGuest), 'nullable', 'string', 'max:255'],
             'email' => [Rule::requiredIf($isGuest), 'nullable', 'email', 'max:255'],
             'phone' => [Rule::requiredIf($isGuest), 'nullable', 'string', 'max:30'],

@@ -10,7 +10,7 @@ class CitySeeder extends Seeder
     public function run(): void
     {
         $cities = [
-            ['key' => 'yaounde', 'name_en' => 'Yaoundé', 'name_fr' => 'Yaoundé', 'sort_order' => 1],
+            ['key' => 'yaounde', 'name_en' => 'Yaounde', 'name_fr' => 'Yaoundé', 'sort_order' => 1],
             ['key' => 'douala', 'name_en' => 'Douala', 'name_fr' => 'Douala', 'sort_order' => 2],
             ['key' => 'buea', 'name_en' => 'Buea', 'name_fr' => 'Buea', 'sort_order' => 3],
             ['key' => 'limbe', 'name_en' => 'Limbe', 'name_fr' => 'Limbé', 'sort_order' => 4],
