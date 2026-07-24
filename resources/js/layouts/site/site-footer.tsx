@@ -4,14 +4,35 @@ import {
   Instagram,
   Linkedin,
   Twitter,
-  Youtube,
   MapPin,
   Phone,
   Mail,
   ArrowRight,
 } from "lucide-react";
 
-export function Footer() {
+type FooterContent = {
+  description?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  facebookUrl?: string;
+  instagramUrl?: string;
+  linkedinUrl?: string;
+  twitterUrl?: string;
+};
+
+interface Props {
+  content?: FooterContent;
+}
+
+export function Footer({ content = {} }: Props) {
+  const socials = [
+    { Icon: Facebook, href: content.facebookUrl },
+    { Icon: Instagram, href: content.instagramUrl },
+    { Icon: Linkedin, href: content.linkedinUrl },
+    { Icon: Twitter, href: content.twitterUrl },
+  ];
+
   return (
     <footer className="relative overflow-hidden bg-gradient-navy text-white/85 mt-24">
       <div
@@ -24,21 +45,12 @@ export function Footer() {
       <div className="container-x pt-20 pb-10 relative">
         <div className="grid gap-14 md:grid-cols-2 lg:grid-cols-5">
           <div className="lg:col-span-2 space-y-6">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-blue">
-                <span className="font-display text-lg font-bold text-white">R</span>
-              </div>
-              <div className="leading-tight">
-                <div className="font-display text-xl font-bold text-white">ROCHELI</div>
-                <div className="text-[10px] uppercase tracking-[0.25em] text-white/50">
-                  Real Properties
-                </div>
-              </div>
+            <Link href="/" className="group flex items-center gap-2.5 shrink-0">
+              <img src="/logo1.png" alt="Rocheli Real Properties" className="h-18 w-auto" />
             </Link>
             <p className="max-w-md text-sm leading-relaxed text-white/60">
-              A technology-driven real estate company helping thousands of Cameroonians
-              secure verified land and build multi-generational wealth through the Land
-              Access Club.
+              {content.description ??
+                "A technology-driven real estate company helping thousands of Cameroonians secure verified land and build multi-generational wealth through the Land Access Club."}
             </p>
 
             <form className="glass rounded-2xl p-2 flex items-center gap-2 max-w-md">
@@ -56,10 +68,12 @@ export function Footer() {
             </form>
 
             <div className="flex gap-2">
-              {[Facebook, Instagram, Linkedin, Twitter, Youtube].map((Icon, i) => (
+              {socials.map(({ Icon, href }, i) => (
                 <a
                   key={i}
-                  href="#"
+                  href={href || "#"}
+                  target={href ? "_blank" : undefined}
+                  rel={href ? "noopener noreferrer" : undefined}
                   className="grid h-10 w-10 place-items-center rounded-full border border-white/10 text-white/70 hover:border-gold/60 hover:text-gold transition"
                 >
                   <Icon className="h-4 w-4" />
@@ -111,15 +125,17 @@ export function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex gap-3">
                 <MapPin className="h-4 w-4 text-gold shrink-0 mt-0.5" />
-                <span className="text-white/60">Bonapriso HQ, Douala, Cameroon</span>
+                <span className="text-white/60">
+                  {content.address ?? "Bonapriso HQ, Douala, Cameroon"}
+                </span>
               </li>
               <li className="flex gap-3">
                 <Phone className="h-4 w-4 text-gold shrink-0 mt-0.5" />
-                <span className="text-white/60">+237 6 55 00 00 00</span>
+                <span className="text-white/60">{content.phone ?? "+237 6 55 00 00 00"}</span>
               </li>
               <li className="flex gap-3">
                 <Mail className="h-4 w-4 text-gold shrink-0 mt-0.5" />
-                <span className="text-white/60">hello@rocheli.cm</span>
+                <span className="text-white/60">{content.email ?? "hello@rocheli.cm"}</span>
               </li>
             </ul>
           </div>

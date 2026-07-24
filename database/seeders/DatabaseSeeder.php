@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             PlanSeeder::class,
             CitySeeder::class,
             CategorySeeder::class,
+            GlobalContentSeeder::class,
             SiteContentSeeder::class,
             AboutContentSeeder::class,
             ServicesContentSeeder::class,

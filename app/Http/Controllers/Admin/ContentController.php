@@ -14,7 +14,8 @@ use Inertia\Response;
 class ContentController extends Controller
 {
     protected array $pages = [
-        'home' => ['hero', 'whyRocheli', 'savingsProgram', 'steps', 'testimonials', 'faq', 'articles', 'cta', 'footer'],
+        'global' => ['footer'],
+        'home' => ['hero', 'whyRocheli', 'savingsProgram', 'steps', 'testimonials', 'faq', 'articles', 'cta'],
         'about' => ['story', 'mission'],
         'services' => ['intro'],
         'land-club' => ['hero'],
