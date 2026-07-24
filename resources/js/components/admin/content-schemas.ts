@@ -1,6 +1,6 @@
 import { type SectionSchema } from '@/types';
 
-export type PageKey = 'home' | 'about' | 'services' | 'land-club' | 'resources' | 'contact';
+export type PageKey ='global' | 'home' | 'about' | 'services' | 'land-club' | 'resources' | 'contact';
 
 export type PageDefinition = {
   key: PageKey;
@@ -9,6 +9,26 @@ export type PageDefinition = {
 };
 
 export const pageSchemas: PageDefinition[] = [
+  {
+    key: 'global',
+    label: 'Global',
+    sections: [
+      {
+        key: 'footer',
+        label: 'Footer',
+        fields: [
+          { type: 'textarea', key: 'description', label: 'Company description' },
+          { type: 'text', key: 'phone', label: 'Phone' },
+          { type: 'text', key: 'email', label: 'Email' },
+          { type: 'text', key: 'address', label: 'Address' },
+          { type: 'text', key: 'facebookUrl', label: 'Facebook URL' },
+          { type: 'text', key: 'instagramUrl', label: 'Instagram URL' },
+          { type: 'text', key: 'linkedinUrl', label: 'LinkedIn URL' },
+          { type: 'text', key: 'twitterUrl', label: 'Twitter/X URL' },
+        ],
+      },
+    ],
+  },
   // ─────────────────────────────────────────────────────────
   // HOME
   // ─────────────────────────────────────────────────────────
@@ -152,20 +172,6 @@ export const pageSchemas: PageDefinition[] = [
           { type: 'text', key: 'phone', label: 'Phone' },
           { type: 'text', key: 'whatsapp', label: 'WhatsApp number' },
           { type: 'text', key: 'ctaLabel', label: 'CTA label' },
-        ],
-      },
-      {
-        key: 'footer',
-        label: 'Footer',
-        fields: [
-          { type: 'textarea', key: 'description', label: 'Company description' },
-          { type: 'text', key: 'phone', label: 'Phone' },
-          { type: 'text', key: 'email', label: 'Email' },
-          { type: 'text', key: 'address', label: 'Address' },
-          { type: 'text', key: 'facebookUrl', label: 'Facebook URL' },
-          { type: 'text', key: 'instagramUrl', label: 'Instagram URL' },
-          { type: 'text', key: 'linkedinUrl', label: 'LinkedIn URL' },
-          { type: 'text', key: 'twitterUrl', label: 'Twitter/X URL' },
         ],
       },
     ],

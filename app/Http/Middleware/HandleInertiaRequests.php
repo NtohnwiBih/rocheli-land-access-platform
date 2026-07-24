@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Repositories\Contracts\SiteContentRepositoryInterface;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -15,6 +16,10 @@ class HandleInertiaRequests extends Middleware
      * @var string
      */
     protected $rootView = 'app';
+
+    public function __construct(
+        protected SiteContentRepositoryInterface $siteContent,
+    ) {}
 
     /**
      * Determines the current asset version.
@@ -38,6 +43,7 @@ class HandleInertiaRequests extends Middleware
         $user = $request->user();
         $member = $user?->member;
         $primaryPlan = $member?->memberPlans()->where('is_primary', true)->with('plan')->first();
+        $locale = $request->cookie('lang', 'en');
 
         return [
             ...parent::share($request),
@@ -68,6 +74,8 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'registered' => fn () => $request->session()->get('registered'),
             ],
+            'footer' => fn () => $this->siteContent
+                ->forFrontend('global', ['footer'], $locale)['footer'] ?? [],
         ];
     }
 }

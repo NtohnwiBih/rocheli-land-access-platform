@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'global' => ['footer'],
     'home' => ['hero', 'whyRocheli', 'savingsProgram', 'steps', 'testimonials', 'faq', 'articles', 'cta', 'footer'],
     'about' => ['hero', 'story', 'mission', 'leadership'],
     'services' => ['hero', 'list', 'cta'],
