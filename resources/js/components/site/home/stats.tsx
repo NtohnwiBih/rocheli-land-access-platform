@@ -4,7 +4,8 @@ import { Counter } from "../section";
 type Props = {
   content?: {
     statMembersLabel?: string;
-    statPropertiesLabel?: string;
+    statPropertiesAllocatedLabel?: string;
+    statAcresLabel?: string;
     statContributionsLabel?: string;
   };
 };
@@ -12,8 +13,8 @@ type Props = {
 export default function Stats({ content = {} }: Props) {
   const stats = [
     { value: 5000, suffix: "+", label: content.statMembersLabel ?? "Active members" },
-    { value: 2000, suffix: "+", label: "Properties allocated" },
-    { value: 15000, suffix: "", label: content.statPropertiesLabel ?? "Acres under management" },
+    { value: 2000, suffix: "+", label: content.statPropertiesAllocatedLabel ?? "Properties allocated" },
+    { value: 15000, suffix: "", label: content.statAcresLabel ?? "Acres under management" },
     { value: 2.5, prefix: "FCFA ", suffix: "B", label: content.statContributionsLabel ?? "Member contributions" },
   ];
 

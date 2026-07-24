@@ -17,14 +17,10 @@ import {
   LayoutDashboard,
   Wallet,
   Landmark,
-  FileText,
   Bell,
   User,
   LifeBuoy,
-  Map,
   Calculator,
-  Users,
-  LogOut,
   Search,
   Menu,
   X,
@@ -33,7 +29,6 @@ import {
   PanelLeft,
   PanelLeftClose,
   Globe,
-  ChevronsUpDown,
   ScrollText,
 } from "lucide-react";
 import AppLogoIcon from "@/components/app-logo-icon";
@@ -79,11 +74,8 @@ const nav = [
   { href: "/member/contributions", key: "contributions", icon: Wallet },
   { href: "/member/plans", key: "active-plan", icon: Wallet },
   { href: "/member/property", key: "property", icon: Landmark },
-  // { href: "/member/documents", key: "documents", icon: FileText },
   { href: "/member/notifications", key: "notifications", icon: Bell },
-  // { href: "/member/map", key: "map", icon: Map },
   { href: "/member/calculator", key: "calculator", icon: Calculator },
-  // { href: "/member/referrals", key: "referrals", icon: Users },
   { href: "/member/profile", key: "profile", icon: User },
   { href: "/member/support", key: "support", icon: LifeBuoy },
   { href: "/member/legal", key: "legal", icon: ScrollText },
@@ -147,7 +139,7 @@ export function MemberLayout({ children }: PropsWithChildren) {
     <div className="min-h-screen bg-muted/40">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-72 shrink-0 border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-72 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300 lg:translate-x-0 ${
           open ? "translate-x-0" : "-translate-x-full"
         } ${sidebarWidth}`}
       >
@@ -168,7 +160,9 @@ export function MemberLayout({ children }: PropsWithChildren) {
           </button>
         </div>
 
-        <nav className="flex flex-col gap-1 p-3">
+        {/* Scrollable nav — wrapping it is what lets items scroll instead of
+            clipping behind the viewport or under the account card below. */}
+        <nav className="sidebar-scroll flex-1 overflow-y-auto flex flex-col gap-1 p-3">
           {nav.map((n) => {
             const active = url === n.href || (n.href !== "/member" && url.startsWith(n.href));
             const label = t(`member.layout.nav.${n.key}`);
@@ -196,11 +190,10 @@ export function MemberLayout({ children }: PropsWithChildren) {
           })}
         </nav>
 
-        <div
-          className={`absolute inset-x-3 bottom-0 transition-all ${
-            collapsed ? "lg:bottom-3" : ""
-          }`}
-        >
+        {/* No longer absolutely positioned — a normal flex child now, so it
+            always sits below the scrollable nav instead of floating on top
+            of whatever items happen to be near the bottom. */}
+        <div className={`relative transition-all ${collapsed ? "lg:pb-3" : ""}`}>
           <MemberMenuContent
             user={user}
             member={member}
@@ -303,6 +296,26 @@ export function MemberLayout({ children }: PropsWithChildren) {
         </header>
         <main className="p-4 md:p-8">{children}</main>
       </div>
+
+      <style>{`
+        .sidebar-scroll {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255, 210, 26, 0.35) transparent;
+        }
+        .sidebar-scroll::-webkit-scrollbar {
+          width: 6px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb {
+          background-color: rgba(255, 210, 26, 0.35);
+          border-radius: 9999px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(255, 210, 26, 0.55);
+        }
+      `}</style>
     </div>
   );
 }

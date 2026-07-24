@@ -57,6 +57,14 @@ class Article extends Model
         ];
     }
 
+    public function forDetail(string $locale): array
+    {
+        return [
+            ...$this->forLocale($locale),
+            'body' => $this->body[$locale] ?? $this->body['en'] ?? '',
+        ];
+    }
+
     public static function generateUniqueSlug(string $titleEn, ?int $ignoreId = null): string
     {
         $base = Str::slug($titleEn);

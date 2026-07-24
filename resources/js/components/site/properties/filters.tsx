@@ -1,7 +1,26 @@
+import { useTranslation } from "react-i18next";
+
 export const cities = ["All cities", "Douala", "Yaoundé", "Kribi", "Buea", "Bafoussam", "Limbe"];
 export const types = ["All types", "Residential", "Beachfront", "Commercial", "Mixed-Use"];
 export const paymentOptions = ["Any payment", "Installments", "Outright"];
-export const availability = ["Any status", "Available", "Fast Selling", "New Launch"];
+export const availability = ["Any status", "Available", "Selling Fast", "Reserved", "Sold"];
+
+const VALUE_KEYS: Record<string, string> = {
+  "All cities": "properties.filters.values.allCities",
+  "All types": "properties.filters.values.allTypes",
+  "Any payment": "properties.filters.values.anyPayment",
+  "Installments": "properties.filters.values.installments",
+  "Outright": "properties.filters.values.outright",
+  "Any status": "properties.filters.values.anyStatus",
+  "Available": "properties.filters.values.available",
+  "Selling Fast": "properties.filters.values.sellingFast",
+  "Reserved": "properties.filters.values.reserved",
+  "Sold": "properties.filters.values.sold",
+  "Residential": "properties.filters.values.residential",
+  "Beachfront": "properties.filters.values.beachfront",
+  "Commercial": "properties.filters.values.commercial",
+  "Mixed-Use": "properties.filters.values.mixedUse",
+};
 
 export interface PropertyFiltersState {
   city: string;
@@ -28,15 +47,17 @@ export function PropertyFilters({
   priceMax,
   setPriceMax,
 }: PropertyFiltersState) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
-      <FilterGroup label="Location" options={cities} value={city} onChange={setCity} />
-      <FilterGroup label="Property type" options={types} value={type} onChange={setType} />
-      <FilterGroup label="Payment" options={paymentOptions} value={payment} onChange={setPayment} />
-      <FilterGroup label="Availability" options={availability} value={status} onChange={setStatus} />
+      <FilterGroup label={t("properties.filters.location", "Location")} options={cities} value={city} onChange={setCity} />
+      <FilterGroup label={t("properties.filters.propertyType", "Property type")} options={types} value={type} onChange={setType} />
+      <FilterGroup label={t("properties.filters.payment", "Payment")} options={paymentOptions} value={payment} onChange={setPayment} />
+      <FilterGroup label={t("properties.filters.availability", "Availability")} options={availability} value={status} onChange={setStatus} />
       <div>
         <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-          Max price
+          {t("properties.filters.maxPrice", "Max price")}
         </div>
         <input
           type="range"
@@ -50,7 +71,7 @@ export function PropertyFilters({
         <div className="mt-2 flex justify-between text-xs text-muted-foreground">
           <span>FCFA 5M</span>
           <span className="font-semibold text-foreground">
-            Up to FCFA {(priceMax / 1_000_000).toFixed(1)}M
+            {t("properties.filters.upTo", "Up to FCFA {{amount}}M", { amount: (priceMax / 1_000_000).toFixed(1) })}
           </span>
           <span>FCFA 30M</span>
         </div>
@@ -70,6 +91,8 @@ function FilterGroup({
   value: string;
   onChange: (v: string) => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div>
       <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
@@ -86,7 +109,7 @@ function FilterGroup({
                 : "border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
             }`}
           >
-            {o}
+            {t(VALUE_KEYS[o] ?? o, o)}
           </button>
         ))}
       </div>

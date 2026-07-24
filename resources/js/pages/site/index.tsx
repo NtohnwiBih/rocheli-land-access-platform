@@ -17,18 +17,20 @@ interface Props {
   testimonials: any[];
   faqs: any[];
   articles: any[];
+  properties: any[];
+  plans: any[];
 }
 
-export default function Home({ content, testimonials, faqs, articles }: Props) {
+export default function Home({ content, testimonials, faqs, articles, properties, plans }: Props) {
   return (
     <>
       <Hero content={content.hero} />
       <Stats content={content.hero} />
-      <Featured />
+      <Featured items={properties}/>
       <WhyUs content={content.whyRocheli} />
       <ClubOverview content={content.savingsProgram} />
       <HowItWorks content={content.steps} />
-      <Plans />
+      <Plans items={plans} />
       <Testimonials content={content.testimonials} items={testimonials} />
       <Articles content={content.articles} items={articles} />
       <FAQ content={content.faq} items={faqs} />

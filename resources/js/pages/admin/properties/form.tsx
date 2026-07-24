@@ -13,6 +13,7 @@ type MediaItem = { id: number; type: "image" | "video"; src: string; caption: st
 
 type PropertyData = {
   id: number;
+  slug: string;
   title_en: string;
   title_fr: string;
   city_id: number;
@@ -54,6 +55,7 @@ export default function PropertyForm({ property, categories, cities }: Props) {
   const [galleryFiles, setGalleryFiles] = useState<FileList | null>(null);
 
   const { data, setData, post, processing, errors, transform } = useForm({
+    slug: property?.slug ?? "",
     title_en: property?.title_en ?? "",
     title_fr: property?.title_fr ?? "",
     city_id: property?.city_id ?? null,
@@ -165,6 +167,20 @@ export default function PropertyForm({ property, categories, cities }: Props) {
 
               {activeSection === "details" && (
                 <div className="grid gap-4 sm:grid-cols-2">
+                    {editing && (
+                      <div className="space-y-2 sm:col-span-2">
+                        <Label>Slug</Label>
+                        <Input
+                          value={data.slug}
+                          onChange={(e) => setData("slug", e.target.value)}
+                          placeholder="auto-generated-from-title"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Changing this will change the property's public URL. Leave as-is unless you have a specific reason to update it.
+                        </p>
+                        {errors.slug && <p className="text-xs text-destructive">{errors.slug}</p>}
+                      </div>
+                    )}
                   {locale === "en" ? (
                     <>
                       <div className="space-y-2 sm:col-span-2">

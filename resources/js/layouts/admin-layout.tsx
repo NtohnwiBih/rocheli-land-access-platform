@@ -122,10 +122,11 @@ export function AdminLayout({ children }: PropsWithChildren) {
     { href: "/rocheli/properties", key: "properties", label: t("admin.adminNav.properties"), icon: Building2, exact: false },
     { href: "/rocheli/enquiries", key: "enquiries", label: t("admin.adminNav.enquiries"), icon: MessageCircle, exact: false },
     { href: "/rocheli/articles", key: "articles", label: t("admin.adminNav.articles"), icon: Newspaper, exact: false },
+    { href: "/rocheli/members", key: "members", label: t("admin.adminNav.members"), icon: Users, exact: false },
     { href: "/rocheli/testimonials", key: "testimonials", label: t("admin.adminNav.testimonials"), icon: Quote, exact: false },
     { href: "/rocheli/faqs", key: "faqs", label: t("admin.adminNav.faqs"), icon: HelpCircle, exact: false },
     { href: "/rocheli/plans", key: "plans", label: t("admin.adminNav.plans"), icon: Wallet, exact: false },
-    { href: "/rocheli/members", key: "members", label: t("admin.adminNav.members"), icon: Users, exact: false },
+    { href: "/rocheli/team-members", key: "team-members", label: t("admin.adminNav.teamMembers"), icon: Users, exact: false },
     { href: "/rocheli/legal", key: "legal", label: t("admin.adminNav.legal"), icon: ScrollText, exact: false },
     { href: "/rocheli/contacts", key: "contacts", label: t("admin.adminNav.contacts"), icon: Mail, exact: false },
   ] as const;
@@ -230,7 +231,7 @@ export function AdminLayout({ children }: PropsWithChildren) {
     <div className="min-h-screen bg-muted/40">
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-72 shrink-0 border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300 lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-72 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300 lg:translate-x-0 ${
           mobileNavOpen ? "translate-x-0" : "-translate-x-full"
         } ${sidebarWidth}`}
       >
@@ -254,141 +255,150 @@ export function AdminLayout({ children }: PropsWithChildren) {
           </button>
         </div>
 
-        <div className="px-6 pt-6 pb-2">
-          <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-semibold">Workspace</div>
-        </div>
+        {/* Scrollable middle section: workspace label, nav links, back-to-site.
+            Wrapping this (instead of leaving nav bare) is what makes the
+            sidebar scroll instead of clipping items behind the viewport
+            or under the account card below. */}
+        <div className="sidebar-scroll flex-1 overflow-y-auto">
+          <div className="px-6 pt-6 pb-2">
+            <div className="text-[10px] uppercase tracking-[0.2em] text-white/40 font-semibold">Workspace</div>
+          </div>
 
-        <nav className="flex flex-col gap-1 p-3">
-            {nav.map((n) => {
-                if ("children" in n) {
-                const isGroupActive = n.children.some((c) => url.startsWith(c.href));
-                const isOpen = openGroup === n.key;
+          <nav className="flex flex-col gap-1 p-3">
+              {nav.map((n) => {
+                  if ("children" in n) {
+                  const isGroupActive = n.children.some((c) => url.startsWith(c.href));
+                  const isOpen = openGroup === n.key;
 
-                return (
-                    <div key={n.key}>
-                    <button
-                        type="button"
-                        onClick={() => {
-                        if (collapsed) {
-                            // collapsed sidebar: just navigate to first child instead of expanding
-                            router.visit(n.children[0].href);
-                            return;
-                        }
-                        setOpenGroup((g) => (g === n.key ? null : n.key));
-                        }}
-                        title={collapsed ? n.label : undefined}
-                        className={`flex w-full items-center rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${
-                        collapsed ? "lg:justify-center lg:px-2" : "gap-3"
-                        } ${
-                        isGroupActive
-                            ? "bg-sidebar-accent text-white"
-                            : "text-sidebar-foreground/75 hover:bg-sidebar-accent/60 hover:text-white"
-                        }`}
-                    >
-                        <n.icon className={`h-4 w-4 shrink-0 ${
+                  return (
+                      <div key={n.key}>
+                      <button
+                          type="button"
+                          onClick={() => {
+                          if (collapsed) {
+                              // collapsed sidebar: just navigate to first child instead of expanding
+                              router.visit(n.children[0].href);
+                              return;
+                          }
+                          setOpenGroup((g) => (g === n.key ? null : n.key));
+                          }}
+                          title={collapsed ? n.label : undefined}
+                          className={`flex w-full items-center rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${
+                          collapsed ? "lg:justify-center lg:px-2" : "gap-3"
+                          } ${
                           isGroupActive
-                          ? "text-rocheli-gold"
-                          : "text-sidebar-foreground/75"
-                        }`} />
-                        <span
-                        className={`flex-1 overflow-hidden text-left transition-all ${
-                            collapsed ? "lg:w-0 lg:opacity-0" : "lg:w-auto lg:opacity-100"
-                        }`}
-                        >
-                        {n.label}
-                        </span>
-                        {!collapsed && (
-                        <ChevronDown
-                            className={`h-3.5 w-3.5 shrink-0 text-white/60 transition-transform ${isOpen ? "rotate-180" : ""}`}
-                        />
-                        )}
-                    </button>
+                              ? "bg-sidebar-accent text-white"
+                              : "text-sidebar-foreground/75 hover:bg-sidebar-accent/60 hover:text-white"
+                          }`}
+                      >
+                          <n.icon className={`h-4 w-4 shrink-0 ${
+                            isGroupActive
+                            ? "text-rocheli-gold"
+                            : "text-sidebar-foreground/75"
+                          }`} />
+                          <span
+                          className={`flex-1 overflow-hidden text-left transition-all ${
+                              collapsed ? "lg:w-0 lg:opacity-0" : "lg:w-auto lg:opacity-100"
+                          }`}
+                          >
+                          {n.label}
+                          </span>
+                          {!collapsed && (
+                          <ChevronDown
+                              className={`h-3.5 w-3.5 shrink-0 text-white/60 transition-transform ${isOpen ? "rotate-180" : ""}`}
+                          />
+                          )}
+                      </button>
 
-                    {!collapsed && isOpen && (
-                        <div className="mt-1 ml-4 flex flex-col gap-0.5 border-l border-sidebar-border pl-3">
-                        {n.children.map((c) => {
-                            const isActive = url.startsWith(c.href);
-                            return (
-                            <Link
-                                key={c.href}
-                                href={c.href}
-                                onClick={() => setMobileNavOpen(false)}
-                                className={`rounded-lg px-3 py-2 text-sm transition-colors ${
-                                isActive
-                                    ? "bg-sidebar-accent/80 text-white font-medium"
-                                    : "text-sidebar-foreground/65 hover:bg-sidebar-accent/40 hover:text-white"
-                                }`}
-                            >
-                                {c.label}
-                            </Link>
-                            );
-                        })}
-                        </div>
-                    )}
-                    </div>
-                );
-                }
+                      {!collapsed && isOpen && (
+                          <div className="mt-1 ml-4 flex flex-col gap-0.5 border-l border-sidebar-border pl-3">
+                          {n.children.map((c) => {
+                              const isActive = url.startsWith(c.href);
+                              return (
+                              <Link
+                                  key={c.href}
+                                  href={c.href}
+                                  onClick={() => setMobileNavOpen(false)}
+                                  className={`rounded-lg px-3 py-2 text-sm transition-colors ${
+                                  isActive
+                                      ? "bg-sidebar-accent/80 text-white font-medium"
+                                      : "text-sidebar-foreground/65 hover:bg-sidebar-accent/40 hover:text-white"
+                                  }`}
+                              >
+                                  {c.label}
+                              </Link>
+                              );
+                          })}
+                          </div>
+                      )}
+                      </div>
+                  );
+                  }
 
-                const isActive = n.exact ? url === n.href : url.startsWith(n.href);
-                const badge = n.key === "contacts" && unread > 0 ? unread : null;
-                return (
-                <Link
-                    key={n.href}
-                    href={n.href}
-                    onClick={() => setMobileNavOpen(false)}
-                    title={collapsed ? n.label : undefined}
-                    className={`flex items-center rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${
-                    collapsed ? "lg:justify-center lg:px-2" : "gap-3"
-                    } ${
-                    isActive
-                        ? "bg-sidebar-accent text-white"
-                        : "text-sidebar-foreground/75 hover:bg-sidebar-accent/60 hover:text-white"
-                    }`}
-                >
-                    <n.icon className={`h-4 w-4 shrink-0 ${
+                  const isActive = n.exact ? url === n.href : url.startsWith(n.href);
+                  const badge = n.key === "contacts" && unread > 0 ? unread : null;
+                  return (
+                  <Link
+                      key={n.href}
+                      href={n.href}
+                      onClick={() => setMobileNavOpen(false)}
+                      title={collapsed ? n.label : undefined}
+                      className={`flex items-center rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${
+                      collapsed ? "lg:justify-center lg:px-2" : "gap-3"
+                      } ${
                       isActive
-                      ? "text-rocheli-gold"
-                      : "text-sidebar-foreground/75"
-                    }`} />
-                    <span
-                    className={`flex-1 overflow-hidden transition-all ${collapsed ? "lg:w-0 lg:opacity-0" : "lg:w-auto lg:opacity-100"}`}
-                    >
-                    {n.label}
-                    </span>
-                    {badge && (
-                    <span
-                        className={`ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-rocheli-gold text-navy ${collapsed ? "lg:hidden" : ""}`}
-                    >
-                        {badge}
-                    </span>
-                    )}
-                    {isActive && <span className={`ml-auto h-1.5 w-1.5 rounded-full bg-rocheli-gold ${collapsed ? "lg:hidden" : ""}`} />}
-                </Link>
-                );
-            })}
-        </nav>
+                          ? "bg-sidebar-accent text-white"
+                          : "text-sidebar-foreground/75 hover:bg-sidebar-accent/60 hover:text-white"
+                      }`}
+                  >
+                      <n.icon className={`h-4 w-4 shrink-0 ${
+                        isActive
+                        ? "text-rocheli-gold"
+                        : "text-sidebar-foreground/75"
+                      }`} />
+                      <span
+                      className={`flex-1 overflow-hidden transition-all ${collapsed ? "lg:w-0 lg:opacity-0" : "lg:w-auto lg:opacity-100"}`}
+                      >
+                      {n.label}
+                      </span>
+                      {badge && (
+                      <span
+                          className={`ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-rocheli-gold text-navy ${collapsed ? "lg:hidden" : ""}`}
+                      >
+                          {badge}
+                      </span>
+                      )}
+                      {isActive && <span className={`ml-auto h-1.5 w-1.5 rounded-full bg-rocheli-gold ${collapsed ? "lg:hidden" : ""}`} />}
+                  </Link>
+                  );
+              })}
+          </nav>
 
-        <div className="px-3 mt-4">
-          <Link
-            href="/"
-            className={`flex items-center rounded-xl px-3.5 py-2.5 text-sm font-medium text-sidebar-foreground/60 hover:bg-sidebar-accent/60 hover:text-white transition-colors ${
-              collapsed ? "lg:justify-center lg:px-2" : "gap-3"
-            }`}
-            title={collapsed ? t("admin.adminLayout.backToSite") : undefined}
-          >
-            <ArrowLeft className="h-4 w-4 shrink-0" />
-            <span
-              className={`overflow-hidden transition-all ${collapsed ? "lg:w-0 lg:opacity-0" : "lg:w-auto lg:opacity-100"}`}
+          <div className="px-3 mt-4">
+            <Link
+              href="/"
+              className={`flex items-center rounded-xl px-3.5 py-2.5 text-sm font-medium text-sidebar-foreground/60 hover:bg-sidebar-accent/60 hover:text-white transition-colors ${
+                collapsed ? "lg:justify-center lg:px-2" : "gap-3"
+              }`}
+              title={collapsed ? t("admin.adminLayout.backToSite") : undefined}
             >
-              {t("admin.adminLayout.backToSite")}
-            </span>
-          </Link>
+              <ArrowLeft className="h-4 w-4 shrink-0" />
+              <span
+                className={`overflow-hidden transition-all ${collapsed ? "lg:w-0 lg:opacity-0" : "lg:w-auto lg:opacity-100"}`}
+              >
+                {t("admin.adminLayout.backToSite")}
+              </span>
+            </Link>
+          </div>
         </div>
 
-        {/* Custom user menu (no shadcn dropdown, matches earlier MemberMenu pattern) */}
+        {/* Custom user menu (no shadcn dropdown, matches earlier MemberMenu pattern).
+            No longer absolutely positioned over the nav — it's a normal flex
+            child now, so it always sits below the scrollable area instead of
+            floating on top of whatever nav items happen to be there. */}
         <div
           ref={userMenuRef}
-          className={`absolute inset-x-3 bottom-4 transition-all ${collapsed ? "lg:bottom-3" : ""}`}
+          className={`relative mx-3 mb-4 transition-all ${collapsed ? "lg:mb-3" : ""}`}
         >
           {userMenuOpen && (
             <div
@@ -554,6 +564,26 @@ export function AdminLayout({ children }: PropsWithChildren) {
 
         <main className="p-4 md:p-8">{children}</main>
       </div>
+
+      <style>{`
+        .sidebar-scroll {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255, 210, 26, 0.35) transparent;
+        }
+        .sidebar-scroll::-webkit-scrollbar {
+          width: 6px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb {
+          background-color: rgba(255, 210, 26, 0.35);
+          border-radius: 9999px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(255, 210, 26, 0.55);
+        }
+      `}</style>
     </div>
   );
 }

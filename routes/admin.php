@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\LegalDocumentController;
 use App\Http\Controllers\Admin\PlanController;
+use App\Http\Controllers\Admin\TeamController;
 
 Route::prefix('rocheli')
     ->name('admin.')
@@ -112,4 +113,8 @@ Route::prefix('rocheli')
 
         Route::get('enquiries/{enquiry}', [EnquiryController::class, 'show'])->name('enquiries.show');
         Route::post('enquiries/{enquiry}/respond', [EnquiryController::class, 'respond'])->name('enquiries.respond');
+
+        Route::resource('team-members', TeamController::class)
+            ->except(['show'])
+            ->parameters(['team-members' => 'team']);
     });

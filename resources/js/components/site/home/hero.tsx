@@ -14,17 +14,34 @@ type HeroContent = {
   ctaPrimaryUrl?: string;
   ctaSecondaryUrl?: string;
   watchStoryLabel?: string;
-  statMembersLabel?: string;
-  statPropertiesLabel?: string;
-  statContributionsLabel?: string;
   heroImage?: string;
+};
+
+type StatsContent = {
+  statMembersValue?: string;
+  statMembersLabel?: string;
+  statAcresValue?: string;
+  statAcresLabel?: string;
+  statContributionsValue?: string;
+  statContributionsLabel?: string;
 };
 
 interface Props {
   content?: HeroContent;
+  stats?: StatsContent;
 }
 
-export default function Hero({ content = {} }: Props) {
+function toNumber(value: string | undefined, fallback: number): number {
+  if (!value) return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function formatThousands(value: number): string {
+  return value.toLocaleString("en-US");
+}
+
+export default function Hero({ content = {}, stats = {} }: Props) {
   const c = {
     badge: content.badge ?? "The Land Access Club · Cohort 12 now open",
     titleLine1: content.titleLine1 ?? "Own Land.",
@@ -38,16 +55,29 @@ export default function Hero({ content = {} }: Props) {
     ctaPrimaryUrl: content.ctaPrimaryUrl || "/properties",
     ctaSecondaryUrl: content.ctaSecondaryUrl || "/land-access-club",
     watchStoryLabel: content.watchStoryLabel ?? "Watch the story",
-    statMembersLabel: content.statMembersLabel ?? "Members building wealth",
-    statPropertiesLabel: content.statPropertiesLabel ?? "Acres actively managed",
-    statContributionsLabel: content.statContributionsLabel ?? "Member contributions",
     heroImage: content.heroImage || "/hero-land.jpg",
   };
 
-  const stats = [
-    { value: "5,000+", label: c.statMembersLabel, icon: HeartHandshake },
-    { value: "15,000", label: c.statPropertiesLabel, icon: MapPin },
-    { value: "FCFA 2.5B", label: c.statContributionsLabel, icon: TrendingUp },
+  const membersValue = toNumber(stats.statMembersValue, 5000);
+  const acresValue = toNumber(stats.statAcresValue, 15000);
+  const contributionsValue = toNumber(stats.statContributionsValue, 2.5);
+
+  const heroStats = [
+    {
+      value: `${formatThousands(membersValue)}+`,
+      label: stats.statMembersLabel ?? "Members building wealth",
+      icon: HeartHandshake,
+    },
+    {
+      value: formatThousands(acresValue),
+      label: stats.statAcresLabel ?? "Acres actively managed",
+      icon: MapPin,
+    },
+    {
+      value: `FCFA ${contributionsValue}B`,
+      label: stats.statContributionsLabel ?? "Member contributions",
+      icon: TrendingUp,
+    },
   ];
 
   return (
@@ -110,7 +140,7 @@ export default function Hero({ content = {} }: Props) {
         </motion.div>
 
         <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-4xl">
-          {stats.map((s, i) => (
+          {heroStats.map((s, i) => (
             <motion.div
               key={s.label}
               initial={{ opacity: 0, y: 40 }}

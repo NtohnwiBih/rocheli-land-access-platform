@@ -1,11 +1,18 @@
 import { Head } from "@inertiajs/react";
 import { useState, useMemo } from "react";
-import { properties } from "@/lib/mock-data";
+import { useTranslation } from "react-i18next";
 import { Breadcrumb } from "@/components/site/breadcrumbs";
 import { PropertyFilters, cities } from "@/components/site/properties/filters";
 import { PropertyListing } from "@/components/site/properties/listing";
+import type { Property } from "@/types";
 
-export default function Properties() {
+interface Props {
+  properties: Property[];
+}
+
+export default function Properties({ properties }: Props) {
+  const { t } = useTranslation();
+
   const [q, setQ] = useState("");
   const [city, setCity] = useState("All cities");
   const [type, setType] = useState("All types");
@@ -15,15 +22,15 @@ export default function Properties() {
 
   const filtered = useMemo(() => {
     return properties.filter((p) => {
-      if (q && !`${p.title} ${p.location}`.toLowerCase().includes(q.toLowerCase())) return false;
-      if (city !== "All cities" && !p.location.includes(city)) return false;
+      const haystack = `${p.title} ${p.location} ${p.city ?? ""}`.toLowerCase();
+      if (q && !haystack.includes(q.toLowerCase())) return false;
+      if (city !== "All cities" && p.city !== city) return false;
       if (type !== "All types" && p.type !== type) return false;
-      if (payment === "Installments" && !p.installment) return false;
       if (status !== "Any status" && p.status !== status) return false;
       if (p.priceValue > priceMax) return false;
       return true;
     });
-  }, [q, city, type, payment, status, priceMax]);
+  }, [q, city, type, status, priceMax]);
 
   const filterState = {
     city,
@@ -38,10 +45,6 @@ export default function Properties() {
     setPriceMax,
   };
 
-  // Filtering already happens live as `q`/`city` change, so the search
-  // button doesn't need to do anything extra — this just exists so the
-  // button has a handler and can later be extended without touching
-  // Breadcrumb itself.
   const handleSearch = () => {};
 
   const resetFilters = () => {
@@ -54,31 +57,37 @@ export default function Properties() {
 
   return (
     <>
-      <Head title="Properties — Rocheli Real Properties">
+      <Head title={t("properties.meta.title", "Properties - Rocheli Real Properties")}>
         <meta
           name="description"
-          content="Explore Rocheli's verified land plots and property developments across Cameroon — Douala, Yaoundé, Kribi, Buea and more."
+          content={t(
+            "properties.meta.description",
+            "Explore Rocheli's verified land plots and property developments across Cameroon - Douala, Yaounde, Kribi, Buea and more."
+          )}
         />
-        <meta property="og:title" content="Properties — Rocheli Real Properties" />
+        <meta property="og:title" content={t("properties.meta.ogTitle", "Properties - Rocheli Real Properties")} />
         <meta
           property="og:description"
-          content="Verified plots and estates across Cameroon's growth corridors."
+          content={t("properties.meta.ogDescription", "Verified plots and estates across Cameroon's growth corridors.")}
         />
       </Head>
 
       <Breadcrumb
-        eyebrow="Marketplace"
+        eyebrow={t("properties.hero.eyebrow", "Marketplace")}
         title={
           <>
-            Verified properties across{" "}
-            <span className="italic text-gradient-gold">Cameroon.</span>
+            {t("properties.hero.title", "Verified properties across")}{" "}
+            <span className="italic text-gradient-gold">{t("properties.hero.titleAccent", "Cameroon.")}</span>
           </>
         }
-        description="Every listing is title-audited, geo-mapped, and eligible for structured installments through the Land Access Club."
+        description={t(
+          "properties.hero.description",
+          "Every listing is title-audited, geo-mapped, and eligible for structured installments through the Land Access Club."
+        )}
         search={{
           value: q,
           onChange: setQ,
-          placeholder: "Search by city, project or feature…",
+          placeholder: t("properties.hero.searchPlaceholder", "Search by city, project or feature…"),
           city,
           onCityChange: setCity,
           cities,
@@ -91,19 +100,19 @@ export default function Properties() {
           <aside className="hidden lg:block">
             <div className="sticky top-28 rounded-3xl bg-card border border-border p-6">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="font-display text-xl font-semibold">Filters</h2>
+                <h2 className="font-display text-xl font-semibold">{t("properties.filters.title", "Filters")}</h2>
                 <button
                   onClick={resetFilters}
                   className="text-xs font-semibold text-primary hover:underline"
                 >
-                  Reset
+                  {t("properties.filters.reset", "Reset")}
                 </button>
               </div>
               <PropertyFilters {...filterState} />
             </div>
           </aside>
-          
-           <PropertyListing filtered={filtered} total={properties.length} filters={filterState} />
+
+          <PropertyListing filtered={filtered} total={properties.length} filters={filterState} />
         </div>
       </section>
     </>
