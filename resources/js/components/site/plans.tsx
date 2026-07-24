@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "./section";
 import { useTranslation } from "react-i18next";
+import { Link } from "@inertiajs/react";
 
 type PlanItem = {
   id: number;
@@ -79,10 +80,14 @@ export function Plans({ items }: PlansProps) {
               </div>
               <div className="p-6 pt-0">
                 <Button
+                  asChild
                   variant="outline"
                   className="w-full h-11 rounded-full border-border bg-muted hover:bg-muted/80 text-foreground font-semibold"
                 >
-                  {t('plans.choosePlan')}
+                  <Link href={`/register`}>
+                    <Check className="mr-2 h-4 w-4" strokeWidth={3} />
+                    {t("plans.choosePlan")}
+                  </Link>
                 </Button>
               </div>
             </motion.div>

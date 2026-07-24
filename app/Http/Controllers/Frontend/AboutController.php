@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Team;
 use App\Repositories\Contracts\SiteContentRepositoryInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -22,6 +23,14 @@ class AboutController extends Controller
 
         return Inertia::render('site/about', [
             'content' => $this->siteContent->forFrontend('about', $this->sections, $locale),
+            'teams' => Team::orderBy('order')
+                ->get()
+                ->map(fn (Team $m) => [
+                    'id' => $m->id,
+                    'name' => $m->nameForLocale($locale),
+                    'role' => $m->positionForLocale($locale),
+                    'image' => $m->image_url,
+                ]),
         ]);
     }
 }

@@ -1,12 +1,13 @@
 import { Breadcrumb } from "@/components/site/breadcrumbs";
 import { SectionHeader } from "@/components/site/section";
-import { team } from "@/lib/mock-data";
 import { Head } from "@inertiajs/react";
 import { Eye, Heart, Target } from "lucide-react";
 import { motion } from "motion/react";
 import { resolveIcon } from "@/lib/icon-map";
 
 type ValueCard = { icon: string; title: string; body: string };
+
+type TeamMember = { id: number | string; name: string; role: string; image?: string | null };
 
 type Props = {
   content: {
@@ -15,7 +16,22 @@ type Props = {
     mission?: { values?: ValueCard[] };
     leadership?: { eyebrow?: string; title?: string; description?: string };
   };
+  teams: TeamMember[];
 };
+
+function splitAccent(text: string): { word: string; rest: string } {
+  const [word, ...restWords] = text.trim().split(/\s+/);
+  return { word: word ?? "", rest: restWords.length ? ` ${restWords.join(" ")}` : "" };
+}
+
+function initialsFor(name: string): string {
+  return name
+    .split(/\s+/)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
 
 const fallbackValues: ValueCard[] = [
   { icon: "Target", title: "Mission", body: "Make verified land ownership accessible to every ambitious Cameroonian through structured, transparent programs." },
@@ -23,11 +39,14 @@ const fallbackValues: ValueCard[] = [
   { icon: "Heart", title: "Values", body: "Integrity above expedience. Transparency by default. Excellence at every touchpoint. Members before margins." },
 ];
 
-export default function About({ content = {} }: Props) {
+export default function About({ content = {}, teams = [] }: Props) {
   const hero = content.hero ?? {};
   const story = content.story ?? {};
   const values = content.mission?.values?.length ? content.mission.values : fallbackValues;
   const leadership = content.leadership ?? {};
+
+  const heroAccent = splitAccent(hero.titleAccent ?? "bridge to land");
+  const storyAccent = splitAccent(story.titleAccent ?? "believers to a movement of 5,000+ members.");
 
   return (
     <>
@@ -48,8 +67,8 @@ export default function About({ content = {} }: Props) {
         title={
           <>
             {hero.title ?? "Building the trusted"}{" "}
-            <span className="italic text-gradient-gold">{hero.titleAccent ?? "bridge to land"}</span>{" "}in
-            Cameroon.
+            <span className="italic text-gradient-gold">{heroAccent.word}</span>
+            {heroAccent.rest}
           </>
         }
         description={
@@ -74,8 +93,8 @@ export default function About({ content = {} }: Props) {
               title={
                 <>
                   {story.title ?? "From a small team of"}{" "}
-                  <span className="italic text-gradient-blue">{story.titleAccent ?? "believers"}</span> to a
-                  movement of 5,000+ members.
+                  <span className="italic text-gradient-blue">{storyAccent.word}</span>
+                  {storyAccent.rest}
                 </>
               }
             />
@@ -123,21 +142,35 @@ export default function About({ content = {} }: Props) {
             title={leadership.title ?? "The people building Rocheli"}
             description={leadership.description ?? "A senior team spanning real estate, law, finance and technology."}
           />
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {team.map((m, i) => (
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {teams.map((m, i) => (
               <motion.div
-                key={m.name}
+                key={m.id}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.06 }}
-                className="group rounded-3xl bg-card border border-border p-8 hover:shadow-elegant hover:-translate-y-1 transition-all"
+                className="group relative aspect-[3/4] overflow-hidden rounded-3xl bg-muted"
               >
-                <div className="grid h-20 w-20 place-items-center rounded-2xl bg-gradient-blue text-white font-display text-2xl font-bold shadow-glow group-hover:scale-105 transition-transform">
-                  {m.initials}
+                {m.image ? (
+                  <img
+                    src={m.image}
+                    alt={m.name}
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="absolute inset-0 grid place-items-center bg-gradient-blue">
+                    <span className="font-display text-4xl font-bold text-white">
+                      {initialsFor(m.name)}
+                    </span>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-5">
+                  <h3 className="font-display text-lg font-semibold text-white">{m.name}</h3>
+                  <p className="mt-0.5 text-sm text-white/75">{m.role}</p>
                 </div>
-                <h3 className="mt-6 font-display text-xl font-semibold">{m.name}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">{m.role}</p>
               </motion.div>
             ))}
           </div>
