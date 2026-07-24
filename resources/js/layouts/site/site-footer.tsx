@@ -10,6 +10,21 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+// lucide-react doesn't ship a TikTok icon (brand logos are excluded from
+// the core set), so we define a small matching-style SVG icon ourselves.
+function TikTok({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M16.6 5.82c-.9-.98-1.4-2.26-1.4-3.62h-3.03v13.68c0 1.5-1.22 2.72-2.72 2.72a2.72 2.72 0 0 1-2.72-2.72 2.72 2.72 0 0 1 2.72-2.72c.28 0 .55.04.8.12v-3.08a5.8 5.8 0 0 0-.8-.06A5.75 5.75 0 0 0 3.75 16a5.75 5.75 0 0 0 5.75 5.75A5.75 5.75 0 0 0 15.25 16V9.01a7.35 7.35 0 0 0 4.3 1.38V7.36c-.97 0-1.87-.31-2.6-.83a4.6 4.6 0 0 1-.35-.71z" />
+    </svg>
+  );
+}
+
 type FooterContent = {
   description?: string;
   phone?: string;
@@ -19,6 +34,7 @@ type FooterContent = {
   instagramUrl?: string;
   linkedinUrl?: string;
   twitterUrl?: string;
+  tiktokUrl?: string;
 };
 
 interface Props {
@@ -31,6 +47,7 @@ export function Footer({ content = {} }: Props) {
     { Icon: Instagram, href: content.instagramUrl },
     { Icon: Linkedin, href: content.linkedinUrl },
     { Icon: Twitter, href: content.twitterUrl },
+    { Icon: TikTok, href: content.tiktokUrl },
   ];
 
   return (

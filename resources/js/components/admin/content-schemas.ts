@@ -25,6 +25,7 @@ export const pageSchemas: PageDefinition[] = [
           { type: 'text', key: 'instagramUrl', label: 'Instagram URL' },
           { type: 'text', key: 'linkedinUrl', label: 'LinkedIn URL' },
           { type: 'text', key: 'twitterUrl', label: 'Twitter/X URL' },
+          { type: 'text', key: 'tiktokUrl', label: 'TikTok URL' },
         ],
       },
     ],

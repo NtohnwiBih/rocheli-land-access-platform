@@ -22,6 +22,7 @@ class GlobalContentSeeder extends Seeder
                     'instagramUrl' => '',
                     'linkedinUrl' => '',
                     'twitterUrl' => '',
+                    'tiktokUrl' => '',
                 ],
                 'fr' => [
                     'description' => 'Une plateforme d\'épargne immobilière de confiance aidant les membres à travers le Cameroun à bâtir la richesse grâce à la propriété foncière vérifiée.',
@@ -32,6 +33,7 @@ class GlobalContentSeeder extends Seeder
                     'instagramUrl' => '',
                     'linkedinUrl' => '',
                     'twitterUrl' => '',
+                    'tiktokUrl' => '',
                 ],
             ],
         ];
