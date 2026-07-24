@@ -1,6 +1,6 @@
 import { Breadcrumb } from "@/components/site/breadcrumbs";
 import { SectionHeader } from "@/components/site/section";
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import { ArrowRight, BookOpen, Download, FileQuestion, Video } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -86,6 +86,9 @@ export default function Resources({ content = {}, articles }: Props) {
                     transition={{ delay: i * 0.06 }}
                     className={`relative group overflow-hidden rounded-3xl ${span}`}
                   >
+                    <Link href={`/resources/${f.slug}`} className="absolute inset-0 z-10">
+                      <span className="sr-only">{f.title}</span>
+                    </Link>
                     {f.image && (
                       <img
                         src={f.image}

@@ -12,18 +12,20 @@ class Enquiry extends Model
     protected $fillable = [
         'member_id',
         'property_id',
+        'name',
+        'email',
+        'phone',
         'interest',
         'message',
         'status',
         'response',
+        'responded_by',
         'responded_at',
     ];
 
     protected function casts(): array
     {
-        return [
-            'responded_at' => 'datetime',
-        ];
+        return ['responded_at' => 'datetime'];
     }
 
     public function member()
@@ -34,5 +36,30 @@ class Enquiry extends Model
     public function property()
     {
         return $this->belongsTo(Property::class);
+    }
+
+    public function respondedBy()
+    {
+        return $this->belongsTo(User::class, 'responded_by');
+    }
+
+    public function scopeSent($query)
+    {
+        return $query->where('status', 'sent');
+    }
+
+    public function getContactNameAttribute(): string
+    {
+        return $this->member?->user?->name ?? $this->name ?? 'Guest';
+    }
+
+    public function getContactEmailAttribute(): ?string
+    {
+        return $this->member?->user?->email ?? $this->email;
+    }
+
+    public function getContactPhoneAttribute(): ?string
+    {
+        return $this->member?->user?->phone ?? $this->phone;
     }
 }

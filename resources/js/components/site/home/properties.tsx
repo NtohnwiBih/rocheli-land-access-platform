@@ -2,9 +2,18 @@ import { ArrowRight } from "lucide-react";
 import { SectionHeader } from "../section";
 import { Link } from "@inertiajs/react";
 import { PropertyCard } from "../components/property-card";
-import { properties } from "@/lib/mock-data";
+import { Property } from "@/types";
+import { useState } from "react";
 
-export default function Featured() {
+type Props = {
+  items: Property[];
+}
+
+export default function Featured({ items }: Props) {
+  const [i, setI] = useState(0);
+
+  if (items.length === 0) return null;
+  const t = items[i] ?? items[0];
   return (
     <section className="py-24 bg-muted/40">
       <div className="container-x">
@@ -28,8 +37,8 @@ export default function Featured() {
         </div>
 
         <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {properties.slice(0, 6).map((p, i) => (
-            <PropertyCard key={p.id} p={p} index={i} />
+          {items.slice(0, 6).map((p, i) => (
+            <PropertyCard key={p.id} p={p as any} index={i} />
           ))}
         </div>
       </div>

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
-            $table->string('interest')->nullable(); // membership, property, advisory, partnership, other
+            $table->string('interest')->nullable(); 
             $table->text('message');
             $table->enum('status', ['new', 'read', 'responded'])->default('new');
             $table->text('response')->nullable();

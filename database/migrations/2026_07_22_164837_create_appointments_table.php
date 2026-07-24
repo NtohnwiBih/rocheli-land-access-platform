@@ -8,20 +8,25 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('contact_messages', function (Blueprint $table) {
+        Schema::create('appointments', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('email');
             $table->string('phone');
-            $table->string('email')->nullable();
             $table->string('interest')->nullable();
             $table->text('message')->nullable();
-            $table->boolean('handled')->default(false);
+            $table->date('appointment_date');
+            $table->time('appointment_time');
+            $table->string('status')->default('confirmed'); // confirmed | cancelled
             $table->timestamps();
+            $table->unique(['appointment_date', 'appointment_time'], 'appointments_slot_unique');
+
+            $table->index(['appointment_date', 'status']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('contact_messages');
+        Schema::dropIfExists('appointments');
     }
 };

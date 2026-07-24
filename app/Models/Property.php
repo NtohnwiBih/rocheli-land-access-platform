@@ -11,6 +11,7 @@ class Property extends Model
     use HasFactory;
 
     protected $fillable = [
+        'slug',
         'title',
         'city_id',
         'location',
@@ -72,5 +73,10 @@ class Property extends Model
     public function descriptionForLocale(string $locale): ?string
     {
         return $this->description[$locale] ?? $this->description['en'] ?? null;
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 }

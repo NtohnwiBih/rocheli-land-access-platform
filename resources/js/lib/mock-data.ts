@@ -1,4 +1,5 @@
 export type Property = {
+  [x: string]: ReactI18NextChildren | Iterable<ReactI18NextChildren>;
   id: string;
   title: string;
   location: string;

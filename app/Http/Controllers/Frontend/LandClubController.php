@@ -7,6 +7,7 @@ use App\Repositories\Contracts\SiteContentRepositoryInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Plan;
 
 class LandClubController extends Controller
 {
@@ -24,6 +25,7 @@ class LandClubController extends Controller
             'content' => $this->siteContent->forFrontend('land-club', $this->sections, $locale),
             'testimonials' => $this->siteContent->testimonialsForFrontend($locale),
             'faqs' => $this->siteContent->faqsForFrontend($locale),
+            'plans' => Plan::active()->get()->map(fn (Plan $p) => $p->toDisplayArray()),
         ]);
     }
 }

@@ -57,4 +57,40 @@ class Plan extends Model
 
         return $slug;
     }
+
+    public function toDisplayArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'total' => $this->formatMillions($this->target_price),
+            'currency' => 'FCFA',
+            'daily' => $this->formatAmount($this->daily_amount),
+            'weekly' => $this->formatAmount($this->weekly_amount),
+            'monthly' => $this->formatAmount($this->monthly_amount),
+            'highlight' => $this->is_featured,
+        ];
+    }
+
+    protected function formatMillions($value): string
+    {
+        if ($value === null) {
+            return '—';
+        }
+
+        $millions = $value / 1000000;
+        $formatted = rtrim(rtrim(number_format((float) $millions, 1), '0'), '.');
+
+        return $formatted . 'M';
+    }
+
+    protected function formatAmount($value): string
+    {
+        if ($value === null) {
+            return '—';
+        }
+
+        return number_format((float) $value, 0, '.', ',') . ' F';
+    }
 }

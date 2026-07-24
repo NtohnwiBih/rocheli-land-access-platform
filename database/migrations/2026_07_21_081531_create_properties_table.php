@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('properties', function (Blueprint $table) {
             $table->id();
             $table->json('title');
+            $table->string('slug')->unique();
             $table->foreignId('city_id')->nullable()->constrained()->nullOnDelete();
             $table->string('location');
             $table->string('size');

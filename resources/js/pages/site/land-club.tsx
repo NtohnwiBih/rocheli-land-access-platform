@@ -19,6 +19,7 @@ type Props = {
   };
   testimonials: { id: number; name: string; role: string; quote: string; rating: number; avatar: string | null }[];
   faqs: { id: number; question: string; answer: string }[];
+  plans: any[];
 };
 
 const fallbackBenefits: BenefitItem[] = [
@@ -44,7 +45,7 @@ const fallbackRequirements = [
   { text: "Signed member agreement" },
 ];
 
-export default function LandClub({ content = {}, testimonials, faqs }: Props) {
+export default function LandClub({ content = {}, testimonials, faqs, plans }: Props) {
   const hero = content.hero ?? {};
   const benefits = content.benefits?.items?.length ? content.benefits.items : fallbackBenefits;
   const journey = content.journey?.items?.length ? content.journey.items : fallbackJourney;
@@ -148,7 +149,7 @@ export default function LandClub({ content = {}, testimonials, faqs }: Props) {
         </div>
       </section>
 
-      <Plans />
+      <Plans items={plans} />
 
       {testimonials.length > 0 && (
         <section className="py-24">

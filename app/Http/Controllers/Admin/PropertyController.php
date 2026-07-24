@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\City;
 use App\Models\Property;
 use App\Models\PropertyMedia;
+use App\Models\Article;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -49,7 +50,15 @@ class PropertyController extends Controller
             ? $request->file('image')->store('properties', 'public')
             : null;
 
-        Property::create([...$this->mapPayload($validated), 'image_path' => $imagePath]);
+        $slug = ! empty($validated['slug'])
+            ? $validated['slug']
+            : Article::generateUniqueSlug($validated['title_en']);
+
+        Property::create([
+            ...$this->mapPayload($validated),
+            'image_path' => $imagePath,
+            'slug' => $slug,
+        ]);
 
         return redirect()->route('admin.properties.index')->with('success', 'Property created.');
     }
@@ -59,6 +68,7 @@ class PropertyController extends Controller
         return Inertia::render('admin/properties/form', [
             'property' => [
                 'id' => $property->id,
+                'slug' => $property->slug,
                 'title_en' => $property->title['en'] ?? '',
                 'title_fr' => $property->title['fr'] ?? '',
                 'city_id' => $property->city_id,
@@ -97,7 +107,13 @@ class PropertyController extends Controller
             $imagePath = $request->file('image')->store('properties', 'public');
         }
 
-        $property->update([...$this->mapPayload($validated), 'image_path' => $imagePath]);
+        $slug = ! empty($validated['slug']) ? $validated['slug'] : $property->slug;
+
+        $property->update([
+            ...$this->mapPayload($validated),
+            'image_path' => $imagePath,
+            'slug' => $slug,
+        ]);
 
         return redirect()->route('admin.properties.index')->with('success', 'Property updated.');
     }

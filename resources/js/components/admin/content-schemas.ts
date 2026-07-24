@@ -37,6 +37,23 @@ export const pageSchemas: PageDefinition[] = [
         ],
       },
       {
+        key: 'stats',
+        label: 'Stats',
+        fields: [
+          { type: 'text', key: 'statMembersValue', label: 'Members stat value (number)' },
+          { type: 'text', key: 'statMembersLabel', label: 'Members stat label' },
+
+          { type: 'text', key: 'statPropertiesAllocatedValue', label: 'Properties allocated value (number)' },
+          { type: 'text', key: 'statPropertiesAllocatedLabel', label: 'Properties allocated stat label' },
+
+          { type: 'text', key: 'statAcresValue', label: 'Acres value (number)' },
+          { type: 'text', key: 'statAcresLabel', label: 'Acres stat label' },
+
+          { type: 'text', key: 'statContributionsValue', label: 'Contributions value (e.g. 2.5)' },
+          { type: 'text', key: 'statContributionsLabel', label: 'Contributions stat label' },
+        ],
+      },
+      {
         key: 'whyRocheli',
         label: 'Why Rocheli',
         fields: [

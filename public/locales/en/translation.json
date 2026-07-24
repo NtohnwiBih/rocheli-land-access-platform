@@ -528,7 +528,15 @@
         "choosePaymentMethod": "Payment method",
         "cancel": "Cancel",
         "submitProject": "Add project",
-        "submitting": "Submitting..."
+        "submitting": "Submitting...",
+        "eyebrow": "Plans",
+        "titles": "Property Plans & Contributions",
+        "description": "Choose the plan that matches your rhythm. Move between plans anytime as your income grows.",
+        "popular": "Popular",
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "choosePlan": "Choose plan"
     },
     "admin": {
         "adminNav": {
@@ -547,7 +555,8 @@
             "plans": "Plans",
             "members": "Members",
             "enquiries": "Enquiries",
-            "contacts": "Contacts"
+            "contacts": "Contacts",
+            "teamMembers": "Team member"
         },
         "adminLayout": {
             "backToSite": "Back to site",
@@ -684,6 +693,134 @@
             "teamResponse": "Team response",
             "noResponseYet": "Our team hasn't responded yet — you'll be notified as soon as they do.",
             "sentOn": "Sent {{date}}"
+        }
+    },
+    "contact": {
+        "meta": {
+            "title": "Contact - Rocheli Real Properties",
+            "description": "Talk to a Rocheli advisor. Book a consultation, visit our offices, or chat on WhatsApp.",
+            "ogTitle": "Contact Rocheli Real Properties",
+            "ogDescription": "Book a consultation or visit our office in Yaounde"
+        },
+        "hero": {
+            "eyebrow": "Contact us",
+            "title": "Let's talk about your",
+            "titleAccent": "first plot.",
+            "description": "Book a 30-minute consultation with an advisor. Visit our office. Or ping us on WhatsApp - whichever works for you."
+        },
+        "form": {
+            "title": "Send us a message",
+            "subtitle": "We'll respond within one business day.",
+            "interests": {
+            "landAccessClub": "Land Access Club",
+            "buyProperty": "Buy a property",
+            "investmentAdvisory": "Investment advisory",
+            "partnershipPress": "Partnership / Press",
+            "other": "Other"
+            },
+            "fields": {
+            "name": { "label": "Full name", "placeholder": "Amina Nkeng" },
+            "phone": { "label": "Phone / WhatsApp", "placeholder": "+237 ..." },
+            "email": { "label": "Email address", "placeholder": "you@example.com" },
+            "interest": { "label": "Interest" },
+            "message": { "label": "Message", "placeholder": "Tell us about your goals..." }
+            }
+        },
+        "booking": {
+            "title": "Book an advisor",
+            "body": "Pick a 30-minute slot with a Rocheli advisor. Available Mon-Sat.",
+            "loading": "Loading available times...",
+            "noSlotsLeft": "Nothing left that day - try another.",
+            "submitting": "Sending...",
+            "submit": "Send message & confirm slot"
+        },
+        "confirmed": {
+            "title": "You're booked",
+            "subtitle": "We've sent a confirmation and an advisor will meet you at the scheduled time.",
+            "bookAnother": "Book another slot"
+        },
+        "whatsapp": {
+            "title": "Chat on WhatsApp",
+            "subtitle": "Response time under 15 minutes . 8am - 8pm"
+        }
+    },
+    "properties": {
+        "meta": {
+            "title": "Properties - Rocheli Real Properties",
+            "description": "Explore Rocheli's verified land plots and property developments across Cameroon - Douala, Yaounde, Kribi, Buea and more.",
+            "ogTitle": "Properties - Rocheli Real Properties",
+            "ogDescription": "Verified plots and estates across Cameroon's growth corridors."
+        },
+        "hero": {
+            "eyebrow": "Marketplace",
+            "title": "Verified properties across",
+            "titleAccent": "Cameroon.",
+            "description": "Every listing is title-audited, geo-mapped, and eligible for structured installments through the Land Access Club.",
+            "searchPlaceholder": "Search by city, project or feature…"
+        },
+        "filters": {
+            "title": "Filters",
+            "reset": "Reset",
+            "location": "Location",
+            "propertyType": "Property type",
+            "payment": "Payment",
+            "availability": "Availability",
+            "maxPrice": "Max price",
+            "upTo": "Up to FCFA {{amount}}M",
+            "values": {
+            "allCities": "All cities",
+            "allTypes": "All types",
+            "anyPayment": "Any payment",
+            "installments": "Installments",
+            "outright": "Outright",
+            "anyStatus": "Any status",
+            "available": "Available",
+            "sellingFast": "Selling Fast",
+            "reserved": "Reserved",
+            "sold": "Sold",
+            "residential": "Residential",
+            "beachfront": "Beachfront",
+            "commercial": "Commercial",
+            "mixedUse": "Mixed-Use"
+            }
+        },
+        "listing": {
+            "showing": "Showing",
+            "of": "of",
+            "properties": "properties",
+            "sortFeatured": "Sort: Featured",
+            "sortPriceLowHigh": "Price: Low → High",
+            "sortPriceHighLow": "Price: High → Low",
+            "sortNewest": "Newest",
+            "emptyTitle": "No properties match those filters",
+            "emptyBody": "Try widening your search or resetting filters."
+        },
+        "card": {
+            "startingFrom": "Starting from"
+        }
+    },
+    "resources": {
+        "article": {
+            "backToResources": "Back to resources",
+            "foundUseful": "Found this useful?",
+            "share": "Share this article",
+            "shareTitle": "Share via",
+            "shareVia": {
+            "whatsapp": "WhatsApp",
+            "facebook": "Facebook",
+            "x": "X (Twitter)",
+            "linkedin": "LinkedIn",
+            "email": "Email"
+            },
+            "copyLink": "Copy link",
+            "copied": "Copied",
+            "linkCopied": "Link copied to clipboard",
+            "copyFailed": "Couldn't copy the link. Select and copy it from your browser's address bar instead.",
+            "ctaTitle": "Ready to talk to an advisor?",
+            "ctaBody": "Book a free 30-minute consultation and get a plan tailored to your goals.",
+            "ctaButton": "Book a consultation",
+            "keepReading": "Keep reading",
+            "read": "Read"
         }
     }
 }

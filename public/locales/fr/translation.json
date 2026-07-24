@@ -528,7 +528,15 @@
         "choosePaymentMethod": "Méthode de paiement",
         "cancel": "Annuler",
         "submitProject": "Ajouter le projet",
-        "submitting": "Soumission..."
+        "submitting": "Soumission...",
+        "eyebrow": "Plans",
+        "titles": "Plans immobiliers et contributions",
+        "description": "Choisissez le plan qui correspond à votre rythme. Passez d'un plan à un autre à tout moment à mesure que vos revenus augmentent.",
+        "popular": "Populaire",
+        "daily": "Quotidien",
+        "weekly": "Hebdomadaire",
+        "monthly": "Mensuel",
+        "choosePlan": "Choisir ce plan"
     },
     "admin": {
         "adminNav": {
@@ -547,7 +555,8 @@
             "plans": "Plans",
             "members": "Membres",
             "enquiries": "Demandes",
-            "contacts": "Contacts"
+            "contacts": "Contacts",
+            "teamMembers": "Membre de l'équipe"
         },
         "adminLayout": {
             "backToSite": "Retour au site",
@@ -684,6 +693,134 @@
             "teamResponse": "Réponse de l'équipe",
             "noResponseYet": "Notre équipe n'a pas encore répondu — vous serez averti dès que ce sera le cas.",
             "sentOn": "Envoyé le {{date}}"
+        }
+    },
+    "contact": {
+        "meta": {
+            "title": "Contact - Rocheli Real Properties",
+            "description": "Parlez a un conseiller Rocheli. Reservez une consultation, visitez nos bureaux ou ecrivez-nous sur WhatsApp.",
+            "ogTitle": "Contactez Rocheli Real Properties",
+            "ogDescription": "Reservez une consultation ou visitez notre bureau a Yaounde"
+        },
+        "hero": {
+            "eyebrow": "Contactez-nous",
+            "title": "Parlons de votre",
+            "titleAccent": "premiere parcelle.",
+            "description": "Reservez une consultation de 30 minutes avec un conseiller. Visitez notre bureau. Ou ecrivez-nous sur WhatsApp - comme vous preferez."
+        },
+        "form": {
+            "title": "Envoyez-nous un message",
+            "subtitle": "Nous repondons sous un jour ouvre.",
+            "interests": {
+            "landAccessClub": "Land Access Club",
+            "buyProperty": "Acheter une propriete",
+            "investmentAdvisory": "Conseil en investissement",
+            "partnershipPress": "Partenariat / Presse",
+            "other": "Autre"
+            },
+            "fields": {
+            "name": { "label": "Nom complet", "placeholder": "Amina Nkeng" },
+            "phone": { "label": "Telephone / WhatsApp", "placeholder": "+237 ..." },
+            "email": { "label": "Adresse e-mail", "placeholder": "vous@exemple.com" },
+            "interest": { "label": "Interet" },
+            "message": { "label": "Message", "placeholder": "Parlez-nous de vos objectifs..." }
+            }
+        },
+        "booking": {
+            "title": "Reservez un conseiller",
+            "body": "Choisissez un creneau de 30 minutes avec un conseiller Rocheli. Disponible du lundi au samedi.",
+            "loading": "Chargement des disponibilites...",
+            "noSlotsLeft": "Plus rien ce jour-la - essayez un autre jour.",
+            "submitting": "Envoi en cours...",
+            "submit": "Envoyer le message et confirmer le creneau"
+        },
+        "confirmed": {
+            "title": "C'est reserve",
+            "subtitle": "Nous avons envoye une confirmation, un conseiller vous retrouvera a l'heure prevue.",
+            "bookAnother": "Reserver un autre creneau"
+        },
+        "whatsapp": {
+            "title": "Discuter sur WhatsApp",
+            "subtitle": "Reponse en moins de 15 minutes . 8h - 20h"
+        }
+    },
+    "properties": {
+        "meta": {
+            "title": "Propriétés - Rocheli Real Properties",
+            "description": "Découvrez les terrains vérifiés et les projets immobiliers de Rocheli à travers le Cameroun - Douala, Yaoundé, Kribi, Buéa et bien plus.",
+            "ogTitle": "Propriétés - Rocheli Real Properties",
+            "ogDescription": "Terrains et domaines vérifiés dans les principaux corridors de croissance du Cameroun."
+        },
+        "hero": {
+            "eyebrow": "Catalogue immobilier",
+            "title": "Des propriétés vérifiées à travers le",
+            "titleAccent": "Cameroun.",
+            "description": "Chaque bien est vérifié au niveau du titre foncier, géolocalisé et éligible à un paiement échelonné via le Land Access Club.",
+            "searchPlaceholder": "Rechercher par ville, projet ou caractéristique…"
+        },
+        "filters": {
+            "title": "Filtres",
+            "reset": "Réinitialiser",
+            "location": "Localisation",
+            "propertyType": "Type de propriété",
+            "payment": "Mode de paiement",
+            "availability": "Disponibilité",
+            "maxPrice": "Prix maximum",
+            "upTo": "Jusqu'à {{amount}} M FCFA",
+            "values": {
+            "allCities": "Toutes les villes",
+            "allTypes": "Tous les types",
+            "anyPayment": "Tous les modes",
+            "installments": "Paiement échelonné",
+            "outright": "Paiement comptant",
+            "anyStatus": "Tous les statuts",
+            "available": "Disponible",
+            "sellingFast": "Vente rapide",
+            "reserved": "Réservé",
+            "sold": "Vendu",
+            "residential": "Résidentiel",
+            "beachfront": "En bord de mer",
+            "commercial": "Commercial",
+            "mixedUse": "Usage mixte"
+            }
+        },
+        "listing": {
+            "showing": "Affichage de",
+            "of": "sur",
+            "properties": "propriétés",
+            "sortFeatured": "Tri : À la une",
+            "sortPriceLowHigh": "Prix : Croissant",
+            "sortPriceHighLow": "Prix : Décroissant",
+            "sortNewest": "Les plus récentes",
+            "emptyTitle": "Aucune propriété ne correspond à ces filtres",
+            "emptyBody": "Essayez d'élargir votre recherche ou de réinitialiser les filtres."
+        },
+        "card": {
+            "startingFrom": "À partir de"
+        }
+    },
+    "resources": {
+        "article": {
+            "backToResources": "Retour aux ressources",
+            "foundUseful": "Cet article vous a été utile ?",
+            "share": "Partager cet article",
+            "shareTitle": "Partager via",
+            "shareVia": {
+                "whatsapp": "WhatsApp",
+                "facebook": "Facebook",
+                "x": "X (Twitter)",
+                "linkedin": "LinkedIn",
+                "email": "E-mail"
+            },
+            "copyLink": "Copier le lien",
+            "copied": "Copié",
+            "linkCopied": "Lien copié dans le presse-papiers",
+            "copyFailed": "Impossible de copier le lien. Sélectionnez-le et copiez-le depuis la barre d'adresse de votre navigateur.",
+            "ctaTitle": "Prêt à échanger avec un conseiller ?",
+            "ctaBody": "Réservez une consultation gratuite de 30 minutes et obtenez un plan adapté à vos objectifs.",
+            "ctaButton": "Réserver une consultation",
+            "keepReading": "Continuer la lecture",
+            "read": "Lire"
         }
     }
 }

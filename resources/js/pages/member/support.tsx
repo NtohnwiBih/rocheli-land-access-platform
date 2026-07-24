@@ -116,11 +116,11 @@ export default function Support() {
                   <Mail className="h-4 w-4 text-muted-foreground" />
                   <span>contact@rocheliproperties.com</span>
                 </a>
-                <a href="tel:+237000000000" className="flex items-center gap-3 rounded-xl border border-border p-3 hover:border-rocheli-blue/40">
+                <a href="tel:+237676988011" className="flex items-center gap-3 rounded-xl border border-border p-3 hover:border-rocheli-blue/40">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>+237 6XX XXX XXX</span>
+                  <span>+237 676 988 011</span>
                 </a>
-                <a href="https://wa.me/2376XXXXXXXX" target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-xl border border-border p-3 hover:border-rocheli-blue/40">
+                <a href="https://wa.me/237676988011" target="_blank" rel="noreferrer" className="flex items-center gap-3 rounded-xl border border-border p-3 hover:border-rocheli-blue/40">
                   <MessageCircle className="h-4 w-4 text-muted-foreground" />
                   <span>{t("member.support.whatsapp")}</span>
                 </a>

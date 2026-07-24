@@ -3,55 +3,30 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Contracts\SiteContentRepositoryInterface;
-use Illuminate\Http\Request;
-use Inertia\Inertia;
-use Inertia\Response;
-use Illuminate\Http\RedirectResponse;
 use App\Http\Requests\StoreContactRequest;
 use App\Models\Contact;
-use App\Models\ContactMessage;
 use App\Models\User;
-use App\Notifications\NewContactSubmitted;
-use App\Http\Requests\StoreContactMessageRequest;
-use App\Notifications\NewContactMessage;
+use App\Notifications\ContactAcknowledged;
+use App\Notifications\NewContactReceived;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Notification;
 
 class ContactController extends Controller
 {
-    protected array $sections = ['hero', 'form', 'booking', 'whatsapp', 'offices'];
-
-    public function __construct(
-        protected SiteContentRepositoryInterface $siteContent,
-    ) {}
-
-    public function index(Request $request): Response
+    public function store(StoreContactRequest $request): RedirectResponse
     {
-        $locale = $request->cookie('lang', 'en');
+        $contact = Contact::create($request->validated());
 
-        return Inertia::render('site/contact', [
-            'content' => $this->siteContent->forFrontend('contact', $this->sections, $locale),
-        ]);
-    }
+        $admins = User::where('role', 'admin')->get();
+        if ($admins->isNotEmpty()) {
+            Notification::send($admins, new NewContactReceived($contact));
+        }
 
-    // public function store(StoreContactRequest $request): RedirectResponse
-    // {
-    //     $contact = Contact::create($request->validated() + ['status' => 'new']);
+        if ($contact->email) {
+            Notification::route('mail', $contact->email)
+                ->notify(new ContactAcknowledged($contact));
+        }
 
-    //     User::where('role', 'admin')->get()->each(
-    //         fn (User $admin) => $admin->notify(new NewContactSubmitted($contact))
-    //     );
-
-    //     return back()->with('success', 'Thanks for reaching out — we will get back to you within one business day.');
-    // }
-
-    public function store(StoreContactMessageRequest $request): RedirectResponse
-    {
-        $contactMessage = ContactMessage::create($request->validated());
-
-        User::where('role', 'admin')->get()->each(
-            fn (User $admin) => $admin->notify(new NewContactMessage($contactMessage))
-        );
-
-        return back()->with('success', 'Your message has been sent — we\'ll respond within one business day.');
+        return back()->with('success', 'Thanks — we will be in touch within one business day.');
     }
 }
