@@ -44,7 +44,7 @@ export default function Login({ status, canResetPassword }: Props) {
           <h1 className="font-display text-3xl font-black md:text-4xl">{t('login.welcomeBack')}</h1>
           <p className="mt-2 text-sm text-muted-foreground">{t('login.subtitle')}</p>
 
-          <div className="mt-8 grid grid-cols-2 gap-2 rounded-xl bg-muted p-1 text-sm">
+          {/* <div className="mt-8 grid grid-cols-2 gap-2 rounded-xl bg-muted p-1 text-sm">
             <button
                 type="button"
                 onClick={() => setMode('email')}
@@ -63,7 +63,7 @@ export default function Login({ status, canResetPassword }: Props) {
             >
                 <Phone className="mr-1 inline h-4 w-4" /> {t('login.phone')}
             </button>
-          </div>
+          </div> */}
 
           {status && (
             <div className="mt-4 text-center text-sm font-medium text-green-600">

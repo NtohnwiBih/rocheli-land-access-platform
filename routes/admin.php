@@ -22,7 +22,7 @@ use App\Http\Controllers\Admin\TeamController;
 
 Route::prefix('rocheli')
     ->name('admin.')
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', 'admin'])
     ->group(function () {
         Route::get('/', [DashboardController::class, 'create'])
             ->name('dashboard');
@@ -105,14 +105,21 @@ Route::prefix('rocheli')
 
         Route::post('contacts/{contact}/handled', [ContactMessageController::class, 'markHandled'])
             ->name('contacts.handled');
+
         Route::delete('contacts/{contact}', [ContactMessageController::class, 'destroy'])
             ->name('contacts.destroy');
 
-        Route::post('appointments/{appointment}/confirm', [AppointmentActionController::class, 'confirm'])->name('appointments.confirm');
-        Route::post('appointments/{appointment}/cancel', [AppointmentActionController::class, 'cancel'])->name('appointments.cancel');
+        Route::post('appointments/{appointment}/confirm', [AppointmentActionController::class, 'confirm'])
+            ->name('appointments.confirm');
 
-        Route::get('enquiries/{enquiry}', [EnquiryController::class, 'show'])->name('enquiries.show');
-        Route::post('enquiries/{enquiry}/respond', [EnquiryController::class, 'respond'])->name('enquiries.respond');
+        Route::post('appointments/{appointment}/cancel', [AppointmentActionController::class, 'cancel'])
+            ->name('appointments.cancel');
+
+        Route::get('enquiries/{enquiry}', [EnquiryController::class, 'show'])
+            ->name('enquiries.show');
+
+        Route::post('enquiries/{enquiry}/respond', [EnquiryController::class, 'respond'])
+            ->name('enquiries.respond');
 
         Route::resource('team-members', TeamController::class)
             ->except(['show'])

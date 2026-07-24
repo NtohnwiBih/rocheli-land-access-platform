@@ -22,7 +22,7 @@ class NewPropertyEnquiry extends Notification
     public function toArray(object $notifiable): array
     {
         $member = $this->enquiry->member->user->name;
-        $property = $this->enquiry->property->title;
+        $property = $this->enquiry->property->titleForLocale(app()->getLocale());
 
         return [
             'title' => 'New property enquiry',

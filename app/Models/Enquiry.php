@@ -62,4 +62,14 @@ class Enquiry extends Model
     {
         return $this->member?->user?->phone ?? $this->phone;
     }
+
+    public function scopeInReview($query)
+    {
+        return $query->where('status', 'in_review');
+    }
+
+    public function scopeResponded($query)
+    {
+        return $query->where('status', 'responded');
+    }
 }

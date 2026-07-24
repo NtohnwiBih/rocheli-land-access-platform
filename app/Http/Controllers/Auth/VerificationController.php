@@ -5,14 +5,15 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\SendVerificationCodeRequest;
 use App\Http\Requests\Auth\VerifyCodeRequest;
+use App\Mail\NewMemberApplication;
+use App\Mail\WelcomeMember;
 use App\Services\VerificationCodeService;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Request;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\NewMemberApplication;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -75,7 +76,20 @@ class VerificationController extends Controller
 
         $request->fulfill();
 
-        $member = $request->user()->member;
+        $user = $request->user();
+
+        // Welcome email fires here — the first point we know the address is
+        // real and belongs to the user — rather than at registration time.
+        try {
+            Mail::to($user->email)->send(new WelcomeMember($user));
+        } catch (\Throwable $e) {
+            Log::error('Failed to send welcome email', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        $member = $user->member;
 
         if ($member) {
             try {
@@ -89,7 +103,7 @@ class VerificationController extends Controller
             }
         } else {
             Log::warning('Email verified but no associated member found — notification not sent.', [
-                'user_id' => $request->user()->id,
+                'user_id' => $user->id,
             ]);
         }
 
