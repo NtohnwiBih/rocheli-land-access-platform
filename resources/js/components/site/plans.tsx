@@ -3,7 +3,7 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "./section";
 import { useTranslation } from "react-i18next";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 
 type PlanItem = {
   id: number;
@@ -21,8 +21,18 @@ interface PlansProps {
   items: PlanItem[];
 }
 
+type AuthUser = { id: number; role?: string } | null;
+
+function resolveChoosePlanHref(user: AuthUser): string {
+  if (!user) return "/register";
+  if (user.role === "admin") return "/rocheli";
+  return "/member";
+}
+
 export function Plans({ items }: PlansProps) {
   const { t } = useTranslation();
+  const { auth } = usePage<{ auth: { user: AuthUser } }>().props;
+  const destination = resolveChoosePlanHref(auth?.user ?? null);
 
   return (
     <section className="py-24 bg-muted/40">
@@ -84,8 +94,7 @@ export function Plans({ items }: PlansProps) {
                   variant="outline"
                   className="w-full h-11 rounded-full border-border bg-muted hover:bg-muted/80 text-foreground font-semibold"
                 >
-                  <Link href={`/register`}>
-                    <Check className="mr-2 h-4 w-4" strokeWidth={3} />
+                  <Link href={destination}>
                     {t("plans.choosePlan")}
                   </Link>
                 </Button>

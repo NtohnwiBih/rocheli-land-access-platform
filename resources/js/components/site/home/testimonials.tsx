@@ -1,5 +1,5 @@
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SectionHeader } from "../section";
 import { Star } from "lucide-react";
 
@@ -8,20 +8,37 @@ type Testimonial = { id: number; name: string; role: string; quote: string; rati
 type Props = {
   content?: { eyebrow?: string; title?: string; titleAccent?: string; subtitle?: string };
   items: Testimonial[];
+  intervalMs?: number;
 };
 
 function getInitials(name: string) {
   return name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase();
 }
 
-export default function Testimonials({ content = {}, items }: Props) {
+export default function Testimonials({ content = {}, items, intervalMs = 6000 }: Props) {
   const [i, setI] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const count = items.length;
+
+  useEffect(() => {
+    if (count <= 1 || paused) return;
+
+    const id = setInterval(() => {
+      setI((prev) => (prev + 1) % count);
+    }, intervalMs);
+
+    return () => clearInterval(id);
+  }, [count, paused, intervalMs]);
 
   if (items.length === 0) return null;
   const t = items[i] ?? items[0];
 
   return (
-    <section className="py-24 bg-muted/40">
+    <section
+      className="py-24 bg-muted/40"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
       <div className="container-x grid gap-14 lg:grid-cols-[1fr_1.2fr] items-center">
         <div>
           <SectionHeader

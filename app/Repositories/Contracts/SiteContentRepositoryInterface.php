@@ -18,7 +18,7 @@ interface SiteContentRepositoryInterface
 
     public function testimonialsForFrontend(string $locale, int $limit = 6): array;
 
-    public function faqsForFrontend(string $locale): array;
+    public function faqsForFrontend(string $locale, bool $landAccessOnly = false): array;
 
     public function articlesForFrontend(string $locale, int $limit = 3): array;
 }

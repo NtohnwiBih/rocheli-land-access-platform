@@ -11,7 +11,7 @@ use App\Models\Plan;
 
 class LandClubController extends Controller
 {
-    protected array $sections = ['hero', 'benefits', 'journey', 'eligibility'];
+    protected array $sections = ['hero', 'howItWorks', 'benefits', 'journey', 'eligibility'];
 
     public function __construct(
         protected SiteContentRepositoryInterface $siteContent,
@@ -24,7 +24,7 @@ class LandClubController extends Controller
         return Inertia::render('site/land-club', [
             'content' => $this->siteContent->forFrontend('land-club', $this->sections, $locale),
             'testimonials' => $this->siteContent->testimonialsForFrontend($locale),
-            'faqs' => $this->siteContent->faqsForFrontend($locale),
+            'faqs' => $this->siteContent->faqsForFrontend($locale, true),
             'plans' => Plan::active()->get()->map(fn (Plan $p) => $p->toDisplayArray()),
         ]);
     }

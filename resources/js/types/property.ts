@@ -1,6 +1,7 @@
 export type Property = {
   [x: string]: any;
   id: number;
+  slug: string;
   title: string;
   location: string;
   price: string;

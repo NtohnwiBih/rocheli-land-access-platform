@@ -797,6 +797,47 @@
         },
         "card": {
             "startingFrom": "À partir de"
+        },
+        "show": {
+            "allProperties": "Toutes les propriétés",
+            "noPhotos": "Aucune photo disponible pour le moment",
+            "previousPhoto": "Photo précédente",
+            "nextPhoto": "Photo suivante",
+            "showPhoto": "Afficher la photo {{n}}",
+            "aboutTitle": "À propos de cette propriété",
+            "aboutFallback": "Les informations complètes sont disponibles sur demande — envoyez une demande et notre équipe vous répondra.",
+            "priceLabel": "Prix",
+            "perSqm": "/m²",
+            "form": {
+                "fullName": "Nom complet",
+                "email": "Adresse e-mail",
+                "phone": "Téléphone / WhatsApp",
+                "interestedIn": "Je suis intéressé(e) par",
+                "choosePlaceholder": "Choisissez une option…",
+                "interests": {
+                "buy": "Je souhaite acheter ce bien",
+                "financing": "Renseignez-moi sur le financement / les paiements échelonnés",
+                "visit": "Planifier une visite du site",
+                "information": "Je souhaite simplement plus d'informations"
+                },
+                "message": "Message (facultatif)",
+                "messagePlaceholder": "Y a-t-il quelque chose de particulier que vous souhaitez savoir ?",
+                "enquiringAs": "Demande envoyée en tant que {{name}} ({{email}})",
+                "submit": "Envoyer la demande",
+                "submitting": "Envoi en cours…",
+                "preferDirect": "Vous préférez nous parler directement ?",
+                "contactTeam": "Contacter notre équipe"
+            },
+            "toast": {
+                "success": "Votre demande a été envoyée — nous vous contacterons très bientôt.",
+                "error": "Veuillez vérifier le formulaire et réessayer."
+            },
+            "related": {
+                "title": "Propriétés similaires",
+                "subtitle": "Autres annonces dans la même zone ou catégorie.",
+                "noPhoto": "Aucune photo",
+                "view": "Voir"
+            }
         }
     },
     "resources": {

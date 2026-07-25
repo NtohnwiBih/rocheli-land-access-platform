@@ -32,6 +32,7 @@ class PropertyController extends Controller
         return Inertia::render('site/properties/show', [
             'property' => [
                 'id' => $property->id,
+                'slug' => $property->slug,
                 'title' => $property->titleForLocale($locale),
                 'description' => $property->descriptionForLocale($locale),
                 'location' => $property->location,
@@ -46,10 +47,6 @@ class PropertyController extends Controller
                     'caption' => $m->caption,
                     'is_featured' => $m->is_featured,
                 ]),
-                // Was $property->category?->name / $property->city?->name — those
-                // return the raw translatable attribute (all locales), which is
-                // what caused the "object with keys {en, fr}" render crash.
-                // Use the same locale-resolved accessors as index().
                 'category' => $property->category?->nameForLocale($locale),
                 'city' => $property->city?->name_en,
             ],

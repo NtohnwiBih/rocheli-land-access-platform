@@ -31,6 +31,29 @@ class LandClubContentSeeder extends Seeder
                 ],
             ],
 
+            'howItWorks' => [
+                'en' => [
+                    'eyebrow' => 'How it works',
+                    'title' => 'From first contribution to signed title.',
+                    'items' => [
+                        ['icon' => 'UserPlus', 'title' => 'Sign up & choose a plan', 'body' => 'Create your account and pick the contribution plan that fits your budget.'],
+                        ['icon' => 'Wallet', 'title' => 'Contribute monthly', 'body' => 'Set up automated contributions and track your balance in real time.'],
+                        ['icon' => 'MapPin', 'title' => 'Reserve your plot', 'body' => 'Once eligible, browse verified inventory and reserve the land you want.'],
+                        ['icon' => 'FileCheck', 'title' => 'Receive your title', 'body' => 'Complete the process and receive your legally registered land title.'],
+                    ],
+                ],
+                'fr' => [
+                    'eyebrow' => 'Comment ça marche',
+                    'title' => 'De la première contribution au titre signé.',
+                    'items' => [
+                        ['icon' => 'UserPlus', 'title' => 'Inscrivez-vous et choisissez un plan', 'body' => 'Créez votre compte et choisissez le plan de contribution adapté à votre budget.'],
+                        ['icon' => 'Wallet', 'title' => 'Contribuez chaque mois', 'body' => 'Configurez des contributions automatisées et suivez votre solde en temps réel.'],
+                        ['icon' => 'MapPin', 'title' => 'Réservez votre parcelle', 'body' => 'Une fois éligible, parcourez l\'inventaire vérifié et réservez le terrain souhaité.'],
+                        ['icon' => 'FileCheck', 'title' => 'Recevez votre titre', 'body' => 'Terminez le processus et recevez votre titre foncier légalement enregistré.'],
+                    ],
+                ],
+            ],
+
             'benefits' => [
                 'en' => [
                     'eyebrow' => 'Why join',

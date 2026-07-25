@@ -26,6 +26,7 @@ type Faq = {
   answer_fr: string;
   sort_order: number;
   is_published: boolean;
+  is_land_access: boolean;
 };
 
 interface Props {
@@ -43,6 +44,7 @@ export default function FaqsIndex({ faqs }: Props) {
     answer_fr: "",
     sort_order: 0,
     is_published: true,
+    is_land_access: false,
   });
 
   const openCreate = () => {
@@ -60,6 +62,7 @@ export default function FaqsIndex({ faqs }: Props) {
       answer_fr: f.answer_fr,
       sort_order: f.sort_order,
       is_published: f.is_published,
+      is_land_access: f.is_land_access,
     });
     setOpen(true);
   };
@@ -99,10 +102,15 @@ export default function FaqsIndex({ faqs }: Props) {
           }
         />
 
-        <AdminTable headers={["Question (EN)", "Status", ""]}>
+        <AdminTable headers={["Question (EN)", "Scope", "Status", ""]}>
           {faqs.map((f) => (
             <TableRow key={f.id}>
               <TableCell className="max-w-lg font-medium">{f.question_en}</TableCell>
+              <TableCell>
+                <Badge variant={f.is_land_access ? "default" : "outline"}>
+                  {f.is_land_access ? "Land Access Club" : "General"}
+                </Badge>
+              </TableCell>
               <TableCell>
                 <Badge variant={f.is_published ? "secondary" : "outline"}>
                   {f.is_published ? "Published" : "Hidden"}
@@ -158,6 +166,13 @@ export default function FaqsIndex({ faqs }: Props) {
                 <div className="flex items-center justify-between rounded-xl border border-border p-3">
                   <Label className="cursor-pointer">Published</Label>
                   <Switch checked={data.is_published} onCheckedChange={(v) => setData("is_published", v)} />
+                </div>
+                <div className="flex items-center justify-between rounded-xl border border-border p-3">
+                  <div>
+                    <Label className="cursor-pointer">Land Access Club only</Label>
+                    <p className="text-xs text-muted-foreground">Show this FAQ on the Land Access Club page instead of the homepage.</p>
+                  </div>
+                  <Switch checked={data.is_land_access} onCheckedChange={(v) => setData("is_land_access", v)} />
                 </div>
               </div>
             </div>

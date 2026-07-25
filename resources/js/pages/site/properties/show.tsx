@@ -11,6 +11,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 
 // Several fields come from the backend as either a plain string or a
@@ -60,13 +61,6 @@ type RelatedProperty = {
   city: Localized;
 };
 
-const INTERESTS = [
-  { value: "buy", label: "I want to buy this" },
-  { value: "financing", label: "Ask about financing / installments" },
-  { value: "visit", label: "Schedule a site visit" },
-  { value: "information", label: "Just more information" },
-];
-
 const STATUS_STYLES: Record<string, string> = {
   available: "bg-emerald-50 text-emerald-700 border-emerald-200",
   reserved: "bg-amber-50 text-amber-700 border-amber-200",
@@ -85,9 +79,17 @@ export default function PropertyShow({
   property: PropertyDetail;
   relatedProperties?: RelatedProperty[];
 }) {
+  const { t } = useTranslation();
   const { props } = usePage<PageProps>();
   const user = props.auth?.user ?? null;
   const locale = props.locale ?? "en";
+
+  const INTERESTS = [
+    { value: "buy", label: t("properties.show.form.interests.buy") },
+    { value: "financing", label: t("properties.show.form.interests.financing") },
+    { value: "visit", label: t("properties.show.form.interests.visit") },
+    { value: "information", label: t("properties.show.form.interests.information") },
+  ];
 
   const title = localize(property.title, locale);
   const description = localize(property.description, locale);
@@ -126,10 +128,10 @@ export default function PropertyShow({
     post("/enquiries", {
       preserveScroll: true,
       onSuccess: () => {
-        toast.success("Enquiry sent — we'll be in touch shortly.");
+        toast.success(t("properties.show.toast.success"));
         reset("name", "email", "phone", "interest", "message");
       },
-      onError: () => toast.error("Please check the form and try again."),
+      onError: () => toast.error(t("properties.show.toast.error")),
     });
   };
 
@@ -144,7 +146,7 @@ export default function PropertyShow({
             href="/properties"
             className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            <ArrowLeft className="h-3.5 w-3.5" /> All properties
+            <ArrowLeft className="h-3.5 w-3.5" /> {t("properties.show.allProperties")}
           </Link>
 
           <div className="mt-6 grid gap-10 lg:grid-cols-[1.3fr_1fr]">
@@ -159,7 +161,7 @@ export default function PropertyShow({
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
-                    No photos available yet
+                    {t("properties.show.noPhotos")}
                   </div>
                 )}
 
@@ -182,7 +184,7 @@ export default function PropertyShow({
                   <>
                     <button
                       type="button"
-                      aria-label="Previous photo"
+                      aria-label={t("properties.show.previousPhoto")}
                       onClick={() => setActiveImage((i) => (i - 1 + gallery.length) % gallery.length)}
                       className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-2 backdrop-blur hover:bg-background transition-colors"
                     >
@@ -190,7 +192,7 @@ export default function PropertyShow({
                     </button>
                     <button
                       type="button"
-                      aria-label="Next photo"
+                      aria-label={t("properties.show.nextPhoto")}
                       onClick={() => setActiveImage((i) => (i + 1) % gallery.length)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-background/80 p-2 backdrop-blur hover:bg-background transition-colors"
                     >
@@ -207,7 +209,7 @@ export default function PropertyShow({
                       key={item.id}
                       type="button"
                       onClick={() => setActiveImage(i)}
-                      aria-label={`Show photo ${i + 1}`}
+                      aria-label={t("properties.show.showPhoto", { n: i + 1 })}
                       className={`h-16 w-20 shrink-0 overflow-hidden rounded-xl border-2 transition-colors ${
                         activeImage === i ? "border-primary" : "border-transparent"
                       }`}
@@ -235,12 +237,12 @@ export default function PropertyShow({
               </div>
 
               <div className="mt-8 border-t border-border pt-6">
-                <h2 className="font-display text-lg font-semibold">About this property</h2>
+                <h2 className="font-display text-lg font-semibold">{t("properties.show.aboutTitle")}</h2>
                 {description ? (
                   <p className="mt-3 leading-relaxed text-muted-foreground">{description}</p>
                 ) : (
                   <p className="mt-3 italic text-muted-foreground">
-                    Full details available on request — send an enquiry and our team will follow up.
+                    {t("properties.show.aboutFallback")}
                   </p>
                 )}
               </div>
@@ -250,10 +252,10 @@ export default function PropertyShow({
             <div className="h-fit lg:sticky lg:top-28">
               <div className="rounded-3xl border border-border bg-card p-6 md:p-8">
                 <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  Price
+                  {t("properties.show.priceLabel")}
                 </div>
                 <div className="mt-1 font-display text-3xl font-semibold text-gradient-gold">
-                  {price}
+                  {price}{t("properties.show.perSqm")}
                 </div>
 
                 <form onSubmit={submit} className="mt-6 space-y-4 border-t border-border pt-6">
@@ -261,7 +263,7 @@ export default function PropertyShow({
                     <>
                       <div>
                         <label htmlFor="name" className="mb-1.5 block text-xs font-medium text-muted-foreground">
-                          Full name
+                          {t("properties.show.form.fullName")}
                         </label>
                         <input
                           id="name"
@@ -274,7 +276,7 @@ export default function PropertyShow({
                       <div className="grid gap-4 sm:grid-cols-2">
                         <div>
                           <label htmlFor="email" className="mb-1.5 block text-xs font-medium text-muted-foreground">
-                            Email
+                            {t("properties.show.form.email")}
                           </label>
                           <input
                             id="email"
@@ -287,7 +289,7 @@ export default function PropertyShow({
                         </div>
                         <div>
                           <label htmlFor="phone" className="mb-1.5 block text-xs font-medium text-muted-foreground">
-                            Phone / WhatsApp
+                            {t("properties.show.form.phone")}
                           </label>
                           <input
                             id="phone"
@@ -303,14 +305,19 @@ export default function PropertyShow({
 
                   {user && (
                     <p className="rounded-xl bg-muted/60 px-4 py-3 text-sm text-muted-foreground">
-                      Enquiring as <span className="font-semibold text-foreground">{user.name}</span>{" "}
-                      ({user.email})
+                      {t("properties.show.form.enquiringAs", { name: "", email: "" })
+                        .split(/(?=\(|\))/)
+                        .length > 0 ? (
+                        <>
+                          {t("properties.show.form.enquiringAs", { name: user.name, email: user.email })}
+                        </>
+                      ) : null}
                     </p>
                   )}
 
                   <div>
                     <label htmlFor="interest" className="mb-1.5 block text-xs font-medium text-muted-foreground">
-                      I'm interested in
+                      {t("properties.show.form.interestedIn")}
                     </label>
                     <select
                       id="interest"
@@ -318,7 +325,7 @@ export default function PropertyShow({
                       onChange={(e) => setData("interest", e.target.value)}
                       className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition-shadow focus:border-primary focus:ring-2 focus:ring-primary/20"
                     >
-                      <option value="">Choose an option…</option>
+                      <option value="">{t("properties.show.form.choosePlaceholder")}</option>
                       {INTERESTS.map((i) => (
                         <option key={i.value} value={i.value}>
                           {i.label}
@@ -330,12 +337,12 @@ export default function PropertyShow({
 
                   <div>
                     <label htmlFor="message" className="mb-1.5 block text-xs font-medium text-muted-foreground">
-                      Message (optional)
+                      {t("properties.show.form.message")}
                     </label>
                     <textarea
                       id="message"
                       rows={4}
-                      placeholder="Anything specific you'd like to know?"
+                      placeholder={t("properties.show.form.messagePlaceholder")}
                       value={data.message}
                       onChange={(e) => setData("message", e.target.value)}
                       className="w-full resize-none rounded-xl border border-input bg-background px-4 py-3 text-sm outline-none transition-shadow focus:border-primary focus:ring-2 focus:ring-primary/20"
@@ -349,20 +356,20 @@ export default function PropertyShow({
                   >
                     {processing ? (
                       <>
-                        <Loader2 className="h-4 w-4 animate-spin" /> Sending…
+                        <Loader2 className="h-4 w-4 animate-spin" /> {t("properties.show.form.submitting")}
                       </>
                     ) : (
                       <>
-                        Send enquiry <ArrowRight className="h-4 w-4" />
+                        {t("properties.show.form.submit")} <ArrowRight className="h-4 w-4" />
                       </>
                     )}
                   </Button>
                 </form>
 
                 <p className="mt-4 text-center text-xs text-muted-foreground">
-                  Prefer to talk directly?{" "}
+                  {t("properties.show.form.preferDirect")}{" "}
                   <Link href="/contact" className="font-medium text-foreground underline underline-offset-2">
-                    Contact our team
+                    {t("properties.show.form.contactTeam")}
                   </Link>
                 </p>
               </div>
@@ -371,9 +378,9 @@ export default function PropertyShow({
 
           {relatedProperties.length > 0 && (
             <div className="mt-16 border-t border-border pt-12">
-              <h2 className="font-display text-2xl font-semibold">Related properties</h2>
+              <h2 className="font-display text-2xl font-semibold">{t("properties.show.related.title")}</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Other listings in the same area or category.
+                {t("properties.show.related.subtitle")}
               </p>
 
               <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -390,6 +397,7 @@ export default function PropertyShow({
 }
 
 function RelatedPropertyCard({ property, locale }: { property: RelatedProperty; locale: string }) {
+  const { t } = useTranslation();
   const title = localize(property.title, locale);
   const location = localize(property.location, locale);
   const price = localize(property.price, locale);
@@ -409,7 +417,7 @@ function RelatedPropertyCard({ property, locale }: { property: RelatedProperty; 
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-            No photo
+            {t("properties.show.related.noPhoto")}
           </div>
         )}
         {status && (
@@ -429,7 +437,7 @@ function RelatedPropertyCard({ property, locale }: { property: RelatedProperty; 
         <div className="mt-3 flex items-center justify-between">
           <span className="font-display text-sm font-semibold">{price}</span>
           <span className="inline-flex items-center gap-1 text-xs font-medium text-foreground opacity-0 transition-opacity group-hover:opacity-100">
-            View <ArrowRight className="h-3 w-3" />
+            {t("properties.show.related.view")} <ArrowRight className="h-3 w-3" />
           </span>
         </div>
       </div>

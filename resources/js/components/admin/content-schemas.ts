@@ -310,6 +310,25 @@ export const pageSchemas: PageDefinition[] = [
         ],
       },
       {
+        key: 'howItWorks',
+        label: 'How it works',
+        fields: [
+          { type: 'text', key: 'eyebrow', label: 'Eyebrow' },
+          { type: 'text', key: 'title', label: 'Title' },
+          {
+            type: 'list',
+            key: 'items',
+            label: 'Steps',
+            itemLabel: 'Step',
+            itemFields: [
+              { type: 'text', key: 'icon', label: 'Icon name (lucide-react)' },
+              { type: 'text', key: 'title', label: 'Title' },
+              { type: 'textarea', key: 'body', label: 'Description' },
+            ],
+          },
+        ],
+      },
+      {
         key: 'benefits',
         label: 'Why join (section header)',
         fields: [

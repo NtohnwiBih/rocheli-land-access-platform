@@ -797,6 +797,47 @@
         },
         "card": {
             "startingFrom": "Starting from"
+        },
+         "show": {
+            "allProperties": "All properties",
+            "noPhotos": "No photos available yet",
+            "previousPhoto": "Previous photo",
+            "nextPhoto": "Next photo",
+            "showPhoto": "Show photo {{n}}",
+            "aboutTitle": "About this property",
+            "aboutFallback": "Full details available on request — send an enquiry and our team will follow up.",
+            "priceLabel": "Price",
+            "perSqm": "/m²",
+            "form": {
+                "fullName": "Full name",
+                "email": "Email",
+                "phone": "Phone / WhatsApp",
+                "interestedIn": "I'm interested in",
+                "choosePlaceholder": "Choose an option…",
+                "interests": {
+                    "buy": "I want to buy this",
+                    "financing": "Ask about financing / installments",
+                    "visit": "Schedule a site visit",
+                    "information": "Just more information"
+                },
+                "message": "Message (optional)",
+                "messagePlaceholder": "Anything specific you'd like to know?",
+                "enquiringAs": "Enquiring as {{name}} ({{email}})",
+                "submit": "Send enquiry",
+                "submitting": "Sending…",
+                "preferDirect": "Prefer to talk directly?",
+                "contactTeam": "Contact our team"
+            },
+            "toast": {
+                "success": "Enquiry sent — we'll be in touch shortly.",
+                "error": "Please check the form and try again."
+            },
+            "related": {
+                "title": "Related properties",
+                "subtitle": "Other listings in the same area or category.",
+                "noPhoto": "No photo",
+                "view": "View"
+            }
         }
     },
     "resources": {

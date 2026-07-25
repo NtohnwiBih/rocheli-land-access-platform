@@ -1,5 +1,5 @@
 import { Head, useForm, Link } from "@inertiajs/react";
-import { Save, ArrowLeft, ImageIcon } from "lucide-react";
+import { Save, ArrowLeft, ImageIcon, AlertCircle } from "lucide-react";
 import { type Locale } from "@/types";
 import { AdminPageHeader } from "@/components/admin/ui";
 import { Button } from "@/components/ui/button";
@@ -35,6 +35,9 @@ export default function TeamMemberForm({ member }: Props) {
     order: member?.order ?? 0,
     image: null as File | null,
   });
+
+  const otherLocale: Locale = locale === "en" ? "fr" : "en";
+  const otherLocaleErrorCount = Object.keys(errors).filter((k) => k.endsWith(`_${otherLocale}`)).length;
 
   const handleImage = (file: File | null) => {
     setData("image", file);
@@ -100,6 +103,22 @@ export default function TeamMemberForm({ member }: Props) {
               {processing ? "Saving…" : editing ? "Update" : "Create"}
             </Button>
           </div>
+
+          {otherLocaleErrorCount > 0 && (
+            <div className="flex items-center justify-between gap-3 rounded-lg border border-destructive/40 bg-destructive/5 px-4 py-2.5 text-xs text-destructive">
+              <span className="flex items-center gap-1.5">
+                <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                {otherLocaleErrorCount} error{otherLocaleErrorCount > 1 ? "s" : ""} on the {otherLocale.toUpperCase()} tab.
+              </span>
+              <button
+                type="button"
+                onClick={() => setLocale(otherLocale)}
+                className="shrink-0 font-semibold underline underline-offset-2 hover:no-underline"
+              >
+                Switch to {otherLocale.toUpperCase()}
+              </button>
+            </div>
+          )}
 
           <div className="grid gap-6 md:grid-cols-[1.3fr_1fr]">
             <div className="space-y-4">

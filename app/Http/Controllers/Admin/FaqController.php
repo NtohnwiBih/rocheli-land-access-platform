@@ -22,6 +22,7 @@ class FaqController extends Controller
                 'answer_fr' => $f->answer['fr'] ?? '',
                 'sort_order' => $f->sort_order,
                 'is_published' => $f->is_published,
+                'is_land_access' => $f->is_land_access,
             ]),
         ]);
     }
@@ -35,6 +36,7 @@ class FaqController extends Controller
             'answer' => ['en' => $validated['answer_en'], 'fr' => $validated['answer_fr']],
             'sort_order' => $validated['sort_order'] ?? 0,
             'is_published' => $validated['is_published'] ?? true,
+            'is_land_access' => $validated['is_land_access'] ?? false,
         ]);
 
         return back()->with('success', 'FAQ added.');
@@ -49,6 +51,7 @@ class FaqController extends Controller
             'answer' => ['en' => $validated['answer_en'], 'fr' => $validated['answer_fr']],
             'sort_order' => $validated['sort_order'] ?? $faq->sort_order,
             'is_published' => $validated['is_published'] ?? $faq->is_published,
+            'is_land_access' => $validated['is_land_access'] ?? $faq->is_land_access,
         ]);
 
         return back()->with('success', 'FAQ updated.');

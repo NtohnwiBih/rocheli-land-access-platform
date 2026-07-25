@@ -27,6 +27,7 @@ class HomeController extends Controller
         return Inertia::render('site/index', [
             'properties' => Property::with(['category', 'city'])->latest()->get()->map(fn (Property $p) => [
                 'id' => $p->id,
+                'slug' => $p->slug,
                 'title' => $p->titleForLocale('en'),
                 'location' => $p->location,
                 'city' => $p->city?->name_en ?? '—',

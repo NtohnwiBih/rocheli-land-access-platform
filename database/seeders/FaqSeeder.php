@@ -9,7 +9,22 @@ class FaqSeeder extends Seeder
 {
     public function run(): void
     {
-        $faqs = [
+        $generalFaqs = [
+            [
+                'en' => ['q' => 'What does Rocheli Real Properties do?', 'a' => 'We help clients find, verify, and acquire land and real estate across Cameroon, backed by legal title checks on every listing.'],
+                'fr' => ['q' => 'Que fait Rocheli Real Properties ?', 'a' => 'Nous aidons les clients à trouver, vérifier et acquérir des terrains et biens immobiliers au Cameroun, avec une vérification légale du titre pour chaque annonce.'],
+            ],
+            [
+                'en' => ['q' => 'How do I schedule a property visit?', 'a' => 'Book an appointment through our contact page and one of our agents will confirm a time that works for you.'],
+                'fr' => ['q' => 'Comment planifier une visite de propriété ?', 'a' => 'Réservez un rendez-vous via notre page de contact et un agent confirmera un horaire qui vous convient.'],
+            ],
+            [
+                'en' => ['q' => 'Do you offer support in French and English?', 'a' => 'Yes, our team and platform are fully bilingual.'],
+                'fr' => ['q' => 'Offrez-vous un support en français et en anglais ?', 'a' => 'Oui, notre équipe et notre plateforme sont entièrement bilingues.'],
+            ],
+        ];
+
+        $landAccessFaqs = [
             [
                 'en' => ['q' => 'How do I join the Land Access Club?', 'a' => 'Create an account, choose a contribution plan, and complete your KYC — you can start contributing the same day.'],
                 'fr' => ['q' => 'Comment rejoindre le Land Access Club ?', 'a' => 'Créez un compte, choisissez un plan de contribution et complétez votre KYC — vous pouvez commencer à contribuer le jour même.'],
@@ -32,14 +47,21 @@ class FaqSeeder extends Seeder
             ],
         ];
 
+        $this->seedFaqs($generalFaqs, isLandAccess: false, sortOffset: 0);
+        $this->seedFaqs($landAccessFaqs, isLandAccess: true, sortOffset: count($generalFaqs));
+    }
+
+    private function seedFaqs(array $faqs, bool $isLandAccess, int $sortOffset): void
+    {
         foreach ($faqs as $i => $f) {
             Faq::updateOrCreate(
                 ['question->en' => $f['en']['q']],
                 [
                     'question' => ['en' => $f['en']['q'], 'fr' => $f['fr']['q']],
                     'answer' => ['en' => $f['en']['a'], 'fr' => $f['fr']['a']],
-                    'sort_order' => $i + 1,
+                    'sort_order' => $sortOffset + $i + 1,
                     'is_published' => true,
+                    'is_land_access' => $isLandAccess,
                 ]
             );
         }

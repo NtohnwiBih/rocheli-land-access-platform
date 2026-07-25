@@ -1,11 +1,11 @@
 import { Head, Link, useForm, router } from "@inertiajs/react";
 import { useState } from "react";
-import { Save, ChevronRight, ArrowLeft, ImageIcon, Upload, Trash2, Star } from "lucide-react";
+import { Save, ChevronRight, ArrowLeft, ImageIcon, Upload, Trash2, Star, AlertCircle } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/ui";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor } from "@/components/admin/rich-text-editor";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { type Locale } from "@/types";
 
@@ -70,6 +70,9 @@ export default function PropertyForm({ property, categories, cities }: Props) {
     description_fr: property?.description_fr ?? "",
     image: null as File | null,
   });
+
+  const otherLocale: Locale = locale === "en" ? "fr" : "en";
+  const otherLocaleErrorCount = Object.keys(errors).filter((k) => k.endsWith(`_${otherLocale}`)).length;
 
   const submit = () => {
     const options = { forceFormData: true as const, preserveScroll: true };
@@ -165,6 +168,22 @@ export default function PropertyForm({ property, categories, cities }: Props) {
                 </Button>
               </div>
 
+              {otherLocaleErrorCount > 0 && (
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-destructive/40 bg-destructive/5 px-4 py-2.5 text-xs text-destructive">
+                  <span className="flex items-center gap-1.5">
+                    <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                    {otherLocaleErrorCount} error{otherLocaleErrorCount > 1 ? "s" : ""} on the {otherLocale.toUpperCase()} tab.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setLocale(otherLocale)}
+                    className="shrink-0 font-semibold underline underline-offset-2 hover:no-underline"
+                  >
+                    Switch to {otherLocale.toUpperCase()}
+                  </button>
+                </div>
+              )}
+
               {activeSection === "details" && (
                 <div className="grid gap-4 sm:grid-cols-2">
                     {editing && (
@@ -191,12 +210,16 @@ export default function PropertyForm({ property, categories, cities }: Props) {
                       <div className="sm:col-span-2" />
                       <div className="sm:col-span-2 space-y-2">
                         <Label>Description (EN)</Label>
-                        <Textarea rows={4} value={data.description_en} onChange={(e) => setData("description_en", e.target.value)} />
+                        <RichTextEditor
+                          value={data.description_en}
+                          onChange={(html) => setData("description_en", html)}
+                        />
+                        {errors.description_en && <p className="text-xs text-destructive">{errors.description_en}</p>}
                       </div>
                     </>
                   ) : (
                     <>
-                      <div className="space-y-2">
+                      <div className="space-y-2 sm:grid-cols-2">
                         <Label>Title (FR)</Label>
                         <Input value={data.title_fr} onChange={(e) => setData("title_fr", e.target.value)} />
                         {errors.title_fr && <p className="text-xs text-destructive">{errors.title_fr}</p>}
@@ -204,7 +227,11 @@ export default function PropertyForm({ property, categories, cities }: Props) {
                       <div className="sm:col-span-2" />
                       <div className="sm:col-span-2 space-y-2">
                         <Label>Description (FR)</Label>
-                        <Textarea rows={4} value={data.description_fr} onChange={(e) => setData("description_fr", e.target.value)} />
+                        <RichTextEditor
+                          value={data.description_fr}
+                          onChange={(html) => setData("description_fr", html)}
+                        />
+                        {errors.description_fr && <p className="text-xs text-destructive">{errors.description_fr}</p>}
                       </div>
                     </>
                   )}

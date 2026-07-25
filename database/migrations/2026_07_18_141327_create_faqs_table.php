@@ -16,6 +16,7 @@ return new class extends Migration
             $table->json('question'); 
             $table->json('answer'); 
             $table->unsignedInteger('sort_order')->default(0);
+            $table->boolean('is_land_access')->default(false);
             $table->boolean('is_published')->default(true);
             $table->timestamps();
         });

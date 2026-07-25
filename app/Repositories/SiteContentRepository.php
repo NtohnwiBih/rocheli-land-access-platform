@@ -62,9 +62,13 @@ class SiteContentRepository implements SiteContentRepositoryInterface
         return Testimonial::published()->take($limit)->get()->map(fn ($t) => $t->forLocale($locale))->all();
     }
 
-    public function faqsForFrontend(string $locale): array
+    public function faqsForFrontend(string $locale, bool $landAccessOnly = false): array
     {
-        return Faq::published()->get()->map(fn ($f) => $f->forLocale($locale))->all();
+        $query = Faq::published();
+
+        $query = $landAccessOnly ? $query->landAccess() : $query->general();
+
+        return $query->get()->map(fn ($f) => $f->forLocale($locale))->all();
     }
 
     public function articlesForFrontend(string $locale, int $limit = 3): array

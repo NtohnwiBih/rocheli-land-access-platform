@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 
 type PropertyRow = {
   id: number;
+  slug: string;
   title: string;
   location: string;
   category: string;
@@ -63,7 +64,7 @@ export default function PropertiesIndex({ properties }: Props) {
               </TableCell>
               <TableCell>
                 <div className="flex justify-end gap-1">
-                  <Link href={`/rocheli/properties/${p.id}/edit`}>
+                  <Link href={`/rocheli/properties/${p.slug}/edit`}>
                     <Button size="icon" variant="ghost"><Pencil className="h-3.5 w-3.5" /></Button>
                   </Link>
                   <Button size="icon" variant="ghost" onClick={() => destroy(p.id)}>

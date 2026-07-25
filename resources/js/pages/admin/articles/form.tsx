@@ -1,6 +1,6 @@
 import { Head, router, useForm, Link } from '@inertiajs/react';
 import { useState } from 'react';
-import { Save, ChevronRight, ArrowLeft, ImageIcon } from 'lucide-react';
+import { Save, ChevronRight, ArrowLeft, ImageIcon, AlertCircle } from 'lucide-react';
 import { type Locale } from '@/types';
 import { AdminPageHeader } from '@/components/admin/ui';
 import { Button } from '@/components/ui/button';
@@ -68,6 +68,9 @@ const { data, setData, post, processing, errors, transform } = useForm({
     is_published: article?.is_published ?? true,
     image: null as File | null,
   });
+
+  const otherLocale: Locale = locale === 'en' ? 'fr' : 'en';
+  const otherLocaleErrorCount = Object.keys(errors).filter((k) => k.endsWith(`_${otherLocale}`)).length;
 
   const handleImage = (file: File | null) => {
     setData('image', file);
@@ -174,6 +177,22 @@ const { data, setData, post, processing, errors, transform } = useForm({
                 {saving || processing ? 'Saving…' : saved ? 'Saved' : editing ? 'Update' : 'Create'}
               </Button>
             </div>
+
+            {otherLocaleErrorCount > 0 && (
+              <div className="flex items-center justify-between gap-3 rounded-lg border border-destructive/40 bg-destructive/5 px-4 py-2.5 text-xs text-destructive">
+                <span className="flex items-center gap-1.5">
+                  <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+                  {otherLocaleErrorCount} error{otherLocaleErrorCount > 1 ? 's' : ''} on the {otherLocale.toUpperCase()} tab.
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setLocale(otherLocale)}
+                  className="shrink-0 font-semibold underline underline-offset-2 hover:no-underline"
+                >
+                  Switch to {otherLocale.toUpperCase()}
+                </button>
+              </div>
+            )}
 
             {activeSection === 'details' && (
             <div className="grid gap-4 sm:grid-cols-2">

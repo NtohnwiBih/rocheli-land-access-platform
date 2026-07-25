@@ -20,6 +20,7 @@ class StoreFaqRequest extends FormRequest
             'answer_fr' => ['required', 'string'],
             'sort_order' => ['nullable', 'integer'],
             'is_published' => ['boolean'],
+            'is_land_access' => ['boolean'],
         ];
     }
 }
