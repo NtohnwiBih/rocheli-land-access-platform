@@ -787,7 +787,8 @@
             "title": "Verified properties across",
             "titleAccent": "Cameroon.",
             "description": "Every listing is title-audited, geo-mapped, and eligible for structured installments through the Land Access Club.",
-            "searchPlaceholder": "Search by city, project or feature…"
+            "searchPlaceholder": "Search by city, project or feature…",
+            "searchButton": "Search"
         },
         "filters": {
             "title": "Filters",

@@ -787,7 +787,8 @@
             "title": "Des propriétés vérifiées à travers le",
             "titleAccent": "Cameroun.",
             "description": "Chaque bien est vérifié au niveau du titre foncier, géolocalisé et éligible à un paiement échelonné via le Land Access Club.",
-            "searchPlaceholder": "Rechercher par ville, projet ou caractéristique…"
+            "searchPlaceholder": "Rechercher par ville, projet ou caractéristique…",
+            "searchButton": "Rechercher"
         },
         "filters": {
             "title": "Filtres",
