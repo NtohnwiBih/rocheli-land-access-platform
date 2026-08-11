@@ -129,8 +129,9 @@ export default function Properties({ properties, cities, types }: Props) {
           placeholder: t("properties.hero.searchPlaceholder", "Search by city, project or feature…"),
           city,
           onCityChange: setCity,
-          cities: cityOptions.map((c) => c.value),
+          cities: cityOptions, 
           onSubmit: handleSearch,
+          buttonLabel: t("properties.hero.searchButton", "Search"),
         }}
       />
 

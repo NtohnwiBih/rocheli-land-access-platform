@@ -16,7 +16,7 @@ export interface BreadcrumbSearchProps {
   city?: string;
   onCityChange?: (city: string) => void;
   /** Options for the location dropdown. If omitted (or empty), the dropdown isn't rendered. */
-  cities?: string[];
+  cities?: { value: string; label: string }[];
   /** Called when the search button is clicked. */
   onSubmit?: () => void;
   /** Text on the search button. */
@@ -132,8 +132,8 @@ export function Breadcrumb({
                   className="bg-transparent py-3 text-sm text-white outline-none min-w-0"
                 >
                   {search.cities.map((c) => (
-                    <option key={c} value={c} className="text-navy">
-                      {c}
+                    <option key={c.value} value={c.value} className="text-navy">
+                      {c.label}
                     </option>
                   ))}
                 </select>
