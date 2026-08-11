@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { PropertyFilters, PropertyFiltersState, FilterOption } from "./filters";
+import { PropertyPagination } from "./pagination";
 import { PropertyCard } from "../components/property-card";
 import { Property } from "@/types";
 
@@ -27,15 +29,45 @@ const SORT_OPTIONS = [
   { value: "newest", labelKey: "properties.listing.sortNewest", fallback: "Newest" },
 ];
 
+const PAGE_SIZE = 9;
+
 export function PropertyListing({ filtered, total, filters, cityOptions, typeOptions }: PropertyListingProps) {
   const { t } = useTranslation();
+  const [page, setPage] = useState(1);
+  const topRef = useRef<HTMLDivElement>(null);
+  const isFirstRender = useRef(true);
+
+  // Reset to page 1 whenever the filtered result set changes (filters/search).
+  useEffect(() => {
+    setPage(1);
+  }, [filtered]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+
+  const pageItems = useMemo(
+    () => filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+    [filtered, page]
+  );
+
+  const handlePageChange = (nextPage: number) => {
+    setPage(nextPage);
+    if (!isFirstRender.current) {
+      topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    isFirstRender.current = false;
+  };
+
+  const rangeStart = filtered.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+  const rangeEnd = Math.min(page * PAGE_SIZE, filtered.length);
 
   return (
-    <div>
+    <div ref={topRef}>
       <div className="mb-6 flex items-center justify-between gap-4 flex-wrap">
         <div className="text-sm text-muted-foreground">
           {t("properties.listing.showing", "Showing")}{" "}
-          <span className="font-semibold text-foreground">{filtered.length}</span>{" "}
+          <span className="font-semibold text-foreground">
+            {filtered.length === 0 ? 0 : `${rangeStart}–${rangeEnd}`}
+          </span>{" "}
           {t("properties.listing.of", "of")} {total} {t("properties.listing.properties", "properties")}
         </div>
         <div className="flex items-center gap-2">
@@ -77,11 +109,20 @@ export function PropertyListing({ filtered, total, filters, cityOptions, typeOpt
           </p>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-3 xl:grid-cols-3">
-          {filtered.map((p, i) => (
-            <PropertyCard key={p.id} p={p as any} index={i} />
-          ))}
-        </div>
+        <>
+          <div className="grid gap-6 md:grid-cols-3 xl:grid-cols-3">
+            {pageItems.map((p, i) => (
+              <PropertyCard key={p.id} p={p as any} index={i} />
+            ))}
+          </div>
+
+          <PropertyPagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            className="mt-10"
+          />
+        </>
       )}
     </div>
   );
