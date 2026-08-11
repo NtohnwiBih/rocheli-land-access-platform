@@ -698,50 +698,81 @@
     "contact": {
         "meta": {
             "title": "Contact - Rocheli Real Properties",
-            "description": "Parlez a un conseiller Rocheli. Reservez une consultation, visitez nos bureaux ou ecrivez-nous sur WhatsApp.",
-            "ogTitle": "Contactez Rocheli Real Properties",
-            "ogDescription": "Reservez une consultation ou visitez notre bureau a Yaounde"
+            "description": "Parlez à un conseiller Rocheli. Réservez une consultation, rendez-vous dans nos bureaux ou échangez avec nous sur WhatsApp.",
+            "ogTitle": "Contacter Rocheli Real Properties",
+            "ogDescription": "Réservez une consultation ou rendez-vous dans notre bureau à Yaoundé"
         },
         "hero": {
             "eyebrow": "Contactez-nous",
             "title": "Parlons de votre",
-            "titleAccent": "premiere parcelle.",
-            "description": "Reservez une consultation de 30 minutes avec un conseiller. Visitez notre bureau. Ou ecrivez-nous sur WhatsApp - comme vous preferez."
+            "titleAccent": "premier terrain.",
+            "description": "Réservez une consultation de 30 minutes avec un conseiller. Rendez-vous dans notre bureau. Ou contactez-nous sur WhatsApp — choisissez ce qui vous convient le mieux."
         },
         "form": {
             "title": "Envoyez-nous un message",
-            "subtitle": "Nous repondons sous un jour ouvre.",
+            "subtitle": "Nous vous répondrons dans un délai d'un jour ouvrable.",
+            "continue": "Continuer vers la prise de rendez-vous",
             "interests": {
-            "landAccessClub": "Land Access Club",
-            "buyProperty": "Acheter une propriete",
-            "investmentAdvisory": "Conseil en investissement",
-            "partnershipPress": "Partenariat / Presse",
-            "other": "Autre"
+                "landAccessClub": "Land Access Club",
+                "buyProperty": "Acheter un bien immobilier",
+                "investmentAdvisory": "Conseil en investissement",
+                "partnershipPress": "Partenariat / Presse",
+                "other": "Autre"
             },
             "fields": {
-            "name": { "label": "Nom complet", "placeholder": "Amina Nkeng" },
-            "phone": { "label": "Telephone / WhatsApp", "placeholder": "+237 ..." },
-            "email": { "label": "Adresse e-mail", "placeholder": "vous@exemple.com" },
-            "interest": { "label": "Interet" },
-            "message": { "label": "Message", "placeholder": "Parlez-nous de vos objectifs..." }
+                "name": {
+                    "label": "Nom complet",
+                    "placeholder": "Amina Nkeng"
+                },
+                "phone": {
+                    "label": "Téléphone / WhatsApp",
+                    "placeholder": "+237 ..."
+                },
+                "email": {
+                    "label": "Adresse e-mail",
+                    "placeholder": "vous@exemple.com"
+                },
+                "interest": {
+                    "label": "Objet de votre demande"
+                },
+                "message": {
+                    "label": "Message",
+                    "placeholder": "Parlez-nous de vos projets..."
+                }
+            },
+            "errors": {
+                "name": "Veuillez saisir votre nom complet",
+                "phone": "Veuillez saisir un numéro de téléphone joignable",
+                "interest": "Sélectionnez le sujet pour lequel vous souhaitez de l'aide"
             }
         },
         "booking": {
-            "title": "Reservez un conseiller",
-            "body": "Choisissez un creneau de 30 minutes avec un conseiller Rocheli. Disponible du lundi au samedi.",
-            "loading": "Chargement des disponibilites...",
-            "noSlotsLeft": "Plus rien ce jour-la - essayez un autre jour.",
+            "title": "Réserver avec un conseiller",
+            "body": "Choisissez un créneau de 30 minutes avec un conseiller Rocheli. Disponible du lundi au samedi.",
+            "loading": "Chargement des créneaux disponibles...",
+            "chooseDay": "Choisissez un jour",
+            "morning": "Matin",
+            "afternoon": "Après-midi",
+            "noSlotsLeft": "Aucun créneau disponible ce jour-là — essayez un autre jour.",
+            "back": "Retour",
             "submitting": "Envoi en cours...",
-            "submit": "Envoyer le message et confirmer le creneau"
+            "submit": "Envoyer le message et confirmer le créneau"
         },
         "confirmed": {
-            "title": "C'est reserve",
-            "subtitle": "Nous avons envoye une confirmation, un conseiller vous retrouvera a l'heure prevue.",
-            "bookAnother": "Reserver un autre creneau"
+            "title": "Votre rendez-vous est confirmé",
+            "subtitle": "Nous vous avons envoyé une confirmation et un conseiller vous contactera à l'heure prévue.",
+            "bookAnother": "Réserver un autre créneau"
+        },
+        "howItWorks": {
+            "title": "Comment ça marche",
+            "step1": "1. Partagez vos coordonnées et expliquez-nous ce que vous recherchez.",
+            "step2": "2. Choisissez un créneau de 30 minutes qui convient à votre emploi du temps.",
+            "step3": "3. Un conseiller vous appelle à l'heure confirmée.",
+            "hours": "Disponible du lundi au samedi, de 8h à 20h"
         },
         "whatsapp": {
             "title": "Discuter sur WhatsApp",
-            "subtitle": "Reponse en moins de 15 minutes . 8h - 20h"
+            "subtitle": "Temps de réponse inférieur à 15 minutes · 8h à 20h"
         }
     },
     "properties": {

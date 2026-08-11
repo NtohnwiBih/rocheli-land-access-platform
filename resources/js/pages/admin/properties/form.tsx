@@ -78,7 +78,7 @@ export default function PropertyForm({ property, categories, cities }: Props) {
     const options = { forceFormData: true as const, preserveScroll: true };
     if (editing) {
       transform((d) => ({ ...d, _method: "PUT" }));
-      post(`/rocheli/properties/${property!.id}`, options);
+      post(`/rocheli/properties/${property!.slug}`, options);
     } else {
       post("/rocheli/properties", options);
     }

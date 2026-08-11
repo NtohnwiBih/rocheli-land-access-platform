@@ -373,6 +373,10 @@ export default function RegisterPage({ plans, cities, registered = false }: Regi
     post("/register", { forceFormData: true });
   };
 
+  const handleSuccessContinue = () => {
+    router.visit("/");
+  };
+
   return (
     <div className="min-h-screen bg-muted/40">
       <Head title="Become a Member — Rocheli" />
@@ -830,7 +834,7 @@ export default function RegisterPage({ plans, cities, registered = false }: Regi
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-center">
-            <Button variant="brand" onClick={goToDashboard}>
+            <Button variant="brand" onClick={handleSuccessContinue}>
               {t("register.success.gotIt")}
             </Button>
           </DialogFooter>

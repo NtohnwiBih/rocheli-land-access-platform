@@ -2,35 +2,74 @@ import { Head } from "@inertiajs/react";
 import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Breadcrumb } from "@/components/site/breadcrumbs";
-import { PropertyFilters, cities } from "@/components/site/properties/filters";
+import { PropertyFilters} from "@/components/site/properties/filters";
 import { PropertyListing } from "@/components/site/properties/listing";
 import type { Property } from "@/types";
 
-interface Props {
-  properties: Property[];
+const ALL_CITIES = "all";
+const ALL_TYPES = "all";
+
+interface CityOption {
+  key: string;
+  name: string;
 }
 
-export default function Properties({ properties }: Props) {
+interface TypeOption {
+  slug: string;
+  name: string;
+}
+
+interface Props {
+  properties: Property[];
+  cities: CityOption[];
+  types: TypeOption[];
+}
+
+export default function Properties({ properties, cities, types }: Props) {
   const { t } = useTranslation();
 
+  const allCitiesLabel = t("properties.filters.values.allCities", "All cities");
+  const allTypesLabel = t("properties.filters.values.allTypes", "All types");
+
+  // value = stable sentinel/key, label = translated display text
+  const cityOptions = useMemo(
+    () => [
+      { value: ALL_CITIES, label: allCitiesLabel },
+      ...cities.map((c) => ({ value: c.key, label: c.name })),
+    ],
+    [cities, allCitiesLabel]
+  );
+
+  const typeOptions = useMemo(
+    () => [
+      { value: ALL_TYPES, label: allTypesLabel },
+      ...types.map((tp) => ({ value: tp.slug, label: tp.name })),
+    ],
+    [types, allTypesLabel]
+  );
+
   const [q, setQ] = useState("");
-  const [city, setCity] = useState("All cities");
-  const [type, setType] = useState("All types");
+  const [city, setCity] = useState<string>(ALL_CITIES);
+  const [type, setType] = useState<string>(ALL_TYPES);
   const [payment, setPayment] = useState("Any payment");
   const [status, setStatus] = useState("Any status");
   const [priceMax, setPriceMax] = useState(30000000);
+
+  // look up the currently selected city/type's DB key so we can match against property data
+  const selectedCity = cities.find((c) => c.key === city);
+  const selectedType = types.find((tp) => tp.slug === type);
 
   const filtered = useMemo(() => {
     return properties.filter((p) => {
       const haystack = `${p.title} ${p.location} ${p.city ?? ""}`.toLowerCase();
       if (q && !haystack.includes(q.toLowerCase())) return false;
-      if (city !== "All cities" && p.city !== city) return false;
-      if (type !== "All types" && p.type !== type) return false;
+      if (city !== ALL_CITIES && p.city !== selectedCity?.name) return false;
+      if (type !== ALL_TYPES && p.category !== selectedType?.name) return false;
       if (status !== "Any status" && p.status !== status) return false;
       if (p.priceValue > priceMax) return false;
       return true;
     });
-  }, [q, city, type, status, priceMax]);
+  }, [q, city, type, status, priceMax, properties, selectedCity, selectedType]);
 
   const filterState = {
     city,
@@ -48,8 +87,8 @@ export default function Properties({ properties }: Props) {
   const handleSearch = () => {};
 
   const resetFilters = () => {
-    setCity("All cities");
-    setType("All types");
+    setCity(ALL_CITIES);
+    setType(ALL_TYPES);
     setPayment("Any payment");
     setStatus("Any status");
     setPriceMax(30000000);
@@ -72,7 +111,7 @@ export default function Properties({ properties }: Props) {
         />
       </Head>
 
-      <Breadcrumb
+        <Breadcrumb
         eyebrow={t("properties.hero.eyebrow", "Marketplace")}
         title={
           <>
@@ -90,7 +129,7 @@ export default function Properties({ properties }: Props) {
           placeholder: t("properties.hero.searchPlaceholder", "Search by city, project or feature…"),
           city,
           onCityChange: setCity,
-          cities,
+          cities: cityOptions.map((c) => c.value),
           onSubmit: handleSearch,
         }}
       />
@@ -108,11 +147,17 @@ export default function Properties({ properties }: Props) {
                   {t("properties.filters.reset", "Reset")}
                 </button>
               </div>
-              <PropertyFilters {...filterState} />
+              <PropertyFilters {...filterState} cityOptions={cityOptions} typeOptions={typeOptions} />
             </div>
           </aside>
 
-          <PropertyListing filtered={filtered} total={properties.length} filters={filterState} />
+          <PropertyListing
+            filtered={filtered}
+            total={properties.length}
+            filters={filterState}
+            cityOptions={cityOptions}
+            typeOptions={typeOptions}
+          />
         </div>
       </section>
     </>

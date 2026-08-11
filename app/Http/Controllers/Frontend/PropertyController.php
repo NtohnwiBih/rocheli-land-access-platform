@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\City;
 use App\Models\Property;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -18,8 +20,20 @@ class PropertyController extends Controller
             ->get()
             ->map(fn (Property $p) => $this->transform($p, $locale));
 
+        $cities = City::active()->get()->map(fn (City $c) => [
+            'key' => $c->key,
+            'name' => $c->{"name_{$locale}"} ?? $c->name_en,
+        ]);
+
+        $types = Category::forProperties()->active()->get()->map(fn (Category $c) => [
+            'slug' => $c->slug,
+            'name' => $c->nameForLocale($locale),
+        ]);
+
         return Inertia::render('site/properties/index', [
             'properties' => $properties,
+            'cities' => $cities,
+            'types' => $types,
         ]);
     }
 
@@ -48,7 +62,7 @@ class PropertyController extends Controller
                     'is_featured' => $m->is_featured,
                 ]),
                 'category' => $property->category?->nameForLocale($locale),
-                'city' => $property->city?->name_en,
+                'city' => $property->city?->{"name_{$locale}"} ?? $property->city?->name_en,
             ],
             'relatedProperties' => $this->relatedTo($property, $locale),
         ]);
@@ -96,7 +110,7 @@ class PropertyController extends Controller
             'type' => $p->type,
             'image' => $p->image_url,
             'category' => $p->category?->nameForLocale($locale),
-            'city' => $p->city?->name_en,
+            'city' => $p->city?->{"name_{$locale}"} ?? $p->city?->name_en,
         ];
     }
 }

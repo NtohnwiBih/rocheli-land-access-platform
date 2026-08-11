@@ -1,13 +1,9 @@
 import { useTranslation } from "react-i18next";
 
-export const cities = ["All cities", "Douala", "Yaoundé", "Kribi", "Buea", "Bafoussam", "Limbe"];
-export const types = ["All types", "Residential", "Beachfront", "Commercial", "Mixed-Use"];
 export const paymentOptions = ["Any payment", "Installments", "Outright"];
 export const availability = ["Any status", "Available", "Selling Fast", "Reserved", "Sold"];
 
-const VALUE_KEYS: Record<string, string> = {
-  "All cities": "properties.filters.values.allCities",
-  "All types": "properties.filters.values.allTypes",
+export const VALUE_KEYS: Record<string, string> = {
   "Any payment": "properties.filters.values.anyPayment",
   "Installments": "properties.filters.values.installments",
   "Outright": "properties.filters.values.outright",
@@ -16,11 +12,12 @@ const VALUE_KEYS: Record<string, string> = {
   "Selling Fast": "properties.filters.values.sellingFast",
   "Reserved": "properties.filters.values.reserved",
   "Sold": "properties.filters.values.sold",
-  "Residential": "properties.filters.values.residential",
-  "Beachfront": "properties.filters.values.beachfront",
-  "Commercial": "properties.filters.values.commercial",
-  "Mixed-Use": "properties.filters.values.mixedUse",
 };
+
+export interface FilterOption {
+  value: string;
+  label: string;
+}
 
 export interface PropertyFiltersState {
   city: string;
@@ -35,6 +32,11 @@ export interface PropertyFiltersState {
   setPriceMax: (v: number) => void;
 }
 
+interface PropertyFiltersProps extends PropertyFiltersState {
+  cityOptions: FilterOption[];
+  typeOptions: FilterOption[];
+}
+
 export function PropertyFilters({
   city,
   setCity,
@@ -46,15 +48,20 @@ export function PropertyFilters({
   setStatus,
   priceMax,
   setPriceMax,
-}: PropertyFiltersState) {
+  cityOptions,
+  typeOptions,
+}: PropertyFiltersProps) {
   const { t } = useTranslation();
+
+  const paymentOpts: FilterOption[] = paymentOptions.map((o) => ({ value: o, label: t(VALUE_KEYS[o] ?? o, o) }));
+  const statusOpts: FilterOption[] = availability.map((o) => ({ value: o, label: t(VALUE_KEYS[o] ?? o, o) }));
 
   return (
     <div className="space-y-6">
-      <FilterGroup label={t("properties.filters.location", "Location")} options={cities} value={city} onChange={setCity} />
-      <FilterGroup label={t("properties.filters.propertyType", "Property type")} options={types} value={type} onChange={setType} />
-      <FilterGroup label={t("properties.filters.payment", "Payment")} options={paymentOptions} value={payment} onChange={setPayment} />
-      <FilterGroup label={t("properties.filters.availability", "Availability")} options={availability} value={status} onChange={setStatus} />
+      <FilterGroup label={t("properties.filters.location", "Location")} options={cityOptions} value={city} onChange={setCity} />
+      <FilterGroup label={t("properties.filters.propertyType", "Property type")} options={typeOptions} value={type} onChange={setType} />
+      <FilterGroup label={t("properties.filters.payment", "Payment")} options={paymentOpts} value={payment} onChange={setPayment} />
+      <FilterGroup label={t("properties.filters.availability", "Availability")} options={statusOpts} value={status} onChange={setStatus} />
       <div>
         <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
           {t("properties.filters.maxPrice", "Max price")}
@@ -87,12 +94,10 @@ function FilterGroup({
   onChange,
 }: {
   label: string;
-  options: string[];
+  options: FilterOption[];
   value: string;
   onChange: (v: string) => void;
 }) {
-  const { t } = useTranslation();
-
   return (
     <div>
       <div className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
@@ -101,15 +106,15 @@ function FilterGroup({
       <div className="flex flex-wrap gap-2">
         {options.map((o) => (
           <button
-            key={o}
-            onClick={() => onChange(o)}
+            key={o.value}
+            onClick={() => onChange(o.value)}
             className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold transition ${
-              value === o
+              value === o.value
                 ? "bg-gradient-blue text-white border-transparent shadow-glow"
                 : "border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
             }`}
           >
-            {t(VALUE_KEYS[o] ?? o, o)}
+            {o.label}
           </button>
         ))}
       </div>

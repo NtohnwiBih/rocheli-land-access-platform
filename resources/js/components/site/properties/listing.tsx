@@ -8,7 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { PropertyFilters, PropertyFiltersState } from "./filters";
+import { PropertyFilters, PropertyFiltersState, FilterOption } from "./filters";
 import { PropertyCard } from "../components/property-card";
 import { Property } from "@/types";
 
@@ -16,9 +16,18 @@ interface PropertyListingProps {
   filtered: Property[];
   total: number;
   filters: PropertyFiltersState;
+  cityOptions: FilterOption[];
+  typeOptions: FilterOption[];
 }
 
-export function PropertyListing({ filtered, total, filters }: PropertyListingProps) {
+const SORT_OPTIONS = [
+  { value: "featured", labelKey: "properties.listing.sortFeatured", fallback: "Sort: Featured" },
+  { value: "price_asc", labelKey: "properties.listing.sortPriceLowHigh", fallback: "Price: Low → High" },
+  { value: "price_desc", labelKey: "properties.listing.sortPriceHighLow", fallback: "Price: High → Low" },
+  { value: "newest", labelKey: "properties.listing.sortNewest", fallback: "Newest" },
+];
+
+export function PropertyListing({ filtered, total, filters, cityOptions, typeOptions }: PropertyListingProps) {
   const { t } = useTranslation();
 
   return (
@@ -41,15 +50,16 @@ export function PropertyListing({ filtered, total, filters }: PropertyListingPro
                 <SheetTitle>{t("properties.filters.title", "Filters")}</SheetTitle>
               </SheetHeader>
               <div className="mt-6 overflow-y-auto pb-10">
-                <PropertyFilters {...filters} />
+                <PropertyFilters {...filters} cityOptions={cityOptions} typeOptions={typeOptions} />
               </div>
             </SheetContent>
           </Sheet>
           <select className="rounded-full border border-border bg-card px-4 py-2 text-sm font-medium">
-            <option>{t("properties.listing.sortFeatured", "Sort: Featured")}</option>
-            <option>{t("properties.listing.sortPriceLowHigh", "Price: Low → High")}</option>
-            <option>{t("properties.listing.sortPriceHighLow", "Price: High → Low")}</option>
-            <option>{t("properties.listing.sortNewest", "Newest")}</option>
+            {SORT_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {t(opt.labelKey, opt.fallback)}
+              </option>
+            ))}
           </select>
         </div>
       </div>

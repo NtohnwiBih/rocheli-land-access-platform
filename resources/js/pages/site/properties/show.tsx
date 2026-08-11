@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { VALUE_KEYS } from "@/components/site/properties/filters";
 
 // Several fields come from the backend as either a plain string or a
 // translation map (e.g. { en: "Available", fr: "Disponible" }) depending on
@@ -97,7 +98,8 @@ export default function PropertyShow({
   const size = localize(property.size, locale);
   const type = localize(property.type, locale);
   const price = localize(property.price, locale);
-  const status = localize(property.status, locale);
+  const rawStatus = localize(property.status, locale);
+  const status = t(VALUE_KEYS[rawStatus] ?? rawStatus, rawStatus);
   const category = localize(property.category, locale);
   const city = localize(property.city, locale);
 
@@ -401,7 +403,8 @@ function RelatedPropertyCard({ property, locale }: { property: RelatedProperty; 
   const title = localize(property.title, locale);
   const location = localize(property.location, locale);
   const price = localize(property.price, locale);
-  const status = localize(property.status, locale);
+  const rawStatus = localize(property.status, locale);
+  const status = t(VALUE_KEYS[rawStatus] ?? rawStatus, rawStatus);
 
   return (
     <Link

@@ -711,26 +711,50 @@
         "form": {
             "title": "Send us a message",
             "subtitle": "We'll respond within one business day.",
+            "continue": "Continue to scheduling",
             "interests": {
-            "landAccessClub": "Land Access Club",
-            "buyProperty": "Buy a property",
-            "investmentAdvisory": "Investment advisory",
-            "partnershipPress": "Partnership / Press",
-            "other": "Other"
+                "landAccessClub": "Land Access Club",
+                "buyProperty": "Buy a property",
+                "investmentAdvisory": "Investment advisory",
+                "partnershipPress": "Partnership / Press",
+                "other": "Other"
             },
             "fields": {
-            "name": { "label": "Full name", "placeholder": "Amina Nkeng" },
-            "phone": { "label": "Phone / WhatsApp", "placeholder": "+237 ..." },
-            "email": { "label": "Email address", "placeholder": "you@example.com" },
-            "interest": { "label": "Interest" },
-            "message": { "label": "Message", "placeholder": "Tell us about your goals..." }
+                "name": {
+                    "label": "Full name",
+                    "placeholder": "Amina Nkeng"
+                },
+                "phone": {
+                    "label": "Phone / WhatsApp",
+                    "placeholder": "+237 ..."
+                },
+                "email": {
+                    "label": "Email address",
+                    "placeholder": "you@example.com"
+                },
+                "interest": {
+                    "label": "Interest"
+                },
+                "message": {
+                    "label": "Message",
+                    "placeholder": "Tell us about your goals..."
+                }
+            },
+            "errors": {
+                "name": "Please enter your full name",
+                "phone": "Enter a reachable phone number",
+                "interest": "Select what you need help with"
             }
         },
         "booking": {
             "title": "Book an advisor",
             "body": "Pick a 30-minute slot with a Rocheli advisor. Available Mon-Sat.",
             "loading": "Loading available times...",
+            "chooseDay": "Choose a day",
+            "morning": "Morning",
+            "afternoon": "Afternoon",
             "noSlotsLeft": "Nothing left that day - try another.",
+            "back": "Back",
             "submitting": "Sending...",
             "submit": "Send message & confirm slot"
         },
@@ -738,6 +762,13 @@
             "title": "You're booked",
             "subtitle": "We've sent a confirmation and an advisor will meet you at the scheduled time.",
             "bookAnother": "Book another slot"
+        },
+        "howItWorks": {
+            "title": "How it works",
+            "step1": "1. Share your details and what you're looking for.",
+            "step2": "2. Choose a 30-minute slot that fits your week.",
+            "step3": "3. An advisor calls you at the confirmed time.",
+            "hours": "Available Mon-Sat, 8am-8pm"
         },
         "whatsapp": {
             "title": "Chat on WhatsApp",

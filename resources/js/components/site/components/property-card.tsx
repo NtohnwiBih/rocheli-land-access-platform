@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { MapPin, Maximize2, ArrowUpRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Property } from "@/types";
+import { VALUE_KEYS } from "../properties/filters";
 
 const statusStyle: Record<Property["status"], string> = {
   Available: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
@@ -13,6 +14,7 @@ const statusStyle: Record<Property["status"], string> = {
 
 export function PropertyCard({ p, index = 0 }: { p: Property; index?: number }) {
   const { t } = useTranslation();
+  const statusLabel = t(VALUE_KEYS[p.status] ?? p.status, p.status);
 
   return (
     <motion.article
@@ -35,7 +37,7 @@ export function PropertyCard({ p, index = 0 }: { p: Property; index?: number }) 
             <span
               className={`rounded-full border px-3 py-1 text-[10px] font-semibold uppercase tracking-wider ${statusStyle[p.status]}`}
             >
-              {p.status}
+              {statusLabel}
             </span>
           </div>
           <div className="absolute top-4 right-4 grid h-10 w-10 place-items-center rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-white opacity-0 -translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition">
