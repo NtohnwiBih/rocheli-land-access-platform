@@ -420,20 +420,41 @@ export default function Contact({ content = {}, availability = [] }: Props) {
             </div>
 
             <a
-              href="#"
+              href={`https://wa.me/237672659713?text=${encodeURIComponent(
+                language === "fr"
+                  ? "Bonjour Rocheli Real Properties, je suis intéressé(e) par vos services immobiliers."
+                  : "Hello Rocheli Real Properties, I'm interested in your real estate services."
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-4 rounded-3xl bg-emerald-500/10 border border-emerald-500/30 p-6 hover:border-emerald-500/50 transition"
             >
               <div className="grid h-14 w-14 place-items-center rounded-2xl bg-emerald-500 text-white shrink-0">
                 <MessageCircle className="h-6 w-6" />
               </div>
+
               <div className="min-w-0">
                 <div className="font-display text-lg font-semibold">
-                  {whatsapp.title ?? t("contact.whatsapp.title", "Chat on WhatsApp")}
+                  {whatsapp.title ??
+                    t(
+                      "contact.whatsapp.title",
+                      language === "fr"
+                        ? "Discuter sur WhatsApp"
+                        : "Chat on WhatsApp"
+                    )}
                 </div>
+
                 <div className="text-sm text-muted-foreground">
-                  {whatsapp.subtitle ?? t("contact.whatsapp.subtitle", "Response time under 15 minutes . 8am - 8pm")}
+                  {whatsapp.subtitle ??
+                    t(
+                      "contact.whatsapp.subtitle",
+                      language === "fr"
+                        ? "Temps de réponse inférieur à 15 minutes · 8h - 20h"
+                        : "Response time under 15 minutes · 8am - 8pm"
+                    )}
                 </div>
               </div>
+
               <ArrowRight className="h-5 w-5 text-emerald-600 ml-auto shrink-0" />
             </a>
 
