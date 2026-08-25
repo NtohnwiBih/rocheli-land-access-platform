@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "@inertiajs/react";
 import {
   Facebook,
@@ -42,6 +43,23 @@ interface Props {
 }
 
 export function Footer({ content = {} }: Props) {
+  useEffect(() => {
+    const scriptId = "digitorn-embed-script";
+
+    // Check if script already exists to avoid duplicate injections
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = "https://digitorn.ai/embed.js";
+      script.setAttribute(
+        "data-key",
+        "dk_75aa2a0d_2463f33cec3305592194f40b7943ade7953a342d50d3428e"
+      );
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
   const socials = [
     { Icon: Facebook, href: content.facebookUrl },
     { Icon: Instagram, href: content.instagramUrl },

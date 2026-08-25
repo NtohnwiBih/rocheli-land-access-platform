@@ -241,7 +241,10 @@ export default function PropertyShow({
               <div className="mt-8 border-t border-border pt-6">
                 <h2 className="font-display text-lg font-semibold">{t("properties.show.aboutTitle")}</h2>
                 {description ? (
-                  <p className="mt-3 leading-relaxed text-muted-foreground">{description}</p>
+                  <div
+                    className="mt-3 leading-relaxed text-muted-foreground prose prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{ __html: description }}
+                  />
                 ) : (
                   <p className="mt-3 italic text-muted-foreground">
                     {t("properties.show.aboutFallback")}
